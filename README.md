@@ -1,2 +1,7 @@
-# gdie-fauna-salvaje
-Proyecto de visor semántico con editor de metadatos.
+## Práctica GDIE
+### Integrantes: Carlos Veny, Marc Rosselló y Juan José Nieto
+La idea es la siguiente:
+- Realizar el proyecto en local en nuestro pc.
+- Subir los cambios a github.
+- Configurar el servidor apache para que haga deploys automáticos cuando se modifique este repositorio.
+- Los cambios se actualizarán en el servidor (https://alumnes-ltim.uib.es/gdieXX)
