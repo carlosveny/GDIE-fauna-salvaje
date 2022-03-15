@@ -18,6 +18,8 @@ La idea es la siguiente:
 `git init`
 6. Añadir el repositorio remoto.  
 `git remote add origin https://github.com/carlosveny/GDIE-fauna-salvaje.git`
+7. Cambiar a la rama "main".  
+`git checkout -b main`
 ### Pull y push
 #### Esto se realizará cada vez que se quiera modificar el repositorio
 1. Hacer que el pull sobreescriba los archivos locales (Aviso: se perderá la información en local y se sobreescribirá con la del repositorio).  
@@ -26,7 +28,6 @@ La idea es la siguiente:
 `git pull origin main`
 3. Modificar los archivos (VSC, Notepad, añadir o eliminar archivos...)
 4. Realizar un commit.  
-`git checkout -b main`  
 `git add --all`  
 `git commit -m "Añadir un mensaje cualquiera"`  
 5. Hacer un push de los cambios en el repositorio remoto.  
