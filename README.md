@@ -20,12 +20,14 @@ La idea es la siguiente:
 `git remote add origin https://github.com/carlosveny/GDIE-fauna-salvaje.git`
 ### Pull y push
 #### Esto se realizará cada vez que se quiera modificar el repositorio
-1. Hacer pull del repositorio a la carpeta local.  
+1. Hacer que el pull sobreescriba los archivos locales (Aviso: se perderá la información en local y se sobreescribirá con la del repositorio).  
+`git reset --hard`
+2. Hacer pull del repositorio a la carpeta local.  
 `git pull origin main`
-2. Modificar los archivos (VSC, Notepad, añadir o eliminar archivos...)
-3. Realizar un commit.  
-`git checkout -b main`
-`git add --all`
-`git commit -m "Añadir un mensaje cualquiera"`
-4. Hacer un push de los cambios en el repositorio remoto.  
+3. Modificar los archivos (VSC, Notepad, añadir o eliminar archivos...)
+4. Realizar un commit.  
+`git checkout -b main`  
+`git add --all`  
+`git commit -m "Añadir un mensaje cualquiera"`  
+5. Hacer un push de los cambios en el repositorio remoto.  
 `git push origin main`
