@@ -30,5 +30,5 @@ La idea es la siguiente:
 4. Realizar un commit.  
 `git add --all`  
 `git commit -m "Añadir un mensaje cualquiera"`  
-5. Hacer un push de los cambios en el repositorio remoto.  
+5. Hacer push de los cambios en el repositorio remoto.  
 `git push origin main`
