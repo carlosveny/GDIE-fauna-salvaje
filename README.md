@@ -1,4 +1,4 @@
-## Práctica GDIE
+# Práctica GDIE
 ### Integrantes: Carlos Veny, Marc Rosselló y Juan José Nieto
 La idea es la siguiente:
 - Realizar el proyecto en local en nuestro PC.
