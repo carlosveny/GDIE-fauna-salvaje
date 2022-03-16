@@ -30,5 +30,5 @@ La idea es la siguiente:
 `git commit -m "Añadir un mensaje cualquiera"`  
 4. Hacer push de los cambios en el repositorio remoto.  
 `git push origin main`
-5. Subir los cambios al servidor con una peticion curl.  
+5. Subir los cambios al servidor con una petición curl.  
 `curl "https://alumnes-ltim.uib.es/gdie2208/repo/index.html"`
