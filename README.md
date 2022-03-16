@@ -22,13 +22,13 @@ La idea es la siguiente:
 `git checkout -b main`
 ### Pull y push
 #### Esto se realizará cada vez que se quiera modificar el repositorio
-1. Hacer que el pull sobreescriba los archivos locales (Aviso: se perderá la información en local y se sobreescribirá con la del repositorio).  
+
 `git reset --hard`
-2. Hacer pull del repositorio a la carpeta local.  
+1. Hacer pull del repositorio a la carpeta local. (Si da error este paso, ejecutar primero `git reset --hard` para limpiar los archivos locales).  
 `git pull origin main`
-3. Modificar los archivos (VSC, Notepad, añadir o eliminar archivos...)
-4. Realizar un commit.  
+2. Modificar los archivos (VSC, Notepad, añadir o eliminar archivos...)
+3. Realizar un commit.  
 `git add --all`  
 `git commit -m "Añadir un mensaje cualquiera"`  
-5. Hacer push de los cambios en el repositorio remoto.  
+4. Hacer push de los cambios en el repositorio remoto.  
 `git push origin main`
