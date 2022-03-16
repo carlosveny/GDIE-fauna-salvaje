@@ -22,8 +22,6 @@ La idea es la siguiente:
 `git checkout -b main`
 ### Pull y push
 #### Esto se realizará cada vez que se quiera modificar el repositorio
-
-`git reset --hard`
 1. Hacer pull del repositorio a la carpeta local. (Si da error este paso, ejecutar primero `git reset --hard` para limpiar los archivos locales).  
 `git pull origin main`
 2. Modificar los archivos (VSC, Notepad, añadir o eliminar archivos...)
