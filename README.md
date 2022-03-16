@@ -4,7 +4,7 @@ La idea es la siguiente:
 - Realizar el proyecto en local en nuestro PC.
 - Subir los cambios a github (ver tutorial).
 - Configurar el servidor apache para que haga deploys automáticos cuando se modifique este repositorio (https://gist.github.com/oodavid/1809044)
-- Los cambios se actualizarán en el servidor (https://alumnes-ltim.uib.es/gdieXX)
+- Los cambios se actualizarán en el servidor (https://alumnes-ltim.uib.es/gdie2208)
 
 ## Tutorial GIT
 ### Instalación
