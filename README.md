@@ -3,7 +3,7 @@
 La idea es la siguiente:
 - Realizar el proyecto en local en nuestro PC.
 - Subir los cambios a github (ver tutorial).
-- Configurar el servidor apache para que haga deploys automáticos cuando se modifique este repositorio (https://gist.github.com/azhar25git/13d1311bf7acde0326f694587dcd9678)
+- Configurar el servidor apache para que haga deploys automáticos cuando se modifique este repositorio (https://gist.github.com/azhar25git/13d1311bf7acde0326f694587dcd9678).
 - Los cambios se actualizarán en el servidor (https://alumnes-ltim.uib.es/gdie2208)
 
 ## Tutorial GIT
