@@ -32,3 +32,4 @@ La idea es la siguiente:
 `git push origin main`
 5. Subir los cambios al servidor con una petición curl.  
 `curl "https://alumnes-ltim.uib.es/gdie2208/deploy.php"`
+
