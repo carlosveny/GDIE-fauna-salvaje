@@ -10,7 +10,7 @@ La idea es la siguiente:
 ### Instalación
 1. Instalar git (https://git-scm.com/download/win). Dejar todo por defecto.
 2. Abrir CMD y configurar nombre y email (el mismo de github).  
-`git config --global user.name "Carlos Veny"`  
+`git config --global user.name "Tu Nombre"`  
 `git config --global user.email "MY_NAME@example.com"`
 3. Crear una carpeta en el PC donde va a estar el repositorio en local.
 4. Abrir el CMD en dicha carpeta (o navegar con cd ...).
