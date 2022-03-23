@@ -38,6 +38,9 @@ function subirVideo() {
         contentType: false,
         success:function(data, textStatus, jqXHR){
             console.log(data);
+            var path = data.replace("../", "");
+            document.getElementById("video-src").setAttribute("src", path);
+            console.log(path);
         },
         error: function(jqXHR, textStatus, errorThrown){
             //if fails

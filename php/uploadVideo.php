@@ -14,11 +14,11 @@ if(isset($_FILES['file']['name'])){
    // Valid extensions
    $valid_ext = array("mp4","webm","ogg");
 
-   $response = 0;
+   $response = "false";
    if(in_array($file_extension,$valid_ext)){
       // Upload file
       if(move_uploaded_file($_FILES['file']['tmp_name'],$location)){
-         $response = 1;
+         $response = $location;
       }
    }
 
