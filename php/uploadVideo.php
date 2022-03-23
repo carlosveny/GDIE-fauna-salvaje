@@ -1,13 +1,13 @@
 <?php
 
 if(isset($_FILES['file']['name'])){
-   // file name
+   // File name
    $filename = $_FILES['file']['name'];
 
    // Location
    $location = '../assets/videos/'.$filename;
 
-   // file extension
+   // File extension
    $file_extension = pathinfo($location, PATHINFO_EXTENSION);
    $file_extension = strtolower($file_extension);
 
