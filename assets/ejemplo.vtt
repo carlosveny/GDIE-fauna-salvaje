@@ -1,6 +1,6 @@
 WEBVTT FILE
 
-poner titulo???
+leon
 01:15.200 --> 02:18.800
 {
 "nombreComun": "León",
@@ -15,18 +15,18 @@ poner titulo???
 "esqueleto": "Vertebrado"
 }
 
-insects
-02:18.800 --> 03:01.600
+mono
+02:18.800 --> 02:40.000
 {
-"title": "Insects",
-"description": "Insects are the most diverse group of animals
-on the planet with estimates for the total
-number of current species range from two million to 50
-million. The first insects appeared around
-400 million years ago, identifiable by a hard exoskeleton,
-three-part body, six legs, compound eyes
-and antennae.",
-"src": "insects.jpg",
-"href": "http://en.wikipedia.org/wiki/Insects"
+"nombreComun": "Mono",
+"nombreCientifico": "Blabla",
+"descripcion": "Blabla",
+"geoX": "8.457108",
+"geoY": "23.036242",
+"continente": "Africa",
+"foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
+"medio": "Tierra",
+"alimentacion": "Carnívoro",
+"esqueleto": "Vertebrado"
 }
 
