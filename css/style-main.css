@@ -1,3 +1,11 @@
+.height25{
+    height: 200px;
+}
+
+#filtros{
+    height: 3rem;
+}
+
 #name-col{
     margin-right: 10px;
     margin-bottom: 5px;
@@ -11,3 +19,8 @@
 #info{
     margin-right: 5px;
 }
+
+#quiz{
+    margin-right: 5px;
+}
+
