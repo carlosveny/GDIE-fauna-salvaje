@@ -1,7 +1,7 @@
 body {
   font-family: "Quicksand",-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   background-color: #fff;
-  height: 200vh;
+  height: 100vh;
   position: relative; }
   body:before {
     content: "";
@@ -83,7 +83,7 @@ a {
       .site-navbar .site-navigation .site-menu > li > a {
         margin-left: 15px;
         margin-right: 15px;
-        padding: 20px 0px;
+        padding: 10px 0px;
         color: #000 !important;
         display: inline-block;
         text-decoration: none !important; }

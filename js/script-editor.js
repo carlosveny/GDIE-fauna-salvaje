@@ -4,10 +4,12 @@
     en el servidor.
 */
 // https://www.w3schools.com/php/php_file_upload.asp (file uploads php)
+// https://developer.mozilla.org/en-US/docs/Web/API/TextTrack/cues (add cues)
 
 // Funcion que se ejecuta al cargarse la pagina
 function loaded() {
     // Inicializacion del media player "plyr"
+    const player = new Plyr('#player');
     const video = document.querySelector('#player');
     video.addEventListener('play', (event) => {
         console.log('The Boolean paused property is now false. Either the ' +
@@ -18,6 +20,7 @@ function loaded() {
     const input = document.querySelector('#file-input');
     input.addEventListener('input', subirVideo);
 
+    cargarVideo("assets/animales.mp4");
 }
 
 // Funcion que sube un video al servidor
@@ -30,27 +33,54 @@ function subirVideo() {
     var formData = new FormData();
     formData.append("file", file);
 
+    // Peticion POST al servidor para subir el archivo (si no existe)
     $.ajax({
-        url : "php/uploadVideo.php",
+        url: "php/uploadVideo.php",
         type: "POST",
-        data : formData,
+        data: formData,
         processData: false,
         contentType: false,
-        success:function(data, textStatus, jqXHR){
-            console.log(data);
+        success: function (data) {
             var path = data.replace("../", "");
-            document.getElementById("video-src").setAttribute("src", path);
-            console.log(path);
+            cargarVideo(path);
         },
-        error: function(jqXHR, textStatus, errorThrown){
+        error: function (jqXHR, textStatus, errorThrown) {
             //if fails
         }
     });
-
-    // $.post("localhost/FaunaSalvaje/php/uploadVideo.php", {
-    //     archivo: formData
-    // })
-    //     .done(function (data) {
-    //         console.log(data);
-    //     });
 }
+
+function cargarVideo(path) {
+    console.log(path);
+    var src = document.createElement("source");
+    setAttributes(src, { id: "video-src", src: path, type: "video/mp4" });
+    document.getElementById("player").appendChild(src);
+    if (document.getElementById("alerta-no-video") != null) {
+        document.getElementById("alerta-no-video").remove();
+    }
+    
+}
+
+function readDatos() {
+    var videoElement = document.getElementById("player");
+    var textTracks = videoElement.textTracks;
+    var cues = textTracks[0].cues;
+    var str = replaceAll(cues[0].text, "\n", "<br>");
+    document.getElementById("display-metadata").innerHTML = str;
+    console.log(cues[0]);
+}
+
+// FUNCIONES AUXILIARES
+// Funcion auxiliar para añadir mas de 1 atributo a la vez (a un mismo elemento)
+// https://stackoverflow.com/questions/12274748/setting-multiple-attributes-for-an-element-at-once-with-javascript
+function setAttributes(el, attrs) {
+    for (var key in attrs) {
+        el.setAttribute(key, attrs[key]);
+    }
+}
+
+// Funcion auxiliar que cambia todas las ocurrencias de una expresion en un string
+// https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string-in-javascript
+function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(find, 'g'), replace);
+  }
