@@ -58,7 +58,7 @@ function cargarVideo(path) {
     if (document.getElementById("alerta-no-video") != null) {
         document.getElementById("alerta-no-video").remove();
     }
-    
+
 }
 
 function readDatos() {
@@ -68,6 +68,30 @@ function readDatos() {
     var str = replaceAll(cues[0].text, "\n", "<br>");
     document.getElementById("display-metadata").innerHTML = str;
     console.log(cues[0]);
+    //console.log(JSON.parse(cues[0].text));
+
+    $("#md-inicio").attr("value", cues[0].startTime);
+    $("#md-fin").attr("value", cues[0].endTime);
+    var info = JSON.parse(cues[0].text);
+    $("#md-nombreComun").attr("value", info.nombreComun);
+    $("#md-nombreCientifico").attr("value", info.nombreCientifico);
+    $("#md-descripcion").html(info.descripcion);
+    $("#md-geoLat").attr("value", info.geoLat);
+    $("#md-geoLong").attr("value", info.geoLong);
+    $("#md-foto").attr("value", info.foto);
+
+    var continente = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var medio = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var alimentacion = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var esqueleto = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    $('#md-continente option[value=default]').removeAttr('selected');
+    $('#md-medio option[value=default]').removeAttr('selected');
+    $('#md-alimentacion option[value=default]').removeAttr('selected');
+    $('#md-esqueleto option[value=default]').removeAttr('selected');
+    $('#md-continente option[value=' + continente + ']').attr('selected', "");
+    $('#md-medio option[value=' + medio + ']').attr('selected', "");
+    $('#md-alimentacion option[value=' + alimentacion + ']').attr('selected', "");
+    $('#md-esqueleto option[value=' + esqueleto + ']').attr('selected', "");
 }
 
 // FUNCIONES AUXILIARES
@@ -83,4 +107,7 @@ function setAttributes(el, attrs) {
 // https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string-in-javascript
 function replaceAll(str, find, replace) {
     return str.replace(new RegExp(find, 'g'), replace);
-  }
+}
+
+// Funcion para formatear el tiempo en minutos y segundos
+// https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
