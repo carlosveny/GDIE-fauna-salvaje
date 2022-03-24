@@ -78,48 +78,58 @@
     </header>
     <!-- Fin Navbar -->
 
-    <div>
+    <div class="mx-5">
       <!-- Filtros -->
-      <div>
-        aa
+      <div class="row">
+        fil
       </div>
 
       <!-- Video -->
-      <div>
+      <div class="row">
         <!-- Botones interactivos -->
-        <div>
-          Botones columna izquierda
-        </div>
-          Video
-        <video id="" width="" height="" src="">
+        <div id="name-col" class="col-lg-1 bg-dark">
 
-          <track label="" id="track1" kind="" src="">
-
-        </video>
-          <!-- Player -->
-        <div>
-          aa
         </div>
-          <!-- Info lateral -->
-        <div>
-          aa
+
+        <div class="row text-center col-lg-6">
+          <div class="wrapper-video">
+              <video id="player" class="w-100" playsinline controls data-poster="">
+                    <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
+                    <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
+
+                    <!-- Captions are optional -->
+                    <track onload="readDatos()" kind="metadata" label="Metadatos" src="assets/ejemplo.vtt"
+                        default />
+              </video>
+          </div>
+        </div>
+          <!-- Info y mapa lateral derecho -->
+        <div id="panel-der" class="row col">
+          <!-- Info lateral derecho -->
+          <div id="info" class="col-lg-5 bg-dark">
+          
+          </div>
+          <!-- Mapa lateral derecho -->
+          <div id="map" class="col bg-dark">
+  
+          </div>
+
+
         </div>
       </div>
 
       <!-- Info -->
       <div>
-        <!-- Descripción -->
+        <!-- Quiz / Extras -->
         <div>
         
         </div>
-        <!-- Mapa -->
+
+        <!-- Iconos -->
         <div>
-        
+          icon
         </div>
-        <!-- Info -->
-        <div>
-          iconos marino terrestre...
-        </div>
+
       </div>
     </div>
   </body>
