@@ -16,7 +16,7 @@ leon
 }
 
 mono
-02:18.800 --> 02:40.000
+02:18.900 --> 02:40.000
 {
 "nombreComun": "Mono",
 "nombreCientifico": "Blabla",
@@ -29,4 +29,3 @@ mono
 "alimentacion": "Carnívoro",
 "esqueleto": "Vertebrado"
 }
-

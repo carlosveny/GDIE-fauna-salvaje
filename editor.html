@@ -80,31 +80,57 @@
 
     <!-- Explicacion -->
     <div class="container mt-4 mb-3">Bienvenido al editor de metadatos. Sigue los pasos para introducir metadatos a
-        cualquier video de animales.
-        <div class="paso">1.&nbsp;&nbsp;Sube un video de animales desde tu ordenador.
+        cualquier vídeo de animales.
+        <div class="paso">1.&nbsp;&nbsp;Sube un vídeo de animales desde tu ordenador.
             <input type="file" id="file-input" accept="video/mp4">
         </div>
-        <div class="paso">2.&nbsp;&nbsp;Reproduce el video y pausalo donde quieras que empiece un bloque de metadatos.
+        <div class="paso">2.&nbsp;&nbsp;Reproduce el vídeo y pausalo donde quieras que empiece un bloque de metadatos.
         </div>
-        <div class="paso">3.&nbsp;&nbsp;Pulsa el botón de "Inicio Metadatos"</div>
-        <div class="paso">4.&nbsp;&nbsp;Introduce los metadatos usando los campos inferiores.</div>
-        <div class="paso">5.&nbsp;&nbsp;Sigue reproduciendo el video hasta el momento donde quieres que finalice el
-            bloque de metadatos y pon pausa."</div>
-        <div class="paso">6.&nbsp;&nbsp;Pulsa el botón "Guardar Metadatos" para guardar el video y los metadatos.</div>
+        <div class="paso">3.&nbsp;&nbsp;Si ya hay metadatos en ese punto aparecerán en el apartado derecho. Si no, pulsa
+            el botón de "Inicio Metadatos".</div>
+        <div class="paso">4.&nbsp;&nbsp;Introduce los metadatos usando los campos correspondientes.</div>
+        <div class="paso">5.&nbsp;&nbsp;Sigue reproduciendo el vídeo hasta el momento donde quieres que finalice el
+            bloque de metadatos y pon pausa.</div>
+        <div class="paso">6.&nbsp;&nbsp;Pulsa el botón "Guardar Metadatos" para guardar el vídeo y los metadatos.</div>
     </div>
     <!-- Distribucion de grid -->
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-6 text-center">Editor
-                <video id="player" playsinline controls data-poster="">
-                    <source id="video-src" src="assets/animale.mp4" type="video/mp4" />
-                    <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
+            <!-- Columna vista previa -->
+            <div class="col-lg-6">
+                <div class="row text-center">
+                    <h4>Vista Previa</h4>
+                </div>
+                <div class="row text-center">
+                    <div class="wrapper-video">
+                        <video id="player" class="w-100" playsinline controls data-poster="">
+                            <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
+                            <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
 
-                    <!-- Captions are optional -->
-                    <!-- <track kind="captions" label="English captions" src="/path/to/captions.vtt" srclang="en" default /> -->
-                </video>
+                            <!-- Captions are optional -->
+                            <track onload="readDatos()" kind="metadata" label="Metadatos" src="assets/ejemplo.vtt"
+                                default />
+                        </video>
+                        <div id="alerta-no-video" class="centered alert alert-danger" role="alert">Aviso: No hay ningún
+                            vídeo cargado. Pulsa en el botón "Examinar".</div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-6 text-center">Metadatos actuales
+            <!-- Columna metadatos actuales -->
+            <div class="col-lg-6 text-center">
+                <div class="row text-center">
+                    <h4>Metadatos Actuales</h4>
+                </div>
+                <div class="row text-start">
+                    <div class="row">
+                        <div>Nombre común:</div>
+                        <input type="text" id="name" name="name" class="font-size-input" required minlength="1"
+                            maxlength="20" size="12">
+                    </div>
+                </div>
+                <div class="row text-center">
+                    <div id="display-metadata" class="display"></div>
+                </div>
             </div>
         </div>
     </div>
