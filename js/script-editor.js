@@ -129,6 +129,7 @@ function peticionSubirVideo() {
         contentType: false,
         success: function (data) {
             // Si ya existe un video con el mismo nombre mostrar aviso
+            console.log(data);
             if (data == "existe") {
                 var descr = "El vídeo seleccionado ya existe en el servidor. ";
                 descr = descr + "Selecciona otro vídeo o modifícale el nombre.";
