@@ -1,3 +1,16 @@
+.icono{
+    height: 30px;
+    width: 30px;
+}
+
+.botones{
+    width: 50px;
+}
+
+#filtros{
+    height: 3rem;
+}
+
 #name-col{
     margin-right: 10px;
     margin-bottom: 5px;
@@ -11,3 +24,13 @@
 #info{
     margin-right: 5px;
 }
+
+#quiz{
+    margin-right: 5px;
+    height: 200px;
+}
+
+#mapa{
+    height: 200px;
+}
+
