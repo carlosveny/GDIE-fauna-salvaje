@@ -1,5 +1,10 @@
-.height25{
-    height: 200px;
+.icono{
+    height: 30px;
+    width: 30px;
+}
+
+.botones{
+    width: 50px;
 }
 
 #filtros{
@@ -22,5 +27,10 @@
 
 #quiz{
     margin-right: 5px;
+    height: 200px;
+}
+
+#mapa{
+    height: 200px;
 }
 
