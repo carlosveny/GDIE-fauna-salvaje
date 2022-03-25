@@ -33,7 +33,7 @@
     <script src="js/script-editor.js"></script>
 </head>
 
-<body class="bg" onload="loaded()">
+<body id="cuerpo" class="bg" onload="loaded()">
     <!-- Inicio Navbar -->
     <div class="site-mobile-menu site-navbar-target">
         <div class="site-mobile-menu-header">
@@ -79,23 +79,30 @@
     </header>
     <!-- Fin Navbar -->
 
-    <!-- Explicacion -->
-    <div class="container mt-4 mb-3">Bienvenido al editor de metadatos. Sigue los pasos para introducir metadatos a
-        cualquier vídeo de animales.
-        <div class="paso">1.&nbsp;&nbsp;Sube un vídeo de animales desde tu ordenador.
-            <input type="file" id="file-input" accept="video/mp4">
+    <!-- Inicio Seleccion de Video -->
+    <div id="hola" class="container m-auto text-center mt-3">
+        <h3 class="mg-bt-sm-neg">Selecciona una de las opciones:</h3>
+        <small>(Leer <a href="#instrucciones">Instrucciones</a>)</small>
+        <div class="row mt-2">
+            <div class="col-md mb-2 mt-2">
+                <h5>Subir vídeo</h5>
+                <input type="file" id="file-input" accept="video/mp4">
+            </div>
+            <div class="col-md mb-2 mt-2">
+                <h5>Elegir vídeo existente</h5>
+                <select class="col-6 max-w180 font-size-input-2 input-color-w" id="file-selector"
+                    onchange="cargarVideo(this)">
+                    <option value="default" selected disabled hidden>Elegir...</option>
+                    <option value="vertebrado">Vertebrado</option>
+                    <option value="invertebrado">Invertebrado</option>
+                </select>
+            </div>
         </div>
-        <div class="paso">2.&nbsp;&nbsp;Reproduce el vídeo y pausalo donde quieras que empiece un bloque de metadatos.
-        </div>
-        <div class="paso">3.&nbsp;&nbsp;Si ya hay metadatos en ese punto aparecerán en el apartado derecho. Si no, pulsa
-            el botón de "Inicio Metadatos".</div>
-        <div class="paso">4.&nbsp;&nbsp;Introduce los metadatos usando los campos correspondientes.</div>
-        <div class="paso">5.&nbsp;&nbsp;Sigue reproduciendo el vídeo hasta el momento donde quieres que finalice el
-            bloque de metadatos y pon pausa.</div>
-        <div class="paso">6.&nbsp;&nbsp;Pulsa el botón "Guardar Metadatos" para guardar el vídeo y los metadatos.</div>
     </div>
-    <!-- Distribucion de grid -->
-    <div class="container-fluid">
+    <!-- Fin Seleccion de Video -->
+
+    <!-- Inicio Contenido Principal -->
+    <div class="container-fluid mt-5">
         <div class="row">
             <!-- Columna vista previa -->
             <div class="col-xxl-6 mb-5">
@@ -112,8 +119,8 @@
                             <track onload="readDatos()" kind="metadata" label="Metadatos" src="assets/ejemplo.vtt"
                                 default />
                         </video>
-                        <div id="alerta-no-video" class="aviso-centered alert alert-danger" role="alert">Aviso: No hay
-                            ningún vídeo cargado. Pulsa en el botón "Examinar".</div>
+                        <div id="alerta-no-video" class="aviso-centered alert alert-danger show" role="alert">Aviso: No hay
+                            ningún vídeo cargado. Selecciona una de las opciones.</div>
                     </div>
                 </div>
             </div>
@@ -126,11 +133,9 @@
                 <div class="row mb-4 m-auto">
                     <div class="col-4 text-end">Tiempo:</div>
                     <div class="col-8 row">
-                        <input type="text" id="md-inicio" class="col-4 font-size-input max-w150 input-color"
-                            readonly>
+                        <input type="text" id="md-inicio" class="col-4 font-size-input max-w150" disabled>
                         <div class="col-1 text-center">-</div>
-                        <input type="text" id="md-fin" class="col-4 font-size-input max-w150 input-color"
-                             readonly>
+                        <input type="text" id="md-fin" class="col-4 font-size-input max-w150" disabled>
                     </div>
                 </div>
                 <!-- Fila nombre comun y cientifico -->
@@ -151,32 +156,36 @@
                     </div>
                 </div>
                 <!-- Fila descripcion -->
-                <div class="w-75 m-auto mt-1">
-                    <div class="row">Descripción:</div>
-                    <div class="row">
-                        <textarea id="md-descripcion" class="font-size-input" cols="40" rows="5"></textarea>
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-10 ms-4 m-auto mt-1">
+                        <div class="row">Descripción:</div>
+                        <div class="row">
+                            <textarea id="md-descripcion" class="font-size-input" cols="40" rows="5"></textarea>
+                        </div>
                     </div>
+                    <div class="col-1"></div>
                 </div>
                 <!-- Fila geoposicion -->
-                <div class="row mt-4 m-auto">
+                <div class="row mt-4">
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Latitud:</div>
-                            <input type="text" id="md-geoLat" class="col-6 font-size-input max-w100" required
+                            <input type="text" id="md-geoLat" class="col-6 font-size-input max-w120" required
                                 minlength="1" maxlength="20">
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Longitud:</div>
-                            <input type="text" id="md-geoLong" class="col-6 font-size-input max-w100" required
+                            <input type="text" id="md-geoLong" class="col-6 font-size-input max-w120" required
                                 minlength="1" maxlength="20">
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Continente:</div>
-                            <select class="col-6 max-w120 font-size-input" id="md-continente">
+                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-continente">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="africa">África</option>
                                 <option value="asia">Asia</option>
@@ -189,11 +198,11 @@
                     </div>
                 </div>
                 <!-- Fila medio, alimentacion y esqueleto -->
-                <div class="row mt-4 m-auto">
+                <div class="row mt-4">
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Medio:</div>
-                            <select class="col-6 max-w100 font-size-input" id="md-medio">
+                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-medio">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="tierra">Tierra</option>
                                 <option value="agua">Agua</option>
@@ -204,7 +213,7 @@
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Alimentación:</div>
-                            <select class="col-6 max-w100 font-size-input" id="md-alimentacion">
+                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-alimentacion">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="herbivoro">Herbívoro</option>
                                 <option value="carnivoro">Carnívoro</option>
@@ -215,7 +224,7 @@
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Esqueleto:</div>
-                            <select class="col-6 max-w120 font-size-input" id="md-esqueleto">
+                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-esqueleto">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="vertebrado">Vertebrado</option>
                                 <option value="invertebrado">Invertebrado</option>
@@ -224,15 +233,39 @@
                     </div>
                 </div>
                 <!-- Fila foto -->
-                <div class="row mt-4 mb-4 m-auto">
+                <div class="row mt-4 mb-4">
                     <div class="col-2 text-end">Foto (URL):</div>
                     <input type="text" id="md-foto" class="col-9 font-size-input" required minlength="1">
                 </div>
 
 
-                <div class="row text-center">
+                <!-- <div class="row text-center">
                     <div id="display-metadata" class="display"></div>
-                </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <!-- Fin Contenido Principal -->
+
+    <!-- Explicacion -->
+    <div class="mg-top-md"></div>
+    <div class="cont-instrucciones mb-3 m-auto">
+        <h3 id="instrucciones" class="text-center">Instrucciones</h3>
+        <div class="txt-instrucciones text-justify">
+            Los siguientes pasos te ayudarán a incluir metadatos a un vídeo nuevo o un vídeo ya existente.
+            <div class="paso">1.&nbsp;&nbsp;Sube un vídeo de animales desde tu ordenador.
+                <input type="file" id="file-input" accept="video/mp4">
+            </div>
+            <div class="paso">2.&nbsp;&nbsp;Reproduce el vídeo y pausalo donde quieras que empiece un bloque de
+                metadatos.
+            </div>
+            <div class="paso">3.&nbsp;&nbsp;Si ya hay metadatos en ese punto aparecerán en el apartado derecho. Si no,
+                pulsa
+                el botón de "Inicio Metadatos".</div>
+            <div class="paso">4.&nbsp;&nbsp;Introduce los metadatos usando los campos correspondientes.</div>
+            <div class="paso">5.&nbsp;&nbsp;Sigue reproduciendo el vídeo hasta el momento donde quieres que finalice el
+                bloque de metadatos y pon pausa.</div>
+            <div class="paso">6.&nbsp;&nbsp;Pulsa el botón "Guardar Metadatos" para guardar el vídeo y los metadatos.
             </div>
         </div>
     </div>

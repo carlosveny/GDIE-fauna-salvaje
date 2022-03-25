@@ -1,5 +1,5 @@
 .bg {
-  background-color: antiquewhite;
+  background-color: rgb(255, 244, 231);
 }
 
 .wrapper-video {
@@ -22,8 +22,18 @@
   font-size: 0.8rem;
   resize: none;
 }
-.input-color {
-  background-color: #f5f5f5;
+.font-size-input-2 {
+  height: 26px;
+  font-size: 0.9rem;
+  resize: none;
+}
+.input-color-w {
+  background-color: white;
+  border-radius:4px;
+  border:1px solid #858585;
+}
+.max-w180 {
+  max-width: 180px;
 }
 .max-w150 {
   max-width: 150px;
@@ -35,6 +45,13 @@
   max-width: 100px;
 }
 
+.mg-bt-sm-neg {
+  margin-bottom: -3px;
+}
+.mg-top-md {
+  margin-top: 75px;
+}
+
 .display {
   width: 70%;
   min-height: 100px;
@@ -42,10 +59,46 @@
   background-color: white;
 }
 
+.cont-instrucciones {
+  width: 50%;
+}
+.txt-instrucciones {
+  font-size: 1.1rem;
+}
+
+/* Aviso flotante (https://codepen.io/Dinamo/pen/rNVOZmr) */
+.myAlert-top{
+  position: fixed;
+  top: 90px; 
+  left:25%;
+  width: 50%;
+}
+/* .alert{
+  display: none;
+} */
+
 /* Web responsive*/
 @media (max-width: 600px) {
   .centered {
     font-size: 0.7rem;
+  }
+  .cont-instrucciones {
+    width: 95%;
+  }
+}
+@media (max-width: 1500px) {
+  .cont-instrucciones {
+    width: 60%;
+  }
+}
+@media (max-width: 1200px) {
+  .cont-instrucciones {
+    width: 70%;
+  }
+}
+@media (max-width: 900px) {
+  .cont-instrucciones {
+    width: 80%;
   }
 }
 
