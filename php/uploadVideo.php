@@ -1,10 +1,8 @@
 <?php
 
-// if (isset($_FILES['file']['name'])) {
+if (isset($_FILES['file']['name'])) {
    // File name
    $filename = $_FILES['file']['name'];
-   echo $filename;
-   exit;
 
    // Location
    $location = '../assets/videos/' . $filename;
@@ -32,4 +30,4 @@
 
    echo $response;
    exit;
-// }
+}
