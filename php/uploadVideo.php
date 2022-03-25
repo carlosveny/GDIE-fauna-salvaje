@@ -31,3 +31,4 @@ if (isset($_FILES['file']['name'])) {
    echo $response;
    exit;
 }
+echo "Hola";
