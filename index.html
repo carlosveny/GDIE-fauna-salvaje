@@ -67,8 +67,8 @@
                 <div class="col-lg-4">
                     <nav class="site-navigation text-left mr-auto " role="navigation">
                         <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
-                            <li><a href="blog.html" class="nav-link">Visor</a></li>
-                            <li class="active"><a href="#" class="nav-link">Editor</a></li>
+                            <li class="active"><a href="#" class="nav-link">Visor</a></li>
+                            <li><a href="editor.html" class="nav-link">Editor</a></li>
                             <li><a href="https://github.com/carlosveny/GDIE-fauna-salvaje" target=”_blank”
                                     class="nav-link">Fuentes</a></li>
                         </ul>
@@ -185,18 +185,31 @@
         <div id="panel-der" class="row col">
           <!-- Info lateral derecho -->
           <div id="info" class="col-lg-8">
-            <h3>León</h3>
-            <h5>Panthera-leo</h5>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            
+            <div class="row">
+              <h3 id="nombreComun"></h3>
+              <h5 id="nombreCientifico"></h5>
+            </div>
+            <div id="descripcion">
+
+            </div>
           </div>
           <!-- Iconos lateral derecho -->
           <div id="datos" class="col">
             <p>Alimentción:</p>
-            <img class="icono" src="assets/icons/meat.ico"> Carnívoro </img>
+            <div class="d-flex">
+              <img id="iconoAlimentacion" class="icono" src=""> <p id="alimentacion"></p>
+            </div>
+
             <p><br>Medio:</p>
-            <img class="icono" src="assets/icons/ocean.ico"> Acuático </img>
+            <div class="d-flex">
+              <img id="iconoMedio" class="icono" src=""> </img> <p id="medio"></p>
+            </div>
+
             <p><br>Esqueleto:</p>
-            <img class="icono" src="assets/icons/bone.ico"> Vertebrado </img>
+            <div class="d-flex">
+              <img id="iconoEsqueleto" class="icono" src=""> </img> <p id="esqueleto"></p>
+            </div>
           </div>
 
 
@@ -206,7 +219,7 @@
       <!-- Info -->
       <div id="bottom-container" class="row my-1">
         <!-- Quiz / Extras -->
-        <div id="quiz" class="col border border-primary rounded height25">
+        <div id="quiz" class="col border rounded height25">
           <h1 class="text-center">QUIZ</h1>
         </div>
 
