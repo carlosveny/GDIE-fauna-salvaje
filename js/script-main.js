@@ -8,6 +8,10 @@ function loaded() {
     });
 
     cargarVideo("assets/animales.mp4");
+
+
+    //Inicialización botones filtros
+    cargarFiltros();
 }
 
 function cargarVideo(path) {
@@ -52,6 +56,47 @@ function readDatos() {
 
     
 
+}
+
+//Función que carga los filtros disponibles en la página principal según los datos del fichero .vtt
+function cargarFiltros(){
+    var filtro = crearElementoFiltro("esto");
+    document.getElementById("filtroAnimales").appendChild(filtro);
+    filtro = crearElementoFiltro("es");
+    document.getElementById("filtroAnimales").appendChild(filtro);
+    filtro = crearElementoFiltro("una");
+    document.getElementById("filtroAnimales").appendChild(filtro);
+
+    divisor = crearDivisorFiltro();
+    document.getElementById("filtroAnimales").appendChild(divisor);
+
+    filtro = crearElementoFiltro("prueba");
+    document.getElementById("filtroAnimales").appendChild(filtro);
+
+
+}
+
+//Función que crea un elemento con el formato de las opciones de los filtros
+function crearElementoFiltro(nombre){
+    var filtro = document.createElement("li");
+    var link = document.createElement("a");
+    var texto = document.createTextNode(nombre);
+    link.appendChild(texto);
+    setAttributes(link, {class: "dropdown-item", href: "#", onclick: "debug();"});
+    filtro.appendChild(link);
+    return filtro;
+}
+
+function crearDivisorFiltro(){
+    var divisor = document.createElement("li");
+    var hr = document.createElement("hr");
+    setAttributes(hr, {class: "dropdown-divider"});
+    divisor.appendChild(hr);
+    return divisor;
+}
+
+function debug(){
+    console.log("Succsessful!")
 }
 
 // FUNCIONES AUXILIARES
