@@ -11,7 +11,6 @@ function loaded() {
         invertTime: false,
         toggleInvert: false
     });
-
     peticionObtenerVideos();
     
     cargarVideo("assets/animales.mp4");
@@ -182,10 +181,15 @@ function peticionObtenerVideos() {
             var paths = JSON.parse(data);
             var filtro;
             for (var i = 0; i < paths.length; i++) {
-                filtro = crearElementoFiltro(paths[i].replace("assets/videos/", ""));
+                var nombre = paths[i].replace("assets/videos/", "");
+                nombre = nombre.replace(".mp4", "");
+                nombre = nombre.replace(".ogg", "");
+                nombre = nombre.replace(".webm", "");
+                nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+                filtro = crearElementoFiltro(nombre);
                 document.getElementById("filtroVideos").appendChild(filtro);
             }
-            //console.log(JSON.parse(data));
+            console.log(JSON.parse(data));
         });
 }
 
