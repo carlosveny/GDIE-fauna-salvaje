@@ -133,7 +133,7 @@ function peticionSubirVideo() {
             if (data == "existe") {
                 var descr = "El vídeo seleccionado ya existe en el servidor. ";
                 descr = descr + "Selecciona otro vídeo o modifícale el nombre.";
-                crearAviso("alert-warning", "Aviso:", descr);
+                crearAviso("alert-danger", "Aviso:", descr);
             }
             else {
                 var path = data.replace("../", "");

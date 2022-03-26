@@ -1,7 +1,7 @@
 <?php
 /*
     Fichero que devuelve un array con todos los paths de los videos
-    que hay subidos en el servidor
+    que hay subidos en el servidor.
 */
 
 $relativePath = "../assets/videos/";
