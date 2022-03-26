@@ -1,191 +1,190 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <!-- Meta informacion -->
-    <meta charset="UTF-8">
-    <title>Fauna Salvaje | Home Page</title>
-    <meta name="description" content="Visor interactivo de video de animales." />
-    <meta name="author" content="Carlos Veny">
-    <meta name="author" content="Marc Rosselló">
-    <meta name="author" content="Juan José Nieto">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-        crossorigin="anonymous"></script>
-    <!-- JQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <!-- Navbar (https://colorlib.com/wp/template/website-menu-10/) -->
-    <link href="https://fonts.googleapis.com/css?family=Quicksand:400,600,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/navbar/fonts/icomoon/style.css">
-    <link rel="stylesheet" href="assets/navbar/css/style.css">
-    <script src="assets/navbar/js/jquery.sticky.js"></script>
-    <script src="assets/navbar/js/main.js"></script>
-    <!-- plyr -->
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.6.12/plyr.css" />
-    <script src="https://cdn.plyr.io/3.6.12/plyr.polyfilled.js"></script>
-    <!-- Local -->
-    <link rel="stylesheet" href="css/style-main.css">
-    <script src="js/script-main.js"></script>
-  </head>
+<head>
+  <!-- Meta informacion -->
+  <meta charset="UTF-8">
+  <title>Fauna Salvaje | Home Page</title>
+  <meta name="description" content="Visor interactivo de video de animales." />
+  <meta name="author" content="Carlos Veny">
+  <meta name="author" content="Marc Rosselló">
+  <meta name="author" content="Juan José Nieto">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <body onload="loaded()">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+  <!-- JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- Navbar (https://colorlib.com/wp/template/website-menu-10/) -->
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,600,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/navbar/fonts/icomoon/style.css">
+  <link rel="stylesheet" href="assets/navbar/css/style.css">
+  <script src="assets/navbar/js/jquery.sticky.js"></script>
+  <script src="assets/navbar/js/main.js"></script>
+  <!-- plyr -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.6.12/plyr.css" />
+  <script src="https://cdn.plyr.io/3.6.12/plyr.polyfilled.js"></script>
+  <!-- Local -->
+  <link rel="stylesheet" href="css/style-main.css">
+  <script src="js/script-main.js"></script>
+</head>
 
-    <!-- Inicio Navbar -->
-    <div class="site-mobile-menu site-navbar-target">
-      <div class="site-mobile-menu-header">
-          <div class="site-mobile-menu-close mt-3">
-              <span class="icon-close2 js-menu-toggle"></span>
-          </div>
+<body onload="loaded()">
+
+  <!-- Inicio Navbar -->
+  <div class="site-mobile-menu site-navbar-target">
+    <div class="site-mobile-menu-header">
+      <div class="site-mobile-menu-close mt-3">
+        <span class="icon-close2 js-menu-toggle"></span>
       </div>
-      <div class="site-mobile-menu-body"></div>
     </div>
+    <div class="site-mobile-menu-body"></div>
+  </div>
 
-    <header class="site-navbar site-navbar-target" role="banner">
-        <div class="container">
-            <div class="row align-items-center position-relative">
-                <div class="col-lg-4">
-                    <nav class="site-navigation text-right ml-auto " role="navigation">
-                        <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
-                            <!-- <li class="active"><a href="index.html" class="nav-link">Home</a></li>
+  <header class="site-navbar site-navbar-target" role="banner">
+    <div class="container">
+      <div class="row align-items-center position-relative">
+        <div class="col-lg-4">
+          <nav class="site-navigation text-right ml-auto " role="navigation">
+            <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
+              <!-- <li class="active"><a href="index.html" class="nav-link">Home</a></li>
                             <li><a href="project.html" class="nav-link">Projects</a></li>
                             <li><a href="services.html" class="nav-link">Services</a></li> -->
-                        </ul>
-                    </nav>
-                </div>
-                <div class="col-lg-4 text-center">
-                    <div class="site-logo">
-                        <a href="index.html">Fauna Salvaje</a>
-                    </div>
-                    <div class="ml-auto toggle-button d-inline-block d-lg-none"><a href="#"
-                            class="site-menu-toggle py-5 js-menu-toggle text-black"><span
-                                class="icon-menu h3 text-black"></span></a></div>
-                </div>
-                <div class="col-lg-4">
-                    <nav class="site-navigation text-left mr-auto " role="navigation">
-                        <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
-                            <li class="active"><a href="#" class="nav-link">Visor</a></li>
-                            <li><a href="editor.html" class="nav-link">Editor</a></li>
-                            <li><a href="https://github.com/carlosveny/GDIE-fauna-salvaje" target=”_blank”
-                                    class="nav-link">Fuentes</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+            </ul>
+          </nav>
         </div>
-    </header>
-    <!-- Fin Navbar -->
-
-    <div class="mx-5">
+        <div class="col-lg-4 text-center">
+          <div class="site-logo">
+            <a href="index.html">Fauna Salvaje</a>
+          </div>
+          <div class="ml-auto toggle-button d-inline-block d-lg-none"><a href="#"
+              class="site-menu-toggle py-5 js-menu-toggle text-black"><span class="icon-menu h3 text-black"></span></a>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <nav class="site-navigation text-left mr-auto " role="navigation">
+            <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
+              <li class="active"><a href="#" class="nav-link">Visor</a></li>
+              <li><a href="editor.html" class="nav-link">Editor</a></li>
+              <li><a href="https://github.com/carlosveny/GDIE-fauna-salvaje" target=”_blank”
+                  class="nav-link">Fuentes</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- Fin Navbar -->
+  <div class="mx-5">
+    <div class="mx-auto panPrincipal">
       <!-- Filtros -->
       <div id="filtros" class="my-2">
-        <!-- Example single danger button -->
+        <!-- Botón seleccionar video -->
         <div class="btn-group">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Seleccionar Video
           </button>
-          <ul class="dropdown-menu">
+          <ul id="filtroVideos" class="dropdown-menu">
             <li><a class="dropdown-item" href="#">Action</a></li>
             <li><a class="dropdown-item" href="#">Another action</a></li>
             <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Separated link</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Ver todos</a></li>
           </ul>
         </div>
-
+        <!-- Botón seleccionar animal -->
         <div class="btn-group">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Animal
           </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Separated link</a></li>
-          </ul>
+          <ul id="filtroAnimales" class="dropdown-menu"></ul>
         </div>
-
+        <!-- Botón seleccionar alimentacion -->
         <div class="btn-group">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Alimentación
           </button>
-          <ul class="dropdown-menu">
+          <ul id="filtroAlimentacion" class="dropdown-menu">
             <li><a class="dropdown-item" href="#">Action</a></li>
             <li><a class="dropdown-item" href="#">Another action</a></li>
             <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Separated link</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Ver todos</a></li>
           </ul>
         </div>
-
+        <!-- Botón seleccionar medio -->
         <div class="btn-group">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Medio
           </button>
-          <ul class="dropdown-menu">
+          <ul id="filtroMedio" class="dropdown-menu">
             <li><a class="dropdown-item" href="#">Action</a></li>
             <li><a class="dropdown-item" href="#">Another action</a></li>
             <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Separated link</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Ver todos</a></li>
           </ul>
         </div>
-
+        <!-- Botón seleccionar esqueleto -->
         <div class="btn-group">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Esqueleto
           </button>
-          <ul class="dropdown-menu">
+          <ul id="filtroEsqueleto" class="dropdown-menu">
             <li><a class="dropdown-item" href="#">Action</a></li>
             <li><a class="dropdown-item" href="#">Another action</a></li>
             <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Separated link</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Ver todos</a></li>
           </ul>
         </div>
-
+        <!-- Botón seleccionar continente -->
         <div class="btn-group">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Continente
           </button>
-          <ul class="dropdown-menu">
+          <ul id="filtroContinente" class="dropdown-menu">
             <li><a class="dropdown-item" href="#">Action</a></li>
             <li><a class="dropdown-item" href="#">Another action</a></li>
             <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Separated link</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Ver todos</a></li>
           </ul>
         </div>
-
-        
       </div>
 
-      
       <div class="row">
-        <!-- Botones interactivos -->
-
         <!-- Video -->
         <div class="row text-center col-lg-7">
           <div class="wrapper-video">
-              <video id="player" class="w-100" playsinline controls data-poster="">
-                    <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
-                    <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
+            <video id="player" class="w-100" playsinline controls data-poster="">
+              <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
+              <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
 
-                    <!-- Captions are optional -->
-                    <track onload="readDatos()" kind="metadata" label="Metadatos" src="assets/ejemplo.vtt"
-                        default />
-              </video>
+              <!-- Captions are optional -->
+              <track onload="readDatos()" kind="metadata" label="Metadatos" src="assets/ejemplo.vtt" default />
+            </video>
           </div>
         </div>
-          <!-- Info lateral derecho -->
+        <!-- Info lateral derecho -->
         <div id="panel-der" class="row col">
           <!-- Info lateral derecho -->
           <div id="info" class="col-lg-8">
-            
+
             <div class="row">
               <h3 id="nombreComun"></h3>
               <h5 id="nombreCientifico"></h5>
@@ -196,19 +195,22 @@
           </div>
           <!-- Iconos lateral derecho -->
           <div id="datos" class="col">
-            <p>Alimentción:</p>
+            <p class="titulosInfo">Alimentción:</p>
             <div class="d-flex">
-              <img id="iconoAlimentacion" class="icono" src=""> <p id="alimentacion"></p>
+              <img id="iconoAlimentacion" class="icono" src=""> &ensp; </img>
+              <p id="alimentacion" class="textoInfo"></p>
             </div>
 
-            <p><br>Medio:</p>
+            <p class="titulosInfo"><br>Medio:</p>
             <div class="d-flex">
-              <img id="iconoMedio" class="icono" src=""> </img> <p id="medio"></p>
+              <img id="iconoMedio" class="icono" src=""> &ensp; </img>
+              <p id="medio" class="textoInfo"></p>
             </div>
 
-            <p><br>Esqueleto:</p>
+            <p class="titulosInfo"><br>Esqueleto:</p>
             <div class="d-flex">
-              <img id="iconoEsqueleto" class="icono" src=""> </img> <p id="esqueleto"></p>
+              <img id="iconoEsqueleto" class="icono" src=""> &ensp; </img>
+              <p id="esqueleto" class="textoInfo"></p>
             </div>
           </div>
 
@@ -217,7 +219,7 @@
       </div>
 
       <!-- Info -->
-      <div id="bottom-container" class="row my-1">
+      <div id="bottom-container" class="row my-3">
         <!-- Quiz / Extras -->
         <div id="quiz" class="col border rounded height25">
           <h1 class="text-center">QUIZ</h1>
@@ -225,14 +227,16 @@
 
         <!-- Mapa -->
         <div id="mapa" class="col-lg-4 border">
-          
+          <h1 class="text-center">MAPA</h1>
         </div>
 
       </div>
     </div>
-  </body>
+  </div>
+</body>
 
-  <footer>
+<footer>
 
-  </footer>
+</footer>
+
 </html>
