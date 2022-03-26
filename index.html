@@ -88,15 +88,7 @@
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Seleccionar Video
           </button>
-          <ul id="filtroVideos" class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="#">Ver todos</a></li>
-          </ul>
+          <ul id="filtroVideos" class="dropdown-menu"></ul>
         </div>
         <!-- Botón seleccionar animal -->
         <div class="btn-group">
@@ -110,60 +102,28 @@
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Alimentación
           </button>
-          <ul id="filtroAlimentacion" class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="#">Ver todos</a></li>
-          </ul>
+          <ul id="filtroAlimentacion" class="dropdown-menu"></ul>
         </div>
         <!-- Botón seleccionar medio -->
         <div class="btn-group">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Medio
           </button>
-          <ul id="filtroMedio" class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="#">Ver todos</a></li>
-          </ul>
+          <ul id="filtroMedio" class="dropdown-menu"></ul>
         </div>
         <!-- Botón seleccionar esqueleto -->
         <div class="btn-group">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Esqueleto
           </button>
-          <ul id="filtroEsqueleto" class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="#">Ver todos</a></li>
-          </ul>
+          <ul id="filtroEsqueleto" class="dropdown-menu"></ul>
         </div>
         <!-- Botón seleccionar continente -->
         <div class="btn-group">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Continente
           </button>
-          <ul id="filtroContinente" class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li><a class="dropdown-item" href="#">Ver todos</a></li>
-          </ul>
+          <ul id="filtroContinente" class="dropdown-menu"></ul>
         </div>
       </div>
 
@@ -171,12 +131,12 @@
         <!-- Video -->
         <div class="row text-center col-lg-7">
           <div class="wrapper-video">
-            <video id="player" class="w-100" playsinline controls data-poster="">
+            <video id="player" class="w-100" playsinline controls data-poster="" >
               <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
               <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
 
               <!-- Captions are optional -->
-              <track onload="readDatos()" kind="metadata" label="Metadatos" src="assets/ejemplo.vtt" default />
+              <!-- <track id="track" kind="metadata" label="Metadatos" src="assets/ejemplo.vtt" default /> -->
             </video>
           </div>
         </div>

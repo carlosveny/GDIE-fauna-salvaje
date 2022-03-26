@@ -15,6 +15,36 @@ leon
   "esqueleto": "Vertebrado"
 }
 
+mosquito
+00:20.000 --> 00:40.900
+{
+"nombreComun": "Mosquito",
+"nombreCientifico": "Blabla",
+"descripcion": "Blabla",
+"geoX": "8.457108",
+"geoY": "23.036242",
+"continente": "Africa",
+"foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
+"medio": "Aire",
+"alimentacion": "Omnivoro",
+"esqueleto": "Invertebrado"
+}
+
+pez
+01:18.900 --> 02:18.900
+{
+"nombreComun": "Pez",
+"nombreCientifico": "Blabla",
+"descripcion": "Blabla",
+"geoX": "8.457108",
+"geoY": "23.036242",
+"continente": "Africa",
+"foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
+"medio": "Agua",
+"alimentacion": "Herbivoro",
+"esqueleto": "Vertebrado"
+}
+
 mono
 02:18.900 --> 02:40.000 
 {
