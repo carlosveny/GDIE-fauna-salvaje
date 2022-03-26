@@ -1,4 +1,4 @@
-## Carpeta .ignore
+## Carpeta .server
 AVISO: Esta carpeta es únicamente para ver el código fuente de los archivos que están en la raíz del servidor Apache y del script de ffmpeg. Modificar estos archivos no modifica
 nada del servidor. La función de tener en el repositorio estos archivos es informativa.
 ### Explicación

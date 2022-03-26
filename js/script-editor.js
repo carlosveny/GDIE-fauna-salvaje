@@ -10,7 +10,9 @@
 var video; // objeto de video
 var cueActual; // VTTCue actual
 // Si los datos se cargan del fichero y no se han modificado no se tienen que poder guardar de nuevo
-var datosYaGuardados = false;
+var datosYaGuardados = false; // hace referencia a cada cue
+// Para saber si activar/desactivar el boton "Subir al servidor"
+var datosModificados = false; // hace referencia a todo el text track
 
 // Funcion que se ejecuta al cargarse la pagina
 function loaded() {
@@ -58,10 +60,10 @@ function cargarVideo(path) {
     setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
     track.setAttribute("src", "assets/videos/animales-metadata.vtt");
     track.default = true;
-    //track.addEventListener("load", readDatos);
+    track.addEventListener("load", loadedMetadatos);
     video.appendChild(track);
 
-    // Configurar los eventos
+    // Configurar los listeners del video
     video.addEventListener('play', (event) => {
         $("#bt-inicio").prop("disabled", true);
         $("#bt-fin").prop("disabled", true);
@@ -70,63 +72,6 @@ function cargarVideo(path) {
         $("#bt-subir").prop("disabled", true);
     });
     video.addEventListener('pause', pausePulsado);
-}
-
-// Funcion que lee los metadatos de un video y los rellena en la parte derecha
-function updateDatos() {
-    var textTracks = video.textTracks;
-    var cues = textTracks[0].cues;
-    //console.log(cues[0]);
-    console.log(formatSeconds(video.currentTime));
-
-    // Bucle que recorre todas las cues para ver cual coincide con el segundo actual
-    for (var i = 0; i < cues.length; i++) {
-        // Si coincide el tiempo actual con el de la cue
-        console.log(video.currentTime + ": " + cues[i].startTime + " - " + cues[i].endTime);
-        if ((video.currentTime > cues[i].startTime) && (video.currentTime < cues[i].endTime)) {
-            // Revisar si antes ya se ha cargado la cue actual
-            if (cues[i] != cueActual) {
-                cueActual = cues[i];
-                break; // Salir del bucle
-            }
-            else {
-                return; // Los datos ya estan actualizados con la cue actual
-            }
-        }
-        // Si es la ultima cue y tampoco coincide
-        else if (i == (cues.length - 1)) {
-            borrarCampos(); // Ponerlo todo en blanco
-            cueActual = null;
-            return;
-        }
-    }
-
-    // Actualizar campos con la cue actual (aqui solo se llega si hay que actualizar)
-    $("#md-inicio").val(formatSeconds(cueActual.startTime));
-    $("#md-fin").val(formatSeconds(cueActual.endTime));
-    var info = JSON.parse(cueActual.text);
-    $("#md-nombreComun").val(info.nombreComun);
-    $("#md-nombreCientifico").val(info.nombreCientifico);
-    $("#md-descripcion").val(info.descripcion);
-    $("#md-geoLat").val(info.geoLat);
-    $("#md-geoLong").val(info.geoLong);
-    $("#md-foto").val(info.foto);
-
-    var continente = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    var medio = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    var alimentacion = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    var esqueleto = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    $('#md-continente option[value=default]').removeAttr('selected');
-    $('#md-medio option[value=default]').removeAttr('selected');
-    $('#md-alimentacion option[value=default]').removeAttr('selected');
-    $('#md-esqueleto option[value=default]').removeAttr('selected');
-    $('#md-continente').val(continente);
-    $('#md-medio').val(medio);
-    $('#md-alimentacion').val(alimentacion);
-    $('#md-esqueleto').val(esqueleto);
-
-    // Variable para que se desactive el boton "Guardar" pq los datos ya estan guardados
-    datosYaGuardados = true;
 }
 
 // Funcion que deja todos los campos de inputs (metadatos) en blanco
@@ -176,7 +121,81 @@ function crearAviso(tipo, titulo, descr) {
 
 /* ---------------------------------------------------------------------------- */
 
+// FUNCIONES REFERENTES A BOTONES (set inicio, final, eliminar, guardar y subir al servidor)
+
+// Funcion que guarda los metadatos actuales en el text track (no en el servidor)
+function botonGuardar() {
+    // Actualizar variable global y activar boton "Subir al servidor"
+    datosModificados = true; // referente a todo el text track
+    datosYaGuardados = true; // referente a la cue actual
+    $("#bt-subir").prop("disabled", false);
+    $("#bt-guardar").prop("disabled", true);
+}
+
+// Funcion que elimina la cue actual del text track
+function botonEliminar() {
+    var activeCues = video.textTracks[0].activeCues;
+    console.log(activeCues[0]);
+}
+
+/* ---------------------------------------------------------------------------- */
+
 // FUNCIONES QUE MANEJAN EVENTOS
+
+// Funcion que se ejecuta al cargarse los metadatos y configura los listeners
+function loadedMetadatos() {
+    // Dejar todos los campos en blanco
+    borrarCampos();
+
+    // Configurar los eventos de los metadatos
+    var cues = video.textTracks[0].cues;
+    for (var i = 0; i < cues.length; i++) {
+        cues[i].addEventListener('enter', event => {
+            updateDatos(event.target);
+        });
+        cues[i].addEventListener('exit', event => {
+            updateDatos(null);
+        });
+    }
+}
+
+// Funcion que se ejecuta al activarse/desactivarse una cue y actualiza los datos (parte derecha)
+function updateDatos(cue) {
+    // Si es null significa que la cue ya ha emitido "exit"
+    if (cue == null) {
+        cueActual = null;
+        borrarCampos();
+        return;
+    }
+    cueActual = cue;
+
+    // Actualizar campos con la cue actual
+    $("#md-inicio").val(formatSeconds(cueActual.startTime));
+    $("#md-fin").val(formatSeconds(cueActual.endTime));
+    var info = JSON.parse(cueActual.text);
+    $("#md-nombreComun").val(info.nombreComun);
+    $("#md-nombreCientifico").val(info.nombreCientifico);
+    $("#md-descripcion").val(info.descripcion);
+    $("#md-geoLat").val(info.geoLat);
+    $("#md-geoLong").val(info.geoLong);
+    $("#md-foto").val(info.foto);
+
+    var continente = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var medio = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var alimentacion = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var esqueleto = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    $('#md-continente option[value=default]').removeAttr('selected');
+    $('#md-medio option[value=default]').removeAttr('selected');
+    $('#md-alimentacion option[value=default]').removeAttr('selected');
+    $('#md-esqueleto option[value=default]').removeAttr('selected');
+    $('#md-continente').val(continente);
+    $('#md-medio').val(medio);
+    $('#md-alimentacion').val(alimentacion);
+    $('#md-esqueleto').val(esqueleto);
+
+    // Variable para que se desactive el boton "Guardar" pq los datos ya estan guardados
+    datosYaGuardados = true;
+}
 
 // Funcion que se ejecuta al pausar el video y que activa/desactiva los botones
 function pausePulsado() {
@@ -197,9 +216,15 @@ function pausePulsado() {
         }
         $("#bt-eliminar").prop("disabled", false);
     }
+
+    // Si alguna de las cues se ha modificado permitir subir al servidor
+    if (datosModificados) {
+        $("#bt-subir").prop("disabled", false);
+    }
 }
 
-// Funcion que activa el boton "Guardar" cuando todos los campos estan llenos
+// Funcion que se ejecuta al modificar un campo y que activa el boton "Guardar"
+// cuando todos los campos estan llenos
 function revisarCamposVacios() {
     // Actualizar variable global porque ya se ha modificado los datos respecto del fichero
     datosYaGuardados = false;
@@ -220,7 +245,7 @@ function revisarCamposVacios() {
     if ($('#md-esqueleto').find(":selected").val() == "default" && !vacios) vacios = true;
 
     // Activar o desactivar el boton "Guardar"
-    if (vacios) {
+    if (vacios || !video.paused) {
         $("#bt-guardar").prop("disabled", true);
     }
     else {

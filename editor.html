@@ -113,8 +113,7 @@
                 </div>
                 <div class="row text-center">
                     <div class="wrapper-video">
-                        <video id="miVideo" class="w-100" playsinline controls data-poster=""
-                            ontimeupdate="updateDatos()">
+                        <video id="miVideo" class="w-100" playsinline controls data-poster="">
                             <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
                             <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
 
@@ -208,7 +207,7 @@
                         <div class="row">
                             <div class="col-6 text-end">Medio:</div>
                             <select class="col-6 max-w120 font-size-input input-color-w" id="md-medio"
-                            onchange="revisarCamposVacios()">
+                                onchange="revisarCamposVacios()">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="tierra">Tierra</option>
                                 <option value="agua">Agua</option>
@@ -220,7 +219,7 @@
                         <div class="row">
                             <div class="col-6 text-end">Alimentación:</div>
                             <select class="col-6 max-w120 font-size-input input-color-w" id="md-alimentacion"
-                            onchange="revisarCamposVacios()">
+                                onchange="revisarCamposVacios()">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="herbivoro">Herbívoro</option>
                                 <option value="carnivoro">Carnívoro</option>
@@ -232,7 +231,7 @@
                         <div class="row">
                             <div class="col-6 text-end">Esqueleto:</div>
                             <select class="col-6 max-w120 font-size-input input-color-w" id="md-esqueleto"
-                            onchange="revisarCamposVacios()">
+                                onchange="revisarCamposVacios()">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="vertebrado">Vertebrado</option>
                                 <option value="invertebrado">Invertebrado</option>
@@ -259,10 +258,12 @@
                     </div>
                     <div class="col-md-6 row">
                         <div class="col-6 text-end">
-                            <button id="bt-eliminar" type="button" class="boton-eliminar" disabled>Eliminar</button>
+                            <button id="bt-eliminar" type="button" class="boton-eliminar" onclick="botonEliminar()"
+                                disabled>Eliminar</button>
                         </div>
                         <div class="col-6 text-start">
-                            <button id="bt-guardar" type="button" class="boton-guardar" disabled>Guardar</button>
+                            <button id="bt-guardar" type="button" class="boton-guardar" onclick="botonGuardar()"
+                                disabled>Guardar</button>
                         </div>
                     </div>
                 </div>
