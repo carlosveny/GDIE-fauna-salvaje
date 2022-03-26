@@ -7,6 +7,20 @@
     width: 50px;
 }
 
+.titulosInfo{
+    font-size: 1.2rem;
+    color: black;
+    font-weight: 500;
+}
+
+.textoInfo{
+    color: black;
+}
+
+.panPrincipal{
+    max-width: 1425px;
+}
+
 #filtros{
     height: 3rem;
 }

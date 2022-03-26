@@ -26,7 +26,6 @@ function readDatos() {
     var videoElement = document.getElementById("player");
     var textTracks = videoElement.textTracks;
     var cues = textTracks[0].cues;
-    console.log("aaaa");
     console.log(JSON.parse(cues[0].text));
 
     var info = JSON.parse(cues[0].text);
