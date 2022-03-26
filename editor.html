@@ -86,7 +86,11 @@
         <div class="row mt-2">
             <div class="col-md mb-2 mt-2">
                 <h5>Subir vídeo</h5>
-                <input type="file" id="file-input" accept="video/mp4">
+                <div>
+                    <input class="max-w-files" type="file" id="file-input" accept="video/mp4"
+                        data-buttonText="Your label here.">
+                </div>
+
             </div>
             <div class="col-md mb-2 mt-2">
                 <h5>Elegir vídeo existente</h5>
@@ -109,7 +113,8 @@
                 </div>
                 <div class="row text-center">
                     <div class="wrapper-video">
-                        <video id="miVideo" class="w-100" playsinline controls data-poster="" ontimeupdate="updateDatos()">
+                        <video id="miVideo" class="w-100" playsinline controls data-poster=""
+                            ontimeupdate="updateDatos()">
                             <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
                             <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
 
@@ -142,14 +147,14 @@
                         <div class="row">
                             <div class="col-6 text-end">Nombre común:</div>
                             <input type="text" id="md-nombreComun" class="col-6 font-size-input max-w150" required
-                                minlength="1" maxlength="20">
+                                minlength="1" maxlength="20" oninput="revisarCamposVacios()">
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Nombre científico:</div>
                             <input type="text" id="md-nombreCientifico" class="col-6 font-size-input max-w150" required
-                                minlength="1" maxlength="40">
+                                minlength="1" maxlength="40" oninput="revisarCamposVacios()">
                         </div>
                     </div>
                 </div>
@@ -159,7 +164,8 @@
                     <div class="col-10 ms-4 m-auto mt-1">
                         <div class="row">Descripción:</div>
                         <div class="row">
-                            <textarea id="md-descripcion" class="font-size-input" cols="40" rows="5"></textarea>
+                            <textarea id="md-descripcion" class="font-size-input" cols="40" rows="5"
+                                oninput="revisarCamposVacios()"></textarea>
                         </div>
                     </div>
                     <div class="col-1"></div>
@@ -170,20 +176,21 @@
                         <div class="row">
                             <div class="col-6 text-end">Latitud:</div>
                             <input type="text" id="md-geoLat" class="col-6 font-size-input max-w120" required
-                                minlength="1" maxlength="20">
+                                minlength="1" maxlength="20" oninput="revisarCamposVacios()">
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Longitud:</div>
                             <input type="text" id="md-geoLong" class="col-6 font-size-input max-w120" required
-                                minlength="1" maxlength="20">
+                                minlength="1" maxlength="20" oninput="revisarCamposVacios()">
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Continente:</div>
-                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-continente">
+                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-continente"
+                                onchange="revisarCamposVacios()">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="africa">África</option>
                                 <option value="asia">Asia</option>
@@ -196,11 +203,12 @@
                     </div>
                 </div>
                 <!-- Fila medio, alimentacion y esqueleto -->
-                <div class="row mt-4">
+                <div class="row mt-2">
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Medio:</div>
-                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-medio">
+                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-medio"
+                            onchange="revisarCamposVacios()">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="tierra">Tierra</option>
                                 <option value="agua">Agua</option>
@@ -211,7 +219,8 @@
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Alimentación:</div>
-                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-alimentacion">
+                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-alimentacion"
+                            onchange="revisarCamposVacios()">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="herbivoro">Herbívoro</option>
                                 <option value="carnivoro">Carnívoro</option>
@@ -222,7 +231,8 @@
                     <div class="col-md-4 mb-3">
                         <div class="row">
                             <div class="col-6 text-end">Esqueleto:</div>
-                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-esqueleto">
+                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-esqueleto"
+                            onchange="revisarCamposVacios()">
                                 <option value="default" selected disabled hidden>Elegir...</option>
                                 <option value="vertebrado">Vertebrado</option>
                                 <option value="invertebrado">Invertebrado</option>
@@ -231,16 +241,37 @@
                     </div>
                 </div>
                 <!-- Fila foto -->
-                <div class="row mt-4 mb-4">
+                <div class="row mt-3 mb-4">
                     <div class="col-2 text-end">Foto (URL):</div>
-                    <input type="text" id="md-foto" class="col-9 font-size-input" required minlength="1">
+                    <input type="text" id="md-foto" class="col-9 font-size-input" required minlength="1"
+                        oninput="revisarCamposVacios()">
                 </div>
                 <!-- Fila botones Inicio, Fin y Guardar -->
-                <div class="row mt-4 mb-4">
-                    <div class="col-4 text-center">
-                        <button type="button" class="boton">Inicio MD</button> 
+                <div class="row mt-4 mb-2">
+                    <div class="col-2"></div>
+                    <div class="col-md-4 row mb-3">
+                        <div class="col-6 text-end">
+                            <button id="bt-inicio" type="button" class="boton" disabled>Set Inicio</button>
+                        </div>
+                        <div class="col-6 text-start">
+                            <button id="bt-fin" type="button" class="boton" disabled>Set Final</button>
+                        </div>
                     </div>
-                    <input type="text" id="md-foto" class="col-9 font-size-input" required minlength="1">
+                    <div class="col-md-6 row">
+                        <div class="col-6 text-end">
+                            <button id="bt-eliminar" type="button" class="boton-eliminar" disabled>Eliminar</button>
+                        </div>
+                        <div class="col-6 text-start">
+                            <button id="bt-guardar" type="button" class="boton-guardar" disabled>Guardar</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fila boton "Subir al Servidor" -->
+                <div class="row mb-4 mg-l-sm text-center">
+                    <div class="col-11">
+                        <button id="bt-subir" type="button" class="boton-subir" disabled>Subir cambios al
+                            Servidor</button>
+                    </div>
                 </div>
 
 
@@ -259,7 +290,6 @@
         <div class="txt-instrucciones text-justify">
             Los siguientes pasos te ayudarán a incluir metadatos a un vídeo nuevo o un vídeo ya existente.
             <div class="paso">1.&nbsp;&nbsp;Sube un vídeo de animales desde tu ordenador.
-                <input type="file" id="file-input" accept="video/mp4">
             </div>
             <div class="paso">2.&nbsp;&nbsp;Reproduce el vídeo y pausalo donde quieras que empiece un bloque de
                 metadatos.

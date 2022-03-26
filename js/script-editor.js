@@ -9,6 +9,8 @@
 // VARIABLES GLOBALES
 var video; // objeto de video
 var cueActual; // VTTCue actual
+// Si los datos se cargan del fichero y no se han modificado no se tienen que poder guardar de nuevo
+var datosYaGuardados = false;
 
 // Funcion que se ejecuta al cargarse la pagina
 function loaded() {
@@ -19,10 +21,6 @@ function loaded() {
     const player = new Plyr('#miVideo', {
         invertTime: false,
         toggleInvert: false
-    });
-    video.addEventListener('play', (event) => {
-        console.log('The Boolean paused property is now false. Either the ' +
-            'play() method was called or the autoplay attribute was toggled.');
     });
 
     // Inicializacion del boton "Examinar"
@@ -62,6 +60,16 @@ function cargarVideo(path) {
     track.default = true;
     //track.addEventListener("load", readDatos);
     video.appendChild(track);
+
+    // Configurar los eventos
+    video.addEventListener('play', (event) => {
+        $("#bt-inicio").prop("disabled", true);
+        $("#bt-fin").prop("disabled", true);
+        $("#bt-guardar").prop("disabled", true);
+        $("#bt-eliminar").prop("disabled", true);
+        $("#bt-subir").prop("disabled", true);
+    });
+    video.addEventListener('pause', pausePulsado);
 }
 
 // Funcion que lee los metadatos de un video y los rellena en la parte derecha
@@ -94,15 +102,15 @@ function updateDatos() {
     }
 
     // Actualizar campos con la cue actual (aqui solo se llega si hay que actualizar)
-    $("#md-inicio").attr("value", formatSeconds(cueActual.startTime));
-    $("#md-fin").attr("value", formatSeconds(cueActual.endTime));
+    $("#md-inicio").val(formatSeconds(cueActual.startTime));
+    $("#md-fin").val(formatSeconds(cueActual.endTime));
     var info = JSON.parse(cueActual.text);
-    $("#md-nombreComun").attr("value", info.nombreComun);
-    $("#md-nombreCientifico").attr("value", info.nombreCientifico);
-    $("#md-descripcion").html(info.descripcion);
-    $("#md-geoLat").attr("value", info.geoLat);
-    $("#md-geoLong").attr("value", info.geoLong);
-    $("#md-foto").attr("value", info.foto);
+    $("#md-nombreComun").val(info.nombreComun);
+    $("#md-nombreCientifico").val(info.nombreCientifico);
+    $("#md-descripcion").val(info.descripcion);
+    $("#md-geoLat").val(info.geoLat);
+    $("#md-geoLong").val(info.geoLong);
+    $("#md-foto").val(info.foto);
 
     var continente = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     var medio = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -112,35 +120,38 @@ function updateDatos() {
     $('#md-medio option[value=default]').removeAttr('selected');
     $('#md-alimentacion option[value=default]').removeAttr('selected');
     $('#md-esqueleto option[value=default]').removeAttr('selected');
-    $('#md-continente option[value=' + continente + ']').attr('selected', "");
-    $('#md-medio option[value=' + medio + ']').attr('selected', "");
-    $('#md-alimentacion option[value=' + alimentacion + ']').attr('selected', "");
-    $('#md-esqueleto option[value=' + esqueleto + ']').attr('selected', "");
+    $('#md-continente').val(continente);
+    $('#md-medio').val(medio);
+    $('#md-alimentacion').val(alimentacion);
+    $('#md-esqueleto').val(esqueleto);
+
+    // Variable para que se desactive el boton "Guardar" pq los datos ya estan guardados
+    datosYaGuardados = true;
 }
 
 // Funcion que deja todos los campos de inputs (metadatos) en blanco
 function borrarCampos() {
-    $("#md-inicio").attr("value", "");
-    $("#md-fin").attr("value", "");
-    $("#md-nombreComun").attr("value", "");
-    $("#md-nombreCientifico").attr("value", "");
-    $("#md-descripcion").html("");
-    $("#md-geoLat").attr("value", "");
-    $("#md-geoLong").attr("value", "");
-    $("#md-foto").attr("value", "");
+    $("#md-inicio").val('');
+    $("#md-fin").val('');
+    $('#md-nombreComun').val('');
+    $("#md-nombreCientifico").val('');
+    $("#md-descripcion").val('');
+    $("#md-geoLat").val('');
+    $("#md-geoLong").val('');
+    $("#md-foto").val('');
 
     $('#md-continente').find('option:selected').removeAttr('selected');
     $('#md-medio').find('option:selected').removeAttr('selected');
     $('#md-alimentacion').find('option:selected').removeAttr('selected');
     $('#md-esqueleto').find('option:selected').removeAttr('selected');
-    $('#md-continente option[value=default]').attr('selected', "");
-    $('#md-medio option[value=default]').attr('selected', "");
-    $('#md-alimentacion option[value=default]').attr('selected', "");
-    $('#md-esqueleto option[value=default]').attr('selected', "");
+    $('#md-continente').val("default");
+    $('#md-medio').val("default");
+    $('#md-alimentacion').val("default");
+    $('#md-esqueleto').val("default");
 }
 
 // Funcion que crea un aviso de bootstrap dado el tipo, titulo y descripcion
-// tipo: alert-danger, alert-warning, alert-success. (Todo de Bootstrap)
+// tipo: alert-danger, alert-warning, alert-success. (Clases de Bootstrap)
 function crearAviso(tipo, titulo, descr) {
     // Crear aviso
     var aviso = document.createElement("div");
@@ -161,6 +172,61 @@ function crearAviso(tipo, titulo, descr) {
     setTimeout(function () {
         $(".myAlert-top").hide();
     }, 4000);
+}
+
+/* ---------------------------------------------------------------------------- */
+
+// FUNCIONES QUE MANEJAN EVENTOS
+
+// Funcion que se ejecuta al pausar el video y que activa/desactiva los botones
+function pausePulsado() {
+    // Si no hay metadatos en este punto
+    if (cueActual == null) {
+        $("#bt-inicio").prop("disabled", false);
+        $("#bt-guardar").prop("disabled", true);
+    }
+    // Hay metadatos por tanto no se puede modificar ni el inicio ni el final
+    else {
+        // Si los datos son los mismos que los del fichero (sin modificar)
+        if (datosYaGuardados) {
+            $("#bt-guardar").prop("disabled", true);
+        }
+        // Si los datos ya se han modificado respecto del fichero
+        else {
+            $("#bt-guardar").prop("disabled", false);
+        }
+        $("#bt-eliminar").prop("disabled", false);
+    }
+}
+
+// Funcion que activa el boton "Guardar" cuando todos los campos estan llenos
+function revisarCamposVacios() {
+    // Actualizar variable global porque ya se ha modificado los datos respecto del fichero
+    datosYaGuardados = false;
+
+    // Revisar si hay algun campo vacio
+    var vacios = false;
+    if ($("#md-inicio").val() == "" && !vacios) vacios = true;
+    if ($("#md-fin").val() == "" && !vacios) vacios = true;
+    if ($("#md-nombreComun").val() == "" && !vacios) vacios = true;
+    if ($("#md-nombreCientifico").val() == "" && !vacios) vacios = true;
+    if ($("#md-descripcion").val() == "" && !vacios) vacios = true;
+    if ($("#md-geoLat").val() == "" && !vacios) vacios = true;
+    if ($("#md-geoLong").val() == "" && !vacios) vacios = true;
+    if ($("#md-foto").val() == "" && !vacios) vacios = true;
+    if ($('#md-continente').find(":selected").val() == "default" && !vacios) vacios = true;
+    if ($('#md-medio').find(":selected").val() == "default" && !vacios) vacios = true;
+    if ($('#md-alimentacion').find(":selected").val() == "default" && !vacios) vacios = true;
+    if ($('#md-esqueleto').find(":selected").val() == "default" && !vacios) vacios = true;
+
+    // Activar o desactivar el boton "Guardar"
+    if (vacios) {
+        $("#bt-guardar").prop("disabled", true);
+    }
+    else {
+        $("#bt-guardar").prop("disabled", false);
+        console.log("Todo lleno");
+    }
 }
 
 /* ---------------------------------------------------------------------------- */

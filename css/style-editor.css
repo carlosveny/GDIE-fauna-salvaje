@@ -47,6 +47,9 @@
 .max-w100 {
   max-width: 100px;
 }
+.max-w-files {
+  font-size: 0.95rem;
+}
 
 /* Margenes */
 .mg-bt-sm-neg {
@@ -54,6 +57,9 @@
 }
 .mg-top-md {
   margin-top: 75px;
+}
+.mg-l-sm {
+  margin-left: 100px;
 }
 
 /* Estilo del apartado de instrucciones */
@@ -66,12 +72,41 @@
 
 /* Botones */
 .boton {
-  background-color: #e0e0e0;
+  background-color: #d6e8ff;
   border-radius: 4px;
   border: 1px solid #858585;
+  width: 100px;
 }
-.boton :hover {
-  background-color: #000000;
+.boton:hover:enabled {
+  background-color: #c0d8ff;
+}
+.boton-eliminar {
+  background-color: #ffd6d6;
+  border-radius: 4px;
+  border: 1px solid #858585;
+  width: 100px;
+}
+.boton-eliminar:hover:enabled {
+  background-color: #ffb7b7;
+}
+.boton-guardar {
+  background-color: #e3ffd6;
+  border-radius: 4px;
+  border: 1px solid #858585;
+  width: 100px;
+}
+.boton-guardar:hover:enabled {
+  background-color: #bfffb7;
+}
+.boton-subir {
+  background-color: #fff2d6;
+  border-radius: 4px;
+  border: 1px solid #858585;
+  width: 240px;
+  font-size: 1.1rem;
+}
+.boton-subir:hover:enabled {
+  background-color: #ffe8b7;
 }
 
 /* .display {
@@ -90,12 +125,28 @@
 }
 
 /* Web responsive*/
+@media (max-width: 400px) {
+  .max-w-files {
+    width: 70%;
+    font-size: 0.8rem;
+  }
+}
+@media (max-width: 500px) {
+  .mg-l-sm {
+    margin-left: -5px !important;
+  }
+}
 @media (max-width: 600px) {
   .centered {
     font-size: 0.7rem;
   }
   .cont-instrucciones {
     width: 95%;
+  }
+}
+@media (max-width: 767px) {
+  .mg-l-sm {
+    margin-left: 20px;
   }
 }
 @media (max-width: 1500px) {
