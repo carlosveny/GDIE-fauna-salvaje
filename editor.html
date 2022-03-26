@@ -111,7 +111,7 @@
                 <div class="row text-center">
                     <h4>Vista Previa</h4>
                 </div>
-                <div class="row text-center">
+                <div class="row text-center mt-4">
                     <div class="wrapper-video">
                         <video id="miVideo" class="w-100" playsinline controls data-poster="">
                             <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
@@ -250,10 +250,12 @@
                     <div class="col-2"></div>
                     <div class="col-md-4 row mb-3">
                         <div class="col-6 text-end">
-                            <button id="bt-inicio" type="button" class="boton" disabled>Set Inicio</button>
+                            <button id="bt-inicio" type="button" class="boton" onclick="botonInicio()" disabled>Set
+                                Inicio</button>
                         </div>
                         <div class="col-6 text-start">
-                            <button id="bt-fin" type="button" class="boton" disabled>Set Final</button>
+                            <button id="bt-fin" type="button" class="boton" onclick="botonFin()" disabled>Set
+                                Final</button>
                         </div>
                     </div>
                     <div class="col-md-6 row">
@@ -270,7 +272,8 @@
                 <!-- Fila boton "Subir al Servidor" -->
                 <div class="row mb-4 mg-l-sm text-center">
                     <div class="col-11">
-                        <button id="bt-subir" type="button" class="boton-subir" disabled>Subir cambios al
+                        <button id="bt-subir" type="button" class="boton-subir" onclick="peticionSubirMetadatos()"
+                            disabled>Subir cambios al
                             Servidor</button>
                     </div>
                 </div>

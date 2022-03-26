@@ -6,7 +6,7 @@
 .wrapper-video {
   position: relative;
   margin: auto;
-  width: 80%;
+  width: 90%;
   overflow: hidden;
 }
 
@@ -120,20 +120,37 @@
 .myAlert-top{
   position: fixed;
   top: 90px; 
-  left:25%;
+  left: 25%;
   width: 50%;
 }
 
 /* Web responsive*/
-@media (max-width: 400px) {
-  .max-w-files {
-    width: 70%;
-    font-size: 0.8rem;
+@media (max-width: 1500px) {
+  .cont-instrucciones {
+    width: 60%;
   }
 }
-@media (max-width: 500px) {
+@media (max-width: 1200px) {
+  .cont-instrucciones {
+    width: 70%;
+  }
+  .myAlert-top{
+    left: 15%;
+    width: 70%;
+  }
+}
+@media (max-width: 900px) {
+  .cont-instrucciones {
+    width: 80%;
+  }
+}
+@media (max-width: 767px) {
   .mg-l-sm {
-    margin-left: -5px !important;
+    margin-left: 20px;
+  }
+  .myAlert-top{
+    left: 5%;
+    width: 90%;
   }
 }
 @media (max-width: 600px) {
@@ -144,24 +161,15 @@
     width: 95%;
   }
 }
-@media (max-width: 767px) {
+@media (max-width: 500px) {
   .mg-l-sm {
-    margin-left: 20px;
+    margin-left: -5px !important;
   }
 }
-@media (max-width: 1500px) {
-  .cont-instrucciones {
-    width: 60%;
-  }
-}
-@media (max-width: 1200px) {
-  .cont-instrucciones {
+@media (max-width: 400px) {
+  .max-w-files {
     width: 70%;
-  }
-}
-@media (max-width: 900px) {
-  .cont-instrucciones {
-    width: 80%;
+    font-size: 0.8rem;
   }
 }
 

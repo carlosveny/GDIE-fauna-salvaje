@@ -9,10 +9,14 @@
 // VARIABLES GLOBALES
 var video; // objeto de video
 var cueActual; // VTTCue actual
+var cueProximo; // VTTCue siguiente, para gestionar el solapamiento
+var pathMetadata = "assets/videos/animales-metadata.vtt";
 // Si los datos se cargan del fichero y no se han modificado no se tienen que poder guardar de nuevo
 var datosYaGuardados = false; // hace referencia a cada cue
 // Para saber si activar/desactivar el boton "Subir al servidor"
 var datosModificados = false; // hace referencia a todo el text track
+var inicioPulsado = false; // para controlar la superposicion de datos
+var solapamiento = false; // para controlar la superposicion de datos
 
 // Funcion que se ejecuta al cargarse la pagina
 function loaded() {
@@ -31,6 +35,13 @@ function loaded() {
 
     // Inicializacion del dropdown "Video Existente"
     peticionObtenerVideos();
+
+    // Desmarcar botones
+    $("#bt-inicio").prop("disabled", true);
+    $("#bt-fin").prop("disabled", true);
+    $("#bt-guardar").prop("disabled", true);
+    $("#bt-eliminar").prop("disabled", true);
+    $("#bt-subir").prop("disabled", true);
 
     cargarVideo("assets/animales.mp4");
 }
@@ -58,19 +69,13 @@ function cargarVideo(path) {
     // Cargar fichero de metadatos
     var track = document.createElement("track");
     setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
-    track.setAttribute("src", "assets/videos/animales-metadata.vtt");
+    track.setAttribute("src", pathMetadata);
     track.default = true;
     track.addEventListener("load", loadedMetadatos);
     video.appendChild(track);
 
     // Configurar los listeners del video
-    video.addEventListener('play', (event) => {
-        $("#bt-inicio").prop("disabled", true);
-        $("#bt-fin").prop("disabled", true);
-        $("#bt-guardar").prop("disabled", true);
-        $("#bt-eliminar").prop("disabled", true);
-        $("#bt-subir").prop("disabled", true);
-    });
+    video.addEventListener('play', playPulsado);
     video.addEventListener('pause', pausePulsado);
 }
 
@@ -93,49 +98,128 @@ function borrarCampos() {
     $('#md-medio').val("default");
     $('#md-alimentacion').val("default");
     $('#md-esqueleto').val("default");
+
+    // Botones
+    cueActual = null;
+    $("#bt-eliminar").prop("disabled", true);
 }
 
-// Funcion que crea un aviso de bootstrap dado el tipo, titulo y descripcion
-// tipo: alert-danger, alert-warning, alert-success. (Clases de Bootstrap)
-function crearAviso(tipo, titulo, descr) {
-    // Crear aviso
-    var aviso = document.createElement("div");
-    aviso.classList.add("myAlert-top", "alert", "alert-dismissible", "fade", "show", tipo);
-    aviso.innerHTML = "<strong>" + titulo + " </strong>" + descr;
-    var cerrar = document.createElement("button");
-    cerrar.setAttribute("type", "button");
-    cerrar.classList.add("btn-close");
-    cerrar.setAttribute("data-bs-dismiss", "alert");
-    cerrar.setAttribute("aria-label", "Close");
+// Funcion que crea una VTTCue con los datos de los inputs y la añade al text track
+function crearCue() {
+    // Crear JSON
+    var contenidoJSON = {
+        nombreComun: $('#md-nombreComun').val(),
+        nombreCientifico: $("#md-nombreCientifico").val(),
+        descripcion: $("#md-descripcion").val(),
+        geoLat: $("#md-geoLat").val(),
+        geoLong: $("#md-geoLong").val(),
+        continente: $('#md-continente').find('option:selected').html(),
+        foto: $("#md-foto").val(),
+        medio: $('#md-medio').find('option:selected').html(),
+        alimentacion: $('#md-alimentacion').find('option:selected').html(),
+        esqueleto: $('#md-esqueleto').find('option:selected').html()
+    }
 
-    // Append
-    aviso.appendChild(cerrar);
-    document.getElementById("cuerpo").appendChild(aviso);
+    // Crear y añadir cue al text track
+    var startTime = $("#md-inicio").attr("name");
+    var endTime = $("#md-fin").attr("name");
+    var cue = new VTTCue(startTime, endTime, JSON.stringify(contenidoJSON));
+    cue.id = $('#md-nombreComun').val().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    video.textTracks[0].addCue(cue);
+    console.log(video.textTracks[0].cues);
 
-    // Mostrar y ocultar tras 4 segundos
-    $(".myAlert-top").show();
-    setTimeout(function () {
-        $(".myAlert-top").hide();
-    }, 4000);
+    // Añadir listeners a la nueva cue
+    cue.addEventListener('enter', event => {
+        updateDatos(event.target);
+    });
+    cue.addEventListener('exit', event => {
+        var activeCue = video.textTracks[0].activeCues[0];
+        // Si justo empieza otra cue
+        if (activeCue != null) {
+            updateDatos(activeCue);
+        }
+        else {
+            updateDatos(null);
+        }
+    });
+
+    // Actualizar los campos de input
+    borrarCampos();
+    updateDatos(cue);
+    $("#bt-eliminar").prop("disabled", false);
 }
 
 /* ---------------------------------------------------------------------------- */
 
 // FUNCIONES REFERENTES A BOTONES (set inicio, final, eliminar, guardar y subir al servidor)
 
-// Funcion que guarda los metadatos actuales en el text track (no en el servidor)
-function botonGuardar() {
-    // Actualizar variable global y activar boton "Subir al servidor"
-    datosModificados = true; // referente a todo el text track
-    datosYaGuardados = true; // referente a la cue actual
-    $("#bt-subir").prop("disabled", false);
-    $("#bt-guardar").prop("disabled", true);
+// Funcion que marca el startTime (en los inputs) de una posible nueva cue
+function botonInicio() {
+    // Actualizar variable global
+    inicioPulsado = true;
+
+    // Actualizar campo startTime (input)
+    $("#md-inicio").val(formatSeconds(video.currentTime));
+    $("#md-inicio").attr("name", video.currentTime);
+
+    // Borrar campo endTime (por si hubiese)
+    $("#md-fin").val("");
+    $("#md-fin").attr("name", "");
+}
+
+// Funcion que marca el endTime (en los inputs) de una posible nueva cue
+function botonFin() {
+    // Actualizar campo endTime (input)
+    $("#md-fin").val(formatSeconds(video.currentTime));
+    $("#md-fin").attr("name", video.currentTime);
 }
 
 // Funcion que elimina la cue actual del text track
 function botonEliminar() {
+    // Actualizar variable global
+    inicioPulsado = false;
+
+    // Obtener cue actual
     var activeCues = video.textTracks[0].activeCues;
-    console.log(activeCues[0]);
+
+    // Borrar cue del text track
+    video.textTracks[0].removeCue(activeCues[0]);
+
+    // Dejar los campos en blanco
+    borrarCampos();
+}
+
+// Funcion que guarda los metadatos actuales en el text track (no en el servidor)
+function botonGuardar() {
+    // Actualizar variables globales y activar boton "Subir al servidor"
+    datosModificados = true; // referente a todo el text track
+    datosYaGuardados = true; // referente a la cue actual
+    inicioPulsado = false;
+    $("#bt-subir").prop("disabled", false);
+    $("#bt-guardar").prop("disabled", true);
+
+    // No ha habido solapamiento
+    if (cueProximo == null) {
+        // Eliminar cue actual (si existe)
+        var eliminado = false;
+        var activeCues = video.textTracks[0].activeCues;
+        if (activeCues.length > 0) {
+            eliminado = true;
+            video.textTracks[0].removeCue(activeCues[0]);
+        }
+    }
+
+
+    // Crear nueva cue
+    crearCue();
+    // Si se ha creado de 0, borrar los inputs porque ya se ha salido de la cue
+    if (cueProximo != null) {
+        cueActual = cueProximo;
+        updateDatos(cueActual);
+    }
+    else if (!eliminado) {
+        updateDatos(null);
+    }
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -154,7 +238,14 @@ function loadedMetadatos() {
             updateDatos(event.target);
         });
         cues[i].addEventListener('exit', event => {
-            updateDatos(null);
+            var activeCue = video.textTracks[0].activeCues[0];
+            // Si justo empieza otra cue
+            if (activeCue != null) {
+                updateDatos(activeCue);
+            }
+            else {
+                updateDatos(null);
+            }
         });
     }
 }
@@ -169,9 +260,28 @@ function updateDatos(cue) {
     }
     cueActual = cue;
 
+    // Si se van a sobreescribir datos
+    if (inicioPulsado) {
+        cueActual = null;
+        cueProximo = cue;
+        video.pause();
+        solapamiento = true;
+        var descr = "Se ha pausado el video porque tienes cambios sin guardar y se han detectado metadatos";
+        descr = descr + " que empiezan en este mismo instante.<br>Rellena todos los campos y guarda los metadatos";
+        descr = descr + " antes de volver a reproducir el video. De lo contrario, los datos actuales se perderán.";
+        crearAviso("alert-danger", "Aviso:", descr, 0);
+        if ($("#md-fin").val() == "") {
+            botonFin();
+        }
+        return;
+    }
+
     // Actualizar campos con la cue actual
     $("#md-inicio").val(formatSeconds(cueActual.startTime));
+    $("#md-inicio").attr("name", cueActual.startTime);
     $("#md-fin").val(formatSeconds(cueActual.endTime));
+    $("#md-fin").attr("name", cueActual.endTime);
+
     var info = JSON.parse(cueActual.text);
     $("#md-nombreComun").val(info.nombreComun);
     $("#md-nombreCientifico").val(info.nombreCientifico);
@@ -197,12 +307,39 @@ function updateDatos(cue) {
     datosYaGuardados = true;
 }
 
+// Funcion que se ejecuta al reproducir el video y que desactiva los botones y gestiona el solapamiento
+function playPulsado() {
+    // Desmarcar botones
+    $("#bt-inicio").prop("disabled", true);
+    $("#bt-fin").prop("disabled", true);
+    $("#bt-guardar").prop("disabled", true);
+    $("#bt-eliminar").prop("disabled", true);
+    $("#bt-subir").prop("disabled", true);
+
+    // Mirar si hay solapamiento actualmente
+    if (solapamiento) {
+        $(".myAlert-top").hide();
+        solapamiento = false;
+        inicioPulsado = false;
+        updateDatos(cueActual);
+    }
+}
+
 // Funcion que se ejecuta al pausar el video y que activa/desactiva los botones
 function pausePulsado() {
     // Si no hay metadatos en este punto
     if (cueActual == null) {
+        // Se ha pulsado "Set Inicio"
+        if ($("#md-inicio").val() != "") {
+            $("#bt-fin").prop("disabled", false);
+        }
         $("#bt-inicio").prop("disabled", false);
         $("#bt-guardar").prop("disabled", true);
+        // Desactivar botones si ha habido solapamiento
+        if (solapamiento) {
+            $("#bt-inicio").prop("disabled", true);
+            $("#bt-fin").prop("disabled", true);
+        }
     }
     // Hay metadatos por tanto no se puede modificar ni el inicio ni el final
     else {
@@ -214,7 +351,9 @@ function pausePulsado() {
         else {
             $("#bt-guardar").prop("disabled", false);
         }
-        $("#bt-eliminar").prop("disabled", false);
+        if (!solapamiento) {
+            $("#bt-eliminar").prop("disabled", false);
+        }
     }
 
     // Si alguna de las cues se ha modificado permitir subir al servidor
@@ -258,6 +397,22 @@ function revisarCamposVacios() {
 
 // FUNCIONES POST Y GET
 
+// Funcion que solicita al servidor los paths de los videos existentes
+function peticionObtenerVideos() {
+    $.get("php/consultVideos.php", {})
+        .done(function (data) {
+            var paths = JSON.parse(data);
+            var select = document.getElementById("file-selector");
+            for (var i = 0; i < paths.length; i++) {
+                var option = document.createElement("option");
+                option.setAttribute("value", paths[i]);
+                option.innerHTML = paths[i].replace("assets/videos/", "");
+                select.appendChild(option);
+            }
+            //console.log(JSON.parse(data));
+        });
+}
+
 // Funcion que sube un video al servidor
 function peticionSubirVideo() {
     var file = document.getElementById("file-input").files[0];
@@ -280,7 +435,7 @@ function peticionSubirVideo() {
             if (data == "existe") {
                 var descr = "El vídeo seleccionado ya existe en el servidor. ";
                 descr = descr + "Selecciona otro vídeo o modifícale el nombre.";
-                crearAviso("alert-danger", "Aviso:", descr);
+                crearAviso("alert-danger", "Aviso:", descr, 4000);
             }
             else {
                 var path = data.replace("../", "");
@@ -293,19 +448,43 @@ function peticionSubirVideo() {
     });
 }
 
-// Funcion que solicita al servidor los paths de los videos existentes
-function peticionObtenerVideos() {
-    $.get("php/consultVideos.php", {})
+// Funcion que sube un fichero de metadatos al servidor
+function peticionSubirMetadatos() {
+    console.log(video.textTracks[0].cues[0]);
+    var cues = video.textTracks[0].cues;
+    var contenido = "WEBVTT FILE\n\n";
+    for (var i=0; i<cues.length; i++) {
+        var info = JSON.parse(cues[i].text);
+        var json = {
+            nombreComun: info.nombreComun,
+            nombreCientifico: info.nombreCientifico,
+            descripcion: info.descripcion,
+            geoLat: info.geoLat,
+            geoLong: info.geoLong,
+            continente: info.continente,
+            foto: info.foto,
+            medio: info.medio,
+            alimentacion: info.alimentacion,
+            esqueleto: info.esqueleto
+        }
+        var start = formatSeconds(cues[i].startTime);
+        var end = formatSeconds(cues[i].endTime);
+        contenido += cues[i].id + "\n" + start + " --> " + end + " \n";
+        contenido += JSON.stringify(json, null, 2) + "\n\n";
+    }
+    console.log(contenido);
+    // Peticion POST al servidor para subir los metadatos (o sobreescribirlos)
+    $.post("php/uploadMetadata.php", {
+        path: "../" + pathMetadata,
+        texto: contenido
+    })
         .done(function (data) {
-            var paths = JSON.parse(data);
-            var select = document.getElementById("file-selector");
-            for (var i = 0; i < paths.length; i++) {
-                var option = document.createElement("option");
-                option.setAttribute("value", paths[i]);
-                option.innerHTML = paths[i].replace("assets/videos/", "");
-                select.appendChild(option);
-            }
-            //console.log(JSON.parse(data));
+            // Crear aviso
+            var descr = "Los metadatos se han guardado con éxito."
+            crearAviso("alert-success", "Aviso:", descr, 4000);
+
+            // Actualizar botones
+            $("#bt-subir").prop("disabled", true);
         });
 }
 
@@ -313,7 +492,7 @@ function peticionObtenerVideos() {
 
 // FUNCIONES AUXILIARES
 
-// Funcion auxiliar para añadir mas de 1 atributo a la vez (a un mismo elemento)
+// Funcion para añadir mas de 1 atributo a la vez (a un mismo elemento)
 // https://stackoverflow.com/questions/12274748/setting-multiple-attributes-for-an-element-at-once-with-javascript
 function setAttributes(el, attrs) {
     for (var key in attrs) {
@@ -321,7 +500,7 @@ function setAttributes(el, attrs) {
     }
 }
 
-// Funcion auxiliar que cambia todas las ocurrencias de una expresion en un string
+// Funcion que cambia todas las ocurrencias de una expresion en un string
 // https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string-in-javascript
 function replaceAll(str, find, replace) {
     return str.replace(new RegExp(find, 'g'), replace);
@@ -330,9 +509,36 @@ function replaceAll(str, find, replace) {
 // Funcion para formatear el tiempo en minutos y segundos
 // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
 function formatSeconds(time) {
-    //1:43
+    //1:43.000
     // console.log(Math.floor(time % 60))
     var minutes = ("0" + Math.floor(time / 60)).slice(-2);
     var seconds = ('0' + Math.floor(time % 60)).slice(-2);
-    return minutes + ':' + seconds;
+    var milis = ("00" + (parseInt((time % 1)*1000))).slice(-3);
+    return minutes + ':' + seconds + "." + milis;
+}
+
+// Funcion que crea un aviso de bootstrap dado el tipo, titulo y descripcion
+// tipo: alert-danger, alert-warning, alert-success. (Clases de Bootstrap)
+function crearAviso(tipo, titulo, descr, tiempo) {
+    // Crear aviso
+    var aviso = document.createElement("div");
+    aviso.classList.add("myAlert-top", "alert", "alert-dismissible", "fade", "show", tipo);
+    aviso.innerHTML = "<strong>" + titulo + " </strong>" + descr;
+    var cerrar = document.createElement("button");
+    cerrar.setAttribute("type", "button");
+    cerrar.classList.add("btn-close");
+    cerrar.setAttribute("data-bs-dismiss", "alert");
+    cerrar.setAttribute("aria-label", "Close");
+
+    // Append
+    aviso.appendChild(cerrar);
+    document.getElementById("cuerpo").appendChild(aviso);
+
+    // Mostrar y ocultar tras X segundos
+    $(".myAlert-top").show();
+    if (tiempo > 0) {
+        setTimeout(function () {
+            $(".myAlert-top").hide();
+        }, tiempo);
+    }
 }
