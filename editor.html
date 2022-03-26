@@ -93,8 +93,6 @@
                 <select class="col-6 max-w180 font-size-input-2 input-color-w" id="file-selector"
                     onchange="cargarVideo(this)">
                     <option value="default" selected disabled hidden>Elegir...</option>
-                    <option value="vertebrado">Vertebrado</option>
-                    <option value="invertebrado">Invertebrado</option>
                 </select>
             </div>
         </div>
@@ -111,16 +109,16 @@
                 </div>
                 <div class="row text-center">
                     <div class="wrapper-video">
-                        <video id="player" class="w-100" playsinline controls data-poster="">
+                        <video id="miVideo" class="w-100" playsinline controls data-poster="" ontimeupdate="updateDatos()">
                             <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
                             <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
 
                             <!-- Captions are optional -->
-                            <track onload="readDatos()" kind="metadata" label="Metadatos" src="assets/ejemplo.vtt"
-                                default />
+                            <!-- <track id="track" kind="metadata" label="Metadatos" src="assets/ejemplo.vtt" default /> -->
                         </video>
-                        <div id="alerta-no-video" class="aviso-centered alert alert-danger show" role="alert">Aviso: No hay
-                            ningún vídeo cargado. Selecciona una de las opciones.</div>
+                        <div id="alerta-no-video" class="aviso-centered alert alert-danger show" role="alert">
+                            <strong>Aviso: </strong>No hay ningún vídeo cargado. Selecciona una de las opciones.
+                        </div>
                     </div>
                 </div>
             </div>

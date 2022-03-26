@@ -6,11 +6,20 @@
 // https://www.w3schools.com/php/php_file_upload.asp (file uploads php)
 // https://developer.mozilla.org/en-US/docs/Web/API/TextTrack/cues (add cues)
 
+// VARIABLES GLOBALES
+var video; // objeto de video
+var cueActual; // VTTCue actual
+
 // Funcion que se ejecuta al cargarse la pagina
 function loaded() {
+    // Inicializacion variable global
+    video = document.getElementById("miVideo");
+
     // Inicializacion del media player "plyr"
-    const player = new Plyr('#player');
-    const video = document.querySelector('#player');
+    const player = new Plyr('#miVideo', {
+        invertTime: false,
+        toggleInvert: false
+    });
     video.addEventListener('play', (event) => {
         console.log('The Boolean paused property is now false. Either the ' +
             'play() method was called or the autoplay attribute was toggled.');
@@ -23,7 +32,7 @@ function loaded() {
     // Inicializacion del dropdown "Video Existente"
     peticionObtenerVideos();
 
-    //cargarVideo("assets/animales.mp4");
+    cargarVideo("assets/animales.mp4");
 }
 
 // Funcion que carga un video dado su path
@@ -33,11 +42,11 @@ function cargarVideo(path) {
         path = path.value;
         console.log(path);
     }
-    
+
     // Crear elemento "source"
     var src = document.createElement("source");
     setAttributes(src, { id: "video-src", src: path, type: "video/mp4" });
-    document.getElementById("player").appendChild(src);
+    video.appendChild(src);
     if (document.getElementById("alerta-no-video") != null) {
         document.getElementById("alerta-no-video").remove();
     }
@@ -46,21 +55,48 @@ function cargarVideo(path) {
     document.getElementById("file-input").disabled = true;
     document.getElementById("file-selector").disabled = true;
 
+    // Cargar fichero de metadatos
+    var track = document.createElement("track");
+    setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
+    track.setAttribute("src", "assets/videos/animales-metadata.vtt");
+    track.default = true;
+    //track.addEventListener("load", readDatos);
+    video.appendChild(track);
 }
 
 // Funcion que lee los metadatos de un video y los rellena en la parte derecha
-function readDatos() {
-    var videoElement = document.getElementById("player");
-    var textTracks = videoElement.textTracks;
+function updateDatos() {
+    var textTracks = video.textTracks;
     var cues = textTracks[0].cues;
-    var str = replaceAll(cues[0].text, "\n", "<br>");
-    //document.getElementById("display-metadata").innerHTML = str;
-    console.log(cues[0]);
-    //console.log(JSON.parse(cues[0].text));
+    //console.log(cues[0]);
+    console.log(formatSeconds(video.currentTime));
 
-    $("#md-inicio").attr("value", cues[0].startTime);
-    $("#md-fin").attr("value", cues[0].endTime);
-    var info = JSON.parse(cues[0].text);
+    // Bucle que recorre todas las cues para ver cual coincide con el segundo actual
+    for (var i = 0; i < cues.length; i++) {
+        // Si coincide el tiempo actual con el de la cue
+        console.log(video.currentTime + ": " + cues[i].startTime + " - " + cues[i].endTime);
+        if ((video.currentTime > cues[i].startTime) && (video.currentTime < cues[i].endTime)) {
+            // Revisar si antes ya se ha cargado la cue actual
+            if (cues[i] != cueActual) {
+                cueActual = cues[i];
+                break; // Salir del bucle
+            }
+            else {
+                return; // Los datos ya estan actualizados con la cue actual
+            }
+        }
+        // Si es la ultima cue y tampoco coincide
+        else if (i == (cues.length - 1)) {
+            borrarCampos(); // Ponerlo todo en blanco
+            cueActual = null;
+            return;
+        }
+    }
+
+    // Actualizar campos con la cue actual (aqui solo se llega si hay que actualizar)
+    $("#md-inicio").attr("value", formatSeconds(cueActual.startTime));
+    $("#md-fin").attr("value", formatSeconds(cueActual.endTime));
+    var info = JSON.parse(cueActual.text);
     $("#md-nombreComun").attr("value", info.nombreComun);
     $("#md-nombreCientifico").attr("value", info.nombreCientifico);
     $("#md-descripcion").html(info.descripcion);
@@ -82,12 +118,33 @@ function readDatos() {
     $('#md-esqueleto option[value=' + esqueleto + ']').attr('selected', "");
 }
 
+// Funcion que deja todos los campos de inputs (metadatos) en blanco
+function borrarCampos() {
+    $("#md-inicio").attr("value", "");
+    $("#md-fin").attr("value", "");
+    $("#md-nombreComun").attr("value", "");
+    $("#md-nombreCientifico").attr("value", "");
+    $("#md-descripcion").html("");
+    $("#md-geoLat").attr("value", "");
+    $("#md-geoLong").attr("value", "");
+    $("#md-foto").attr("value", "");
+
+    $('#md-continente').find('option:selected').removeAttr('selected');
+    $('#md-medio').find('option:selected').removeAttr('selected');
+    $('#md-alimentacion').find('option:selected').removeAttr('selected');
+    $('#md-esqueleto').find('option:selected').removeAttr('selected');
+    $('#md-continente option[value=default]').attr('selected', "");
+    $('#md-medio option[value=default]').attr('selected', "");
+    $('#md-alimentacion option[value=default]').attr('selected', "");
+    $('#md-esqueleto option[value=default]').attr('selected', "");
+}
+
 // Funcion que crea un aviso de bootstrap dado el tipo, titulo y descripcion
 // tipo: alert-danger, alert-warning, alert-success. (Todo de Bootstrap)
 function crearAviso(tipo, titulo, descr) {
     // Crear aviso
     var aviso = document.createElement("div");
-    aviso.classList.add("myAlert-top", "alert", "alert-dismissible", "fade" ,"show", tipo);
+    aviso.classList.add("myAlert-top", "alert", "alert-dismissible", "fade", "show", tipo);
     aviso.innerHTML = "<strong>" + titulo + " </strong>" + descr;
     var cerrar = document.createElement("button");
     cerrar.setAttribute("type", "button");
@@ -99,11 +156,11 @@ function crearAviso(tipo, titulo, descr) {
     aviso.appendChild(cerrar);
     document.getElementById("cuerpo").appendChild(aviso);
 
-    // Mostrar y ocultar tras 3 segundos
+    // Mostrar y ocultar tras 4 segundos
     $(".myAlert-top").show();
-    setTimeout(function(){
+    setTimeout(function () {
         $(".myAlert-top").hide();
-      }, 3000);
+    }, 4000);
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -129,7 +186,6 @@ function peticionSubirVideo() {
         contentType: false,
         success: function (data) {
             // Si ya existe un video con el mismo nombre mostrar aviso
-            console.log(data);
             if (data == "existe") {
                 var descr = "El vídeo seleccionado ya existe en el servidor. ";
                 descr = descr + "Selecciona otro vídeo o modifícale el nombre.";
@@ -149,19 +205,18 @@ function peticionSubirVideo() {
 // Funcion que solicita al servidor los paths de los videos existentes
 function peticionObtenerVideos() {
     $.get("php/consultVideos.php", {})
-		.done(function (data) {
+        .done(function (data) {
             var paths = JSON.parse(data);
             var select = document.getElementById("file-selector");
-            for (var i=0; i<paths.length; i++) {
+            for (var i = 0; i < paths.length; i++) {
                 var option = document.createElement("option");
                 option.setAttribute("value", paths[i]);
                 option.innerHTML = paths[i].replace("assets/videos/", "");
                 select.appendChild(option);
             }
+            //console.log(JSON.parse(data));
 
-            console.log(JSON.parse(data));
-            
-		});
+        });
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -184,3 +239,10 @@ function replaceAll(str, find, replace) {
 
 // Funcion para formatear el tiempo en minutos y segundos
 // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
+function formatSeconds(time) {
+    //1:43
+    // console.log(Math.floor(time % 60))
+    var minutes = ("0" + Math.floor(time / 60)).slice(-2);
+    var seconds = ('0' + Math.floor(time % 60)).slice(-2);
+    return minutes + ':' + seconds;
+}
