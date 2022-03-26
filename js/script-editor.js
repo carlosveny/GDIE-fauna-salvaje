@@ -215,7 +215,6 @@ function peticionObtenerVideos() {
                 select.appendChild(option);
             }
             //console.log(JSON.parse(data));
-
         });
 }
 
