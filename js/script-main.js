@@ -11,10 +11,10 @@ function loaded() {
         invertTime: false,
         toggleInvert: false
     });
+
+    peticionObtenerVideos();
     
     cargarVideo("assets/animales.mp4");
-
-    //Inicialización botones filtros
     
 }
 
@@ -50,7 +50,7 @@ function cargarVideo(path) {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
-    //cargar los filtros de la home page cuando se carguen los cues
+    //Inicialización botones filtros al cargarse los cues
     cargarFiltros();
 
     // Configurar los eventos de los metadatos
@@ -117,20 +117,15 @@ function cargarFiltros(){
 
     var info;
 
-    console.log(cues);
-
     //Se recorren todos los cues y se añaden todos los filtros disponibles a los arrays
     for (var i = 0; i < cues.length; i++) {
         info = JSON.parse(cues[i].text);
-        console.log(info);
         checkArray(animales, info.nombreComun);
         checkArray(alimentacion, info.alimentacion);
         checkArray(medio, info.medio);
         checkArray(esqueleto, info.esqueleto);
         checkArray(continente, info.continente);
     }
-
-    console.log(animales);
 
     cargarDesplegable(animales, "filtroAnimales");
     cargarDesplegable(alimentacion, "filtroAlimentacion");
@@ -176,6 +171,24 @@ function debug(){
     console.log("Succsessful!")
 }
 
+/* ---------------------------------------------------------------------------- */
+
+// FUNCIONES POST Y GET
+
+// Funcion que solicita al servidor los paths de los videos existentes
+function peticionObtenerVideos() {
+    $.get("php/consultVideos.php", {})
+        .done(function (data) {
+            var paths = JSON.parse(data);
+            var filtro;
+            for (var i = 0; i < paths.length; i++) {
+                filtro = crearElementoFiltro(paths[i].replace("assets/videos/", ""));
+                document.getElementById("filtroVideos").appendChild(filtro);
+            }
+            //console.log(JSON.parse(data));
+        });
+}
+
 // FUNCIONES AUXILIARES
 // Funcion auxiliar para añadir mas de 1 atributo a la vez (a un mismo elemento)
 // https://stackoverflow.com/questions/12274748/setting-multiple-attributes-for-an-element-at-once-with-javascript
@@ -192,8 +205,7 @@ function replaceAll(str, find, replace) {
 }
 //Funcion auxiliar que comprueba si un array contiene una palabra y si no la contiene la añade (añadir que se mantenga un orden ej. alfabético o preestablecido)
 function checkArray(array, nuevaPalabra) {
-    console.log(nuevaPalabra);
-    console.log(array.includes(nuevaPalabra));
+    //console.log(nuevaPalabra);
     if (!array.includes(nuevaPalabra)) {
         array.push(nuevaPalabra);
     }
