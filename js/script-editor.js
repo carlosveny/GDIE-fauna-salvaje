@@ -530,19 +530,26 @@ function peticionSubirVideo() {
         success: function (data) {
             // Contraseña incorrecta
             if (data == "false") {
+                // Quitar aviso
+                $(".myAlert-top").hide();
+                const boxes = document.querySelectorAll('.myAlert-top');
+                boxes.forEach(box => {
+                    box.remove();
+                });
+
                 var descr = "Usuario o contraseña incorrectos. Inténtalo de nuevo."
                 crearAviso("alert-danger", "Error:", descr, 4000);
                 return;
             }
-            // Quitar aviso
-            $(".myAlert-top").hide();
-            const boxes = document.querySelectorAll('.myAlert-top');
-            boxes.forEach(box => {
-                box.remove();
-            });
-
             // Si ya existe un video con el mismo nombre mostrar aviso
-            if (data == "existe") {
+            else if (data == "existe") {
+                // Quitar aviso
+                $(".myAlert-top").hide();
+                const boxes = document.querySelectorAll('.myAlert-top');
+                boxes.forEach(box => {
+                    box.remove();
+                });
+
                 var descr = "El vídeo seleccionado ya existe en el servidor. ";
                 descr = descr + "Selecciona otro vídeo o modifícale el nombre.";
                 crearAviso("alert-danger", "Aviso:", descr, 4000);
