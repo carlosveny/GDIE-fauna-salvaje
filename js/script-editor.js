@@ -529,7 +529,7 @@ function peticionSubirVideo() {
         contentType: false,
         success: function (data) {
             // Contraseña incorrecta
-            if (data == "incorrecta") {
+            if (data == "false") {
                 var descr = "Usuario o contraseña incorrectos. Inténtalo de nuevo."
                 crearAviso("alert-danger", "Error:", descr, 4000);
                 return;
