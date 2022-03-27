@@ -348,6 +348,12 @@ function loadedMetadatos() {
             }
         });
     }
+
+    // Revisar que no se tenga que reproducir ya una cue
+    var activeCue = video.textTracks[0].activeCues[0];
+    if (activeCue != null) {
+        updateDatos(activeCue);
+    }
 }
 
 // Funcion que se ejecuta al activarse/desactivarse una cue y actualiza los datos (parte derecha)
