@@ -3,7 +3,7 @@
     Fichero que sube un video al servidor, verificando antes que el
     video no exista. Pasos a seguir para subir archivos:
     1. Dar permisos a la carpeta html al usuario www-data:www-data
-        (sudo chown -R www-data:www-data /var/www/html/)
+        (chown -R www-data:www-data /var/www/html/)
     2. Modificar fichero "php.ini" para permitir subidas de mas tamaño
         (https://stackoverflow.com/questions/3586919/why-would-files-be-empty-when-uploading-files-to-php)
 */
