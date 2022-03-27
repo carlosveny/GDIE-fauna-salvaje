@@ -236,8 +236,10 @@ function botonFin() {
 
 // Funcion que elimina la cue actual del text track
 function botonEliminar() {
-    // Actualizar variable global
+    // Actualizar variables globales y activar boton "Subir al servidor"
     inicioPulsado = false;
+    datosModificados = true; // referente a todo el text track
+    $("#bt-subir").prop("disabled", false);
 
     // Obtener cue actual
     var activeCues = video.textTracks[0].activeCues;

@@ -1,20 +1,5 @@
 WEBVTT FILE
 
-aaaaaaa
-00:01.579 --> 00:05.054 
-{
-  "nombreComun": "aaaaaaa",
-  "nombreCientifico": "aaaaaa",
-  "descripcion": "a",
-  "geoLat": "a",
-  "geoLong": "a",
-  "continente": "América",
-  "foto": "aaaaa",
-  "medio": "Tierra",
-  "alimentacion": "Carnívoro",
-  "esqueleto": "Vertebrado"
-}
-
 ddd
 00:05.128 --> 00:10.085 
 {
@@ -46,7 +31,7 @@ aaa
 }
 
 bbb
-00:12.703 --> 00:13.140 
+00:12.702 --> 00:13.140 
 {
   "nombreComun": "bbb",
   "nombreCientifico": "bb",
@@ -85,6 +70,21 @@ a
   "geoLong": "a",
   "continente": "África",
   "foto": "aaa",
+  "medio": "Tierra",
+  "alimentacion": "Herbívoro",
+  "esqueleto": "Vertebrado"
+}
+
+aaa
+00:32.043 --> 00:33.875 
+{
+  "nombreComun": "aaa",
+  "nombreCientifico": "aa",
+  "descripcion": "a",
+  "geoLat": "a",
+  "geoLong": "a",
+  "continente": "África",
+  "foto": "aaaaaa",
   "medio": "Tierra",
   "alimentacion": "Herbívoro",
   "esqueleto": "Vertebrado"

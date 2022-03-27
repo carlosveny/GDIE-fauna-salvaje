@@ -1,5 +1,3 @@
 assets/animales.mp4
-assets/videos/*.mp4
-assets/videos/*.ogg
-assets/videos/*.webm
+assets/videos/
 **/.DS_Store
