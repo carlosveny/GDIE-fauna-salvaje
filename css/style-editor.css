@@ -117,11 +117,14 @@
   background-color: #ffe8b7;
 }
 
-/* .display {
-  width: 70%;
-  min-height: 100px;
-  margin: auto;
-  background-color: white;
+/* Mostrar/ocultar metadatos o subtitulos */
+/* #container-metadatos {
+  font-size: 1rem;
+  display: none;
+}
+#container-subtitulos {
+  font-size: 1rem;
+  display: none;
 } */
 
 /* Aviso flotante (https://codepen.io/Dinamo/pen/rNVOZmr) */

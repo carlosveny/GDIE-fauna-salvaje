@@ -13,7 +13,8 @@ $files = scandir($relativePath);
 // Tambien concatena el path absoluto
 $archivos = [];
 for ($i = 0; $i < count($files); $i++) {
-    if (($files[$i] != ".") && ($files[$i] != "..") && (strpos($files[$i], '.mp4') !== false)) {
+    if (($files[$i] != ".") && ($files[$i] != ".."))
+        if (((strpos($files[$i], '.mp4') !== false) || (strpos($files[$i], '.webm') !== false))) {
         $archivos[] = $absolutePath . $files[$i];
     }
 }

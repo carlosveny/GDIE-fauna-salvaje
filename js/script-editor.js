@@ -11,6 +11,7 @@ var video; // objeto de video
 var cueActual; // VTTCue actual
 var cueProximo; // VTTCue siguiente, para gestionar el solapamiento
 var pathMetadata;
+var pathSubtitulos1;
 // Si los datos se cargan del fichero y no se han modificado no se tienen que poder guardar de nuevo
 var datosYaGuardados = false; // hace referencia a cada cue
 // Para saber si activar/desactivar el boton "Subir al servidor"
@@ -18,6 +19,7 @@ var datosModificados = false; // hace referencia a todo el text track
 var inicioPulsado = false; // para controlar la superposicion de datos
 var solapamiento = false; // para controlar la superposicion de datos
 var password; // contraseña para operaciones con el servidor
+var subtitulos = false;
 
 // Funcion que se ejecuta al cargarse la pagina
 function loaded() {
@@ -36,7 +38,7 @@ function loaded() {
 
     // Inicializacion del boton "Examinar"
     var input = document.createElement("input");
-    setAttributes(input, { class: "max-w-files", type: "file", id: "file-input", accept: "video/mp4" });
+    setAttributes(input, { class: "max-w-files", type: "file", id: "file-input", accept: "video/mp4, video/webm" });
     input.addEventListener('input', peticionSubirVideo);
     document.getElementById("file-input-div").appendChild(input);
     $("#file-input").prop("disabled", true);
@@ -44,6 +46,10 @@ function loaded() {
     // Inicializacion del dropdown "Video Existente"
     peticionObtenerVideos();
     $("#file-selector").prop("disabled", true);
+
+    // Inicializacion dropdown de tipo de datos
+    //$("#metadata-selector").prop("disabled", true);
+    $("#metadata-selector").val("default");
 
     // Desmarcar botones
     $("#bt-inicio").prop("disabled", true);
@@ -53,6 +59,7 @@ function loaded() {
     $("#bt-subir").prop("disabled", true);
     habilitarInputs(false);
 
+    //peticionLogin();
     //cargarVideo("assets/animales.mp4");
 }
 
@@ -66,11 +73,11 @@ function cargarVideo(path) {
     });
 
     // Mostrar aviso
-    var descr = "El vídeo se ha cargado correctamente. También se ha ";
-    descr += "detectado y cargado un fichero de metadatos.";
+    var descr = "El vídeo se ha cargado correctamente. También se han ";
+    descr += "detectado y cargado los ficheros de metadatos.";
     if ($("#file-selector").val() == null) {
-        descr = "El vídeo se ha subido al servidor. También se ha creado un fichero ";
-        descr += "de metadatos vacío porque no se han detectado metadatos para este vídeo."
+        descr = "El vídeo se ha subido al servidor. También se han creado los ficheros ";
+        descr += "de metadatos vacíos porque no se han detectado metadatos para este vídeo."
     }
     crearAviso("alert-success", "Éxito:", descr, 5500);
 
@@ -81,8 +88,10 @@ function cargarVideo(path) {
     }
 
     // Crear elemento "source"
+    var ext = "video/mp4";
+    if (!path.includes(".mp4")) ext = "video/webm";
     var src = document.createElement("source");
-    setAttributes(src, { id: "video-src", src: path, type: "video/mp4" });
+    setAttributes(src, { id: "video-src", src: path, type: ext });
     video.appendChild(src);
     if (document.getElementById("alerta-no-video") != null) {
         document.getElementById("alerta-no-video").remove();
@@ -91,22 +100,26 @@ function cargarVideo(path) {
     // Deshabilitar la seleccion de nuevos videos
     document.getElementById("file-input").disabled = true;
     document.getElementById("file-selector").disabled = true;
+    document.getElementById("metadata-selector").disabled = false;
 
     // Cargar fichero de metadatos
-    pathMetadata = path.replace(".mp4", "-metadata.vtt");
-    var track = document.createElement("track");
-    setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
-    track.setAttribute("src", pathMetadata);
-    track.default = true;
-    track.addEventListener("load", loadedMetadatos);
-    video.appendChild(track);
+    $("#metadata-selector").prop("disabled", false);
+    if (path.includes(".mp4")) {
+        pathMetadata = path.replace(".mp4", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
+    }
+    else {
+        pathMetadata = path.replace(".webm", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
+    }
+    
 
     // Configurar los listeners del video
     video.addEventListener('play', playPulsado);
     video.addEventListener('pause', pausePulsado);
     video.addEventListener('timeupdate', (event) => {
         // Actualizar botones
-        if (($("#md-inicio").val() != "") && ($("#md-fin").val() != "")) {
+        if (($("#md-inicio").val() != "") && ($("#md-fin").val() != "") && video.paused) {
             habilitarInputs(true);
         }
         else {
@@ -119,6 +132,7 @@ function cargarVideo(path) {
 function borrarCampos() {
     $("#md-inicio").val('');
     $("#md-fin").val('');
+    $("#md-español").val('');
     $('#md-nombreComun').val('');
     $("#md-nombreCientifico").val('');
     $("#md-descripcion").val('');
@@ -159,8 +173,14 @@ function crearCue() {
     // Crear y añadir cue al text track
     var startTime = $("#md-inicio").attr("name");
     var endTime = $("#md-fin").attr("name");
-    var cue = new VTTCue(startTime, endTime, JSON.stringify(contenidoJSON));
-    cue.id = $('#md-nombreComun').val().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var cue;
+    if (subtitulos) {
+        cue = new VTTCue(startTime, endTime, $('#md-español').val());
+    }
+    else {
+        cue = new VTTCue(startTime, endTime, JSON.stringify(contenidoJSON));
+        cue.id = $('#md-nombreComun').val().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
     video.textTracks[0].addCue(cue);
     console.log(video.textTracks[0].cues);
 
@@ -187,6 +207,7 @@ function crearCue() {
 
 // Funcion que habilita/deshabilita los inputs segun el parametro
 function habilitarInputs(enable) {
+    $("#md-español").prop("disabled", !enable);
     $("#md-nombreComun").prop("disabled", !enable);
     $("#md-nombreCientifico").prop("disabled", !enable);
     $("#md-descripcion").prop("disabled", !enable);
@@ -305,6 +326,8 @@ function botonGuardar() {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
+
+    console.log(video.textTracks);
     // Dejar todos los campos en blanco
     borrarCampos();
 
@@ -329,6 +352,7 @@ function loadedMetadatos() {
 
 // Funcion que se ejecuta al activarse/desactivarse una cue y actualiza los datos (parte derecha)
 function updateDatos(cue) {
+    console.log(cue);
     // Si es null significa que la cue ya ha emitido "exit"
     if (cue == null) {
         cueActual = null;
@@ -359,26 +383,31 @@ function updateDatos(cue) {
     $("#md-fin").val(formatSeconds(cueActual.endTime));
     $("#md-fin").attr("name", cueActual.endTime);
 
-    var info = JSON.parse(cueActual.text);
-    $("#md-nombreComun").val(info.nombreComun);
-    $("#md-nombreCientifico").val(info.nombreCientifico);
-    $("#md-descripcion").val(info.descripcion);
-    $("#md-geoLat").val(info.geoLat);
-    $("#md-geoLong").val(info.geoLong);
-    $("#md-foto").val(info.foto);
+    if (subtitulos) {
+        $("#md-español").val(cueActual.text);
+    }
+    else {
+        var info = JSON.parse(cueActual.text);
+        $("#md-nombreComun").val(info.nombreComun);
+        $("#md-nombreCientifico").val(info.nombreCientifico);
+        $("#md-descripcion").val(info.descripcion);
+        $("#md-geoLat").val(info.geoLat);
+        $("#md-geoLong").val(info.geoLong);
+        $("#md-foto").val(info.foto);
 
-    var continente = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    var medio = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    var alimentacion = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    var esqueleto = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    $('#md-continente option[value=default]').removeAttr('selected');
-    $('#md-medio option[value=default]').removeAttr('selected');
-    $('#md-alimentacion option[value=default]').removeAttr('selected');
-    $('#md-esqueleto option[value=default]').removeAttr('selected');
-    $('#md-continente').val(continente);
-    $('#md-medio').val(medio);
-    $('#md-alimentacion').val(alimentacion);
-    $('#md-esqueleto').val(esqueleto);
+        var continente = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        var medio = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        var alimentacion = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        var esqueleto = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        $('#md-continente option[value=default]').removeAttr('selected');
+        $('#md-medio option[value=default]').removeAttr('selected');
+        $('#md-alimentacion option[value=default]').removeAttr('selected');
+        $('#md-esqueleto option[value=default]').removeAttr('selected');
+        $('#md-continente').val(continente);
+        $('#md-medio').val(medio);
+        $('#md-alimentacion').val(alimentacion);
+        $('#md-esqueleto').val(esqueleto);
+    }
 
     // Variable para que se desactive el boton "Guardar" pq los datos ya estan guardados
     datosYaGuardados = true;
@@ -462,18 +491,23 @@ function revisarCamposVacios() {
 
     // Revisar si hay algun campo vacio
     var vacios = false;
-    if ($("#md-inicio").val() == "" && !vacios) vacios = true;
-    if ($("#md-fin").val() == "" && !vacios) vacios = true;
-    if ($("#md-nombreComun").val() == "" && !vacios) vacios = true;
-    if ($("#md-nombreCientifico").val() == "" && !vacios) vacios = true;
-    if ($("#md-descripcion").val() == "" && !vacios) vacios = true;
-    if ($("#md-geoLat").val() == "" && !vacios) vacios = true;
-    if ($("#md-geoLong").val() == "" && !vacios) vacios = true;
-    if ($("#md-foto").val() == "" && !vacios) vacios = true;
-    if ($('#md-continente').find(":selected").val() == "default" && !vacios) vacios = true;
-    if ($('#md-medio').find(":selected").val() == "default" && !vacios) vacios = true;
-    if ($('#md-alimentacion').find(":selected").val() == "default" && !vacios) vacios = true;
-    if ($('#md-esqueleto').find(":selected").val() == "default" && !vacios) vacios = true;
+    if (subtitulos) {
+        if ($("#md-español").val() == "") vacios = true;
+    }
+    else {
+        if ($("#md-inicio").val() == "" && !vacios) vacios = true;
+        if ($("#md-fin").val() == "" && !vacios) vacios = true;
+        if ($("#md-nombreComun").val() == "" && !vacios) vacios = true;
+        if ($("#md-nombreCientifico").val() == "" && !vacios) vacios = true;
+        if ($("#md-descripcion").val() == "" && !vacios) vacios = true;
+        if ($("#md-geoLat").val() == "" && !vacios) vacios = true;
+        if ($("#md-geoLong").val() == "" && !vacios) vacios = true;
+        if ($("#md-foto").val() == "" && !vacios) vacios = true;
+        if ($('#md-continente').find(":selected").val() == "default" && !vacios) vacios = true;
+        if ($('#md-medio').find(":selected").val() == "default" && !vacios) vacios = true;
+        if ($('#md-alimentacion').find(":selected").val() == "default" && !vacios) vacios = true;
+        if ($('#md-esqueleto').find(":selected").val() == "default" && !vacios) vacios = true;
+    }
 
     // Activar o desactivar el boton "Guardar"
     if (vacios || !video.paused) {
@@ -482,6 +516,36 @@ function revisarCamposVacios() {
     else {
         $("#bt-guardar").prop("disabled", false);
         console.log("Todo lleno");
+    }
+}
+
+// Funcion que muestra los campos de metadatos/subtitulos
+function cambiarTipoMetadatos() {
+    $("#metadata-selector").prop("disabled", true);
+    if ($("#metadata-selector").val() == "metadatos") {
+        document.getElementById("container-metadatos").style.removeProperty("display");
+        document.getElementById("container-subtitulos").remove();
+
+        // Cargar fichero de metadatos
+        var track1 = document.createElement("track");
+        setAttributes(track1, { id: "track", kind: "metadata", label: "Metadatos" });
+        track1.setAttribute("src", pathMetadata);
+        track1.addEventListener("load", loadedMetadatos);
+        track1.default = true;
+        video.appendChild(track1);
+    }
+    else {
+        subtitulos = true;
+        document.getElementById("container-subtitulos").style.removeProperty("display");
+        document.getElementById("container-metadatos").remove();
+
+        // Cargar fichero de metadatos
+        var track2 = document.createElement("track");
+        setAttributes(track2, { id: "español", kind: "subtitles", label: "Español", srclang: "es" });
+        track2.setAttribute("src", pathSubtitulos1);
+        track2.addEventListener("load", loadedMetadatos);
+        track2.default = true;
+        video.appendChild(track2);
     }
 }
 
@@ -570,29 +634,39 @@ function peticionSubirMetadatos() {
     var cues = video.textTracks[0].cues;
     var contenido = "WEBVTT FILE\n\n";
     for (var i = 0; i < cues.length; i++) {
-        var info = JSON.parse(cues[i].text);
-        var json = {
-            nombreComun: info.nombreComun,
-            nombreCientifico: info.nombreCientifico,
-            descripcion: info.descripcion,
-            geoLat: info.geoLat,
-            geoLong: info.geoLong,
-            continente: info.continente,
-            foto: info.foto,
-            medio: info.medio,
-            alimentacion: info.alimentacion,
-            esqueleto: info.esqueleto
-        }
         var start = formatSeconds(cues[i].startTime);
         var end = formatSeconds(cues[i].endTime);
         contenido += cues[i].id + "\n" + start + " --> " + end + " \n";
-        contenido += JSON.stringify(json, null, 2) + "\n\n";
+        if (subtitulos) {
+            contenido += cues[i].text + "\n\n";
+        }
+        else {
+            var info = JSON.parse(cues[i].text);
+            var json = {
+                nombreComun: info.nombreComun,
+                nombreCientifico: info.nombreCientifico,
+                descripcion: info.descripcion,
+                geoLat: info.geoLat,
+                geoLong: info.geoLong,
+                continente: info.continente,
+                foto: info.foto,
+                medio: info.medio,
+                alimentacion: info.alimentacion,
+                esqueleto: info.esqueleto
+            }
+            contenido += JSON.stringify(json, null, 2) + "\n\n";
+        }
+    }
+
+    var pth = "../" + pathMetadata;
+    if (subtitulos) {
+        pth = "../" + pathSubtitulos1;
     }
     //console.log(contenido);
 
     // Peticion POST al servidor para subir los metadatos (o sobreescribirlos)
     $.post("php/uploadMetadata.php", {
-        path: "../" + pathMetadata,
+        path: pth,
         texto: contenido,
         password: password
     })
@@ -624,6 +698,8 @@ function peticionLogin() {
         .done(function (data) {
             // Contraseña incorrecta
             if (data == "false") {
+                $("#username").val("");
+                $("#password").val("");
                 var descr = "Usuario o contraseña incorrectos. Inténtalo de nuevo."
                 crearAviso("alert-danger", "Error:", descr, 4000);
             }

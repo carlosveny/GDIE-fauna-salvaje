@@ -128,159 +128,221 @@
             <!-- Columna metadatos actuales -->
             <div class="col-xxl-6 text-center">
                 <div class="row text-center mb-3">
-                    <h4>Metadatos Actuales</h4>
+                    <h4 class="col-7 text-end">Datos Actuales</h4>
+                    <select class="col-5 max-w120 m font-size-input-2 input-color-w" id="metadata-selector"
+                        onchange="cambiarTipoMetadatos()" disabled>
+                        <option value="default" selected disabled hidden>Elegir...</option>
+                        <option value="metadatos">Metadatos</option>
+                        <option value="subtitulos">Subtitulos</option>
+                    </select>
                 </div>
-                <!-- Fila marcas temporales -->
-                <div class="row mb-4 m-auto">
-                    <div class="col-4 text-end">Tiempo:</div>
-                    <div class="col-8 row">
-                        <input type="text" id="md-inicio" class="col-4 font-size-input max-w150" disabled>
-                        <div class="col-1 text-center">-</div>
-                        <input type="text" id="md-fin" class="col-4 font-size-input max-w150" disabled>
+                <!-- Contenedor metadatos -->
+                <div id="container-metadatos" style="display: none">
+                    <!-- Fila marcas temporales -->
+                    <div class="row mb-4 m-auto">
+                        <div class="col-4 text-end">Tiempo:</div>
+                        <div class="col-8 row">
+                            <input type="text" id="md-inicio" class="col-4 font-size-input max-w150" disabled>
+                            <div class="col-1 text-center">-</div>
+                            <input type="text" id="md-fin" class="col-4 font-size-input max-w150" disabled>
+                        </div>
+                    </div>
+                    <!-- Fila nombre comun y cientifico -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="row">
+                                <div class="col-6 text-end">Nombre común:</div>
+                                <input type="text" id="md-nombreComun" class="col-6 font-size-input max-w150" required
+                                    minlength="1" maxlength="20" oninput="revisarCamposVacios()">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="row">
+                                <div class="col-6 text-end">Nombre científico:</div>
+                                <input type="text" id="md-nombreCientifico" class="col-6 font-size-input max-w150"
+                                    required minlength="1" maxlength="40" oninput="revisarCamposVacios()">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fila descripcion -->
+                    <div class="row">
+                        <div class="col-1"></div>
+                        <div class="col-10 ms-4 m-auto mt-1">
+                            <div class="row">Descripción:</div>
+                            <div class="row">
+                                <textarea id="md-descripcion" class="font-size-input" cols="40" rows="5"
+                                    oninput="revisarCamposVacios()"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                    <!-- Fila geoposicion -->
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="row">
+                                <div class="col-6 text-end">Latitud:</div>
+                                <input type="text" id="md-geoLat" class="col-6 font-size-input max-w120" required
+                                    minlength="1" maxlength="20" oninput="revisarCamposVacios()">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="row">
+                                <div class="col-6 text-end">Longitud:</div>
+                                <input type="text" id="md-geoLong" class="col-6 font-size-input max-w120" required
+                                    minlength="1" maxlength="20" oninput="revisarCamposVacios()">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="row">
+                                <div class="col-6 text-end">Continente:</div>
+                                <select class="col-6 max-w120 font-size-input input-color-w" id="md-continente"
+                                    onchange="revisarCamposVacios()">
+                                    <option value="default" selected disabled hidden>Elegir...</option>
+                                    <option value="africa">África</option>
+                                    <option value="asia">Asia</option>
+                                    <option value="america">América</option>
+                                    <option value="europa">Europa</option>
+                                    <option value="oceania">Oceanía</option>
+                                    <option value="antartida">Antártida</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fila medio, alimentacion y esqueleto -->
+                    <div class="row mt-2">
+                        <div class="col-md-4 mb-3">
+                            <div class="row">
+                                <div class="col-6 text-end">Medio:</div>
+                                <select class="col-6 max-w120 font-size-input input-color-w" id="md-medio"
+                                    onchange="revisarCamposVacios()">
+                                    <option value="default" selected disabled hidden>Elegir...</option>
+                                    <option value="tierra">Tierra</option>
+                                    <option value="agua">Agua</option>
+                                    <option value="aire">Aire</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="row">
+                                <div class="col-6 text-end">Alimentación:</div>
+                                <select class="col-6 max-w120 font-size-input input-color-w" id="md-alimentacion"
+                                    onchange="revisarCamposVacios()">
+                                    <option value="default" selected disabled hidden>Elegir...</option>
+                                    <option value="herbivoro">Herbívoro</option>
+                                    <option value="carnivoro">Carnívoro</option>
+                                    <option value="omnivoro">Omnívoro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="row">
+                                <div class="col-6 text-end">Esqueleto:</div>
+                                <select class="col-6 max-w120 font-size-input input-color-w" id="md-esqueleto"
+                                    onchange="revisarCamposVacios()">
+                                    <option value="default" selected disabled hidden>Elegir...</option>
+                                    <option value="vertebrado">Vertebrado</option>
+                                    <option value="invertebrado">Invertebrado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fila foto -->
+                    <div class="row mt-3 mb-4">
+                        <div class="col-2 text-end">Foto (URL):</div>
+                        <input type="text" id="md-foto" class="col-9 font-size-input" required minlength="1"
+                            oninput="revisarCamposVacios()">
+                    </div>
+                    <!-- Fila botones Inicio, Fin y Guardar -->
+                    <div class="row mt-4 mb-2 mg-l-md">
+                        <div class="col-2"></div>
+                        <div class="col-md-4 row mb-3">
+                            <div class="col-6 text-end">
+                                <button id="bt-inicio" type="button" class="boton" onclick="botonInicio()" disabled>Set
+                                    Inicio</button>
+                            </div>
+                            <div class="col-6 text-start">
+                                <button id="bt-fin" type="button" class="boton" onclick="botonFin()" disabled>Set
+                                    Final</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 row">
+                            <div class="col-6 text-end">
+                                <button id="bt-eliminar" type="button" class="boton-eliminar" onclick="botonEliminar()"
+                                    disabled>Eliminar</button>
+                            </div>
+                            <div class="col-6 text-start">
+                                <button id="bt-guardar" type="button" class="boton-guardar" onclick="botonGuardar()"
+                                    disabled>Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fila boton "Subir al Servidor" -->
+                    <div class="row mb-4 mg-l-sm text-center">
+                        <div class="col-11">
+                            <button id="bt-subir" type="button" class="boton-subir" onclick="peticionSubirMetadatos()"
+                                disabled>Subir cambios al
+                                Servidor</button>
+                        </div>
                     </div>
                 </div>
-                <!-- Fila nombre comun y cientifico -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="row">
-                            <div class="col-6 text-end">Nombre común:</div>
-                            <input type="text" id="md-nombreComun" class="col-6 font-size-input max-w150" required
-                                minlength="1" maxlength="20" oninput="revisarCamposVacios()">
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="row">
-                            <div class="col-6 text-end">Nombre científico:</div>
-                            <input type="text" id="md-nombreCientifico" class="col-6 font-size-input max-w150" required
-                                minlength="1" maxlength="40" oninput="revisarCamposVacios()">
-                        </div>
-                    </div>
-                </div>
-                <!-- Fila descripcion -->
-                <div class="row">
-                    <div class="col-1"></div>
-                    <div class="col-10 ms-4 m-auto mt-1">
-                        <div class="row">Descripción:</div>
-                        <div class="row">
-                            <textarea id="md-descripcion" class="font-size-input" cols="40" rows="5"
-                                oninput="revisarCamposVacios()"></textarea>
-                        </div>
-                    </div>
-                    <div class="col-1"></div>
-                </div>
-                <!-- Fila geoposicion -->
-                <div class="row mt-4">
-                    <div class="col-md-4 mb-3">
-                        <div class="row">
-                            <div class="col-6 text-end">Latitud:</div>
-                            <input type="text" id="md-geoLat" class="col-6 font-size-input max-w120" required
-                                minlength="1" maxlength="20" oninput="revisarCamposVacios()">
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="row">
-                            <div class="col-6 text-end">Longitud:</div>
-                            <input type="text" id="md-geoLong" class="col-6 font-size-input max-w120" required
-                                minlength="1" maxlength="20" oninput="revisarCamposVacios()">
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="row">
-                            <div class="col-6 text-end">Continente:</div>
-                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-continente"
-                                onchange="revisarCamposVacios()">
-                                <option value="default" selected disabled hidden>Elegir...</option>
-                                <option value="africa">África</option>
-                                <option value="asia">Asia</option>
-                                <option value="america">América</option>
-                                <option value="europa">Europa</option>
-                                <option value="oceania">Oceanía</option>
-                                <option value="antartida">Antártida</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <!-- Fila medio, alimentacion y esqueleto -->
-                <div class="row mt-2">
-                    <div class="col-md-4 mb-3">
-                        <div class="row">
-                            <div class="col-6 text-end">Medio:</div>
-                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-medio"
-                                onchange="revisarCamposVacios()">
-                                <option value="default" selected disabled hidden>Elegir...</option>
-                                <option value="tierra">Tierra</option>
-                                <option value="agua">Agua</option>
-                                <option value="aire">Aire</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="row">
-                            <div class="col-6 text-end">Alimentación:</div>
-                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-alimentacion"
-                                onchange="revisarCamposVacios()">
-                                <option value="default" selected disabled hidden>Elegir...</option>
-                                <option value="herbivoro">Herbívoro</option>
-                                <option value="carnivoro">Carnívoro</option>
-                                <option value="omnivoro">Omnívoro</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="row">
-                            <div class="col-6 text-end">Esqueleto:</div>
-                            <select class="col-6 max-w120 font-size-input input-color-w" id="md-esqueleto"
-                                onchange="revisarCamposVacios()">
-                                <option value="default" selected disabled hidden>Elegir...</option>
-                                <option value="vertebrado">Vertebrado</option>
-                                <option value="invertebrado">Invertebrado</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <!-- Fila foto -->
-                <div class="row mt-3 mb-4">
-                    <div class="col-2 text-end">Foto (URL):</div>
-                    <input type="text" id="md-foto" class="col-9 font-size-input" required minlength="1"
-                        oninput="revisarCamposVacios()">
-                </div>
-                <!-- Fila botones Inicio, Fin y Guardar -->
-                <div class="row mt-4 mb-2 mg-l-md">
-                    <div class="col-2"></div>
-                    <div class="col-md-4 row mb-3">
-                        <div class="col-6 text-end">
-                            <button id="bt-inicio" type="button" class="boton" onclick="botonInicio()" disabled>Set
-                                Inicio</button>
-                        </div>
-                        <div class="col-6 text-start">
-                            <button id="bt-fin" type="button" class="boton" onclick="botonFin()" disabled>Set
-                                Final</button>
-                        </div>
-                    </div>
-                    <div class="col-md-6 row">
-                        <div class="col-6 text-end">
-                            <button id="bt-eliminar" type="button" class="boton-eliminar" onclick="botonEliminar()"
-                                disabled>Eliminar</button>
-                        </div>
-                        <div class="col-6 text-start">
-                            <button id="bt-guardar" type="button" class="boton-guardar" onclick="botonGuardar()"
-                                disabled>Guardar</button>
-                        </div>
-                    </div>
-                </div>
-                <!-- Fila boton "Subir al Servidor" -->
-                <div class="row mb-4 mg-l-sm text-center">
-                    <div class="col-11">
-                        <button id="bt-subir" type="button" class="boton-subir" onclick="peticionSubirMetadatos()"
-                            disabled>Subir cambios al
-                            Servidor</button>
-                    </div>
-                </div>
+                <!-- Fin Contenedor metadatos -->
 
-
-                <!-- <div class="row text-center">
-                    <div id="display-metadata" class="display"></div>
-                </div> -->
+                <!-- Contenedor subtitulos -->
+                <div id="container-subtitulos" style="display: none">
+                    <!-- Fila marcas temporales -->
+                    <div class="row mb-4 m-auto">
+                        <div class="col-4 text-end">Tiempo:</div>
+                        <div class="col-8 row">
+                            <input type="text" id="md-inicio" class="col-4 font-size-input max-w150" disabled>
+                            <div class="col-1 text-center">-</div>
+                            <input type="text" id="md-fin" class="col-4 font-size-input max-w150" disabled>
+                        </div>
+                    </div>
+                    <!-- Fila descripcion -->
+                    <div class="row mb-3">
+                        <div class="col-1"></div>
+                        <div class="col-10 ms-4 m-auto mt-1">
+                            <div class="row mt-3">Subtitulos español:</div>
+                            <div class="row mb-4">
+                                <textarea id="md-español" class="font-size-input" cols="40" rows="5"
+                                    oninput="revisarCamposVacios()"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                    <!-- Fila botones Inicio, Fin y Guardar -->
+                    <div class="row mt-4 mb-2 mg-l-md">
+                        <div class="col-2"></div>
+                        <div class="col-md-4 row mb-3">
+                            <div class="col-6 text-end">
+                                <button id="bt-inicio" type="button" class="boton" onclick="botonInicio()" disabled>Set
+                                    Inicio</button>
+                            </div>
+                            <div class="col-6 text-start">
+                                <button id="bt-fin" type="button" class="boton" onclick="botonFin()" disabled>Set
+                                    Final</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 row">
+                            <div class="col-6 text-end">
+                                <button id="bt-eliminar" type="button" class="boton-eliminar" onclick="botonEliminar()"
+                                    disabled>Eliminar</button>
+                            </div>
+                            <div class="col-6 text-start">
+                                <button id="bt-guardar" type="button" class="boton-guardar" onclick="botonGuardar()"
+                                    disabled>Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fila boton "Subir al Servidor" -->
+                    <div class="row mb-4 mg-l-sm text-center">
+                        <div class="col-11">
+                            <button id="bt-subir" type="button" class="boton-subir" onclick="peticionSubirMetadatos()"
+                                disabled>Subir cambios al
+                                Servidor</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -291,29 +353,32 @@
     <div class="cont-instrucciones mb-3 m-auto">
         <h3 id="instrucciones" class="text-center">Instrucciones</h3>
         <div class="txt-instrucciones text-justify">
-            Los siguientes pasos te ayudarán a incluir metadatos a un vídeo nuevo o un vídeo ya existente.
+            Los siguientes pasos te ayudarán a incluir metadatos/subtítulos a un vídeo nuevo o un vídeo ya existente.
             <div class="paso">1.&nbsp;&nbsp;Sube un vídeo de animales desde tu ordenador o selecciona uno ya existente,
                 usando los botones de la parte superior.
             </div>
-            <div class="paso">2.&nbsp;&nbsp;Reproduce el vídeo y pausalo donde quieras que empiece un bloque de
-                metadatos.
+            <div class="paso">2.&nbsp;&nbsp;Selecciona del menú desplegable si quieres trabajar sobre los metadatos o
+                subtítulos del vídeo.
             </div>
-            <div class="paso">3.&nbsp;&nbsp;Si ya hay metadatos en ese punto aparecerán en el apartado derecho. Si no,
+            <div class="paso">3.&nbsp;&nbsp;Reproduce el vídeo y pausalo donde quieras que empiece un bloque de
+                datos.
+            </div>
+            <div class="paso">4.&nbsp;&nbsp;Si ya hay datos en ese punto aparecerán en el apartado derecho. Si no,
                 pulsa el botón de "Set Inicio".</div>
-            <div class="paso">4.&nbsp;&nbsp;Sigue reproduciendo el vídeo hasta donde quieras que duren los metadatos,
+            <div class="paso">5.&nbsp;&nbsp;Sigue reproduciendo el vídeo hasta donde quieras que duren los datos,
                 pon pausa y pulsa el botón "Set Final".</div>
-            <div class="paso">5.&nbsp;&nbsp;Rellena todos los campos de metadatos y pulsa el boton "Guardar" para
-                guardar los metadatos (en local).</div>
-            <div class="paso">6.&nbsp;&nbsp;Si quieres eliminar un bloque de metadatos pon pausa en el momento en que se
+            <div class="paso">6.&nbsp;&nbsp;Rellena todos los campos de datos y pulsa el boton "Guardar" para
+                guardar los datos (en local).</div>
+            <div class="paso">7.&nbsp;&nbsp;Si quieres eliminar un bloque de datos pon pausa en el momento en que se
                 esté reproduciendo el bloque y pulsa el boton "Eliminar".
             </div>
-            <div class="paso">7.&nbsp;&nbsp;Puedes modificar el tiempo de inicio y fin de los metadatos que aún no están
+            <div class="paso">8.&nbsp;&nbsp;Puedes modificar el tiempo de inicio y fin de los datos que aún no están
                 guardados usando los botones "Set Inicio" y "Set Final".
             </div>
-            <div class="paso">8.&nbsp;&nbsp;Para subir los cambios al servidor pulsa el botón "Subir cambios al
+            <div class="paso">9.&nbsp;&nbsp;Para subir los cambios al servidor pulsa el botón "Subir cambios al
                 Servidor".
             </div>
-            <div class="paso">9.&nbsp;&nbsp;Si ya has terminado y quieres modificar otro vídeo simplemente recarga la
+            <div class="paso">10.&nbsp;&nbsp;Si ya has terminado y quieres modificar otro vídeo simplemente recarga la
                 página.
             </div>
         </div>

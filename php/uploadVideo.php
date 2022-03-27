@@ -46,9 +46,25 @@ if (isset($_FILES['file']['name'])) {
         }
 
         // Check if there is a metadata file. If not, create it
-        $locationMetadata = str_replace(".mp4", "-metadata.vtt", $location);
-        if (!file_exists($locationMetadata)) {
-            file_put_contents($locationMetadata, "WEBVTT FILE\n\n");
+        if (strpos($location, '.mp4') !== false) {
+            $locationMetadata = str_replace(".mp4", "-metadata.vtt", $location);
+            if (!file_exists($locationMetadata)) {
+                file_put_contents($locationMetadata, "WEBVTT FILE\n\n");
+            }
+            $locationSubtitulos = str_replace(".mp4", "-castellano.vtt", $location);
+            if (!file_exists($locationSubtitulos)) {
+                file_put_contents($locationSubtitulos, "WEBVTT FILE\n\n");
+            }
+        }
+        else {
+            $locationMetadata = str_replace(".webm", "-metadata.vtt", $location);
+            if (!file_exists($locationMetadata)) {
+                file_put_contents($locationMetadata, "WEBVTT FILE\n\n");
+            }
+            $locationSubtitulos = str_replace(".webm", "-castellano.vtt", $location);
+            if (!file_exists($locationSubtitulos)) {
+                file_put_contents($locationSubtitulos, "WEBVTT FILE\n\n");
+            }
         }
     }
 
