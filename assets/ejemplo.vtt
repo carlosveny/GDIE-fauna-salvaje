@@ -1,7 +1,7 @@
 WEBVTT FILE
 
 leon
-01:15.200 --> 02:18.800
+00:02.004 --> 00:10.800
 {
 "nombreComun": "León",
 "nombreCientifico": "Panthera leo",
@@ -21,8 +21,8 @@ mono
 "nombreComun": "Mono",
 "nombreCientifico": "Blabla",
 "descripcion": "Blabla",
-"geoX": "8.457108",
-"geoY": "23.036242",
+"geoLat": "8.457108",
+"geoLong": "23.036242",
 "continente": "Africa",
 "foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
 "medio": "Tierra",
