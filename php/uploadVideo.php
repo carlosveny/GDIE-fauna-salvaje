@@ -8,6 +8,16 @@
         (https://stackoverflow.com/questions/3586919/why-would-files-be-empty-when-uploading-files-to-php)
 */
 
+// Hash de la contraseña correcta
+$hashCorrecto = "$2y$10$7Pxe.3i3uZbReqoRiW4oR.u47PLbHCgOk7ORuFWuozmdItSNjxWXS";
+
+// Comparar hash correcto con el de la contraseña a verificar
+if (password_verify($_REQUEST["password"], $hashCorrecto)) {
+} else {
+    echo "false";
+    exit;
+}
+
 if (isset($_FILES['file']['name'])) {
     // File name
     $filename = $_FILES['file']['name'];

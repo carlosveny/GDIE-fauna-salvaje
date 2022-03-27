@@ -17,6 +17,7 @@ var datosYaGuardados = false; // hace referencia a cada cue
 var datosModificados = false; // hace referencia a todo el text track
 var inicioPulsado = false; // para controlar la superposicion de datos
 var solapamiento = false; // para controlar la superposicion de datos
+var password; // contraseña para operaciones con el servidor
 
 // Funcion que se ejecuta al cargarse la pagina
 function loaded() {
@@ -29,14 +30,20 @@ function loaded() {
         toggleInvert: false
     });
 
+    // Inicializacion "iniciar sesion"
+    $("#username").val("");
+    $("#password").val("");
+
     // Inicializacion del boton "Examinar"
     var input = document.createElement("input");
     setAttributes(input, { class: "max-w-files", type: "file", id: "file-input", accept: "video/mp4" });
     input.addEventListener('input', peticionSubirVideo);
     document.getElementById("file-input-div").appendChild(input);
+    $("#file-input").prop("disabled", true);
 
     // Inicializacion del dropdown "Video Existente"
     peticionObtenerVideos();
+    $("#file-selector").prop("disabled", true);
 
     // Desmarcar botones
     $("#bt-inicio").prop("disabled", true);
@@ -51,6 +58,22 @@ function loaded() {
 
 // Funcion que carga un video dado su path
 function cargarVideo(path) {
+    // Quitar aviso
+    $(".myAlert-top").hide();
+    const boxes = document.querySelectorAll('.myAlert-top');
+    boxes.forEach(box => {
+        box.remove();
+    });
+
+    // Mostrar aviso
+    var descr = "El vídeo se ha cargado correctamente. También se ha ";
+    descr += "detectado y cargado un fichero de metadatos.";
+    if ($("#file-selector").val() == null) {
+        descr = "El vídeo se ha subido al servidor. También se ha creado un fichero ";
+        descr += "de metadatos vacío porque no se han detectado metadatos para este vídeo."
+    }
+    crearAviso("alert-success", "Éxito:", descr, 5500);
+
     // Si es un objeto se ha elegido un video existente
     if ((typeof path) == "object") {
         path = path.value;
@@ -196,8 +219,15 @@ function botonInicio() {
 
 // Funcion que marca el endTime (en los inputs) de una posible nueva cue
 function botonFin() {
-    // Actualizar campo endTime (input)
     var endTime = video.currentTime - 0.1;
+
+    // Revisar si hay solapamiento y ajustar el tiempo exacto
+    var activeCue = video.textTracks[0].activeCues[0];
+    if (activeCue != null) {
+        endTime = activeCue.startTime;
+    }
+
+    // Actualizar campo endTime (input)
     $("#md-fin").val(formatSeconds(endTime));
     $("#md-fin").attr("name", endTime);
 
@@ -228,10 +258,10 @@ function botonGuardar() {
     $("#bt-subir").prop("disabled", false);
     $("#bt-guardar").prop("disabled", true);
 
+    var eliminado = false;
     // No ha habido solapamiento
     if (cueProximo == null) {
         // Eliminar cue actual (si existe)
-        var eliminado = false;
         var activeCues = video.textTracks[0].activeCues;
         if (activeCues.length > 0) {
             eliminado = true;
@@ -254,6 +284,7 @@ function botonGuardar() {
         video.play();
         cueActual = cueProximo;
         updateDatos(cueActual);
+        cueProximo = null;
     }
     // Si se ha creado de 0, borrar los inputs porque ya se ha salido de la cue
     else if (!eliminado) {
@@ -485,6 +516,7 @@ function peticionSubirVideo() {
     // Pasar el archivo a formData
     var formData = new FormData();
     formData.append("file", file);
+    formData.append("password", password);
 
     // Peticion POST al servidor para subir el archivo (si no existe)
     $.ajax({
@@ -494,6 +526,12 @@ function peticionSubirVideo() {
         processData: false,
         contentType: false,
         success: function (data) {
+            // Contraseña incorrecta
+            if (data == "false") {
+                var descr = "Usuario o contraseña incorrectos. Inténtalo de nuevo."
+                crearAviso("alert-danger", "Error:", descr, 4000);
+                return;
+            }
             // Quitar aviso
             $(".myAlert-top").hide();
             const boxes = document.querySelectorAll('.myAlert-top');
@@ -508,9 +546,6 @@ function peticionSubirVideo() {
                 crearAviso("alert-danger", "Aviso:", descr, 4000);
             }
             else {
-                var descr = "El vídeo se ha subido al servidor. También se ha creado un fichero ";
-                descr += "de metadatos vacío porque no se han detectado metadatos para este vídeo."
-                crearAviso("alert-success", "Éxito:", descr, 5500);
                 var path = data.replace("../", "");
                 cargarVideo(path);
             }
@@ -544,20 +579,64 @@ function peticionSubirMetadatos() {
         contenido += cues[i].id + "\n" + start + " --> " + end + " \n";
         contenido += JSON.stringify(json, null, 2) + "\n\n";
     }
-    console.log(contenido);
+    //console.log(contenido);
+
     // Peticion POST al servidor para subir los metadatos (o sobreescribirlos)
     $.post("php/uploadMetadata.php", {
         path: "../" + pathMetadata,
-        texto: contenido
+        texto: contenido,
+        password: password
     })
         .done(function (data) {
-            // Crear aviso
-            var descr = "Los metadatos se han guardado en el servidor."
-            crearAviso("alert-success", "Éxito:", descr, 4000);
+            // Contraseña incorrecta
+            if (data == "false") {
+                var descr = "Usuario o contraseña incorrectos. Inténtalo de nuevo."
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+            else {
+                // Crear aviso
+                var descr = "Los metadatos se han guardado en el servidor."
+                crearAviso("alert-success", "Éxito:", descr, 4000);
 
-            // Actualizar botones
-            $("#bt-subir").prop("disabled", true);
+                // Actualizar botones
+                $("#bt-subir").prop("disabled", true);
+            }
         });
+}
+
+// Funcion que revisa si las credenciales coinciden con las del servidor
+function peticionLogin() {
+    password = $("#password").val();
+
+    // Peticion POST al servidor para comprobar la contraseña
+    $.post("php/login.php", {
+        password: password
+    })
+        .done(function (data) {
+            // Contraseña incorrecta
+            if (data == "false") {
+                var descr = "Usuario o contraseña incorrectos. Inténtalo de nuevo."
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+            // Contraseña correcta
+            else {
+                document.getElementById("parent").remove();
+                var descr = "Credenciales aceptadas. Ya puedes empezar a editar!"
+                crearAviso("alert-success", "Éxito:", descr, 4000);
+                $("#file-input").prop("disabled", false);
+                $("#file-selector").prop("disabled", false);
+            }
+
+            // // Crear aviso
+            // var descr = "Los metadatos se han guardado en el servidor."
+            // crearAviso("alert-success", "Éxito:", descr, 4000);
+
+            // // Actualizar botones
+            // $("#bt-subir").prop("disabled", true);
+        });
+}
+function enterKey(e) {
+    if (e.keyCode == 13) peticionLogin();
 }
 
 /* ---------------------------------------------------------------------------- */

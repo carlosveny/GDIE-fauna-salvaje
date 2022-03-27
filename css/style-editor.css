@@ -66,10 +66,13 @@
 .mg-l-sm {
   margin-left: 100px;
 }
+.mg-l-md {
+  margin-left: 0px;
+}
 
 /* Estilo del apartado de instrucciones */
 .cont-instrucciones {
-  width: 50%;
+  width: 55%;
 }
 .txt-instrucciones {
   font-size: 1.1rem;
@@ -129,6 +132,29 @@
   width: 50%;
 }
 
+/* Centered login (https://stackoverflow.com/questions/22658141/css-center-form-in-page-horizontally-and-vertically) */
+#parent {
+  display: table;
+  width: 20%;
+}
+#form_login {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+.centered-login{
+  position: fixed;
+  top: 100px; 
+  /* left: 40%; */
+  left: calc(50vw - 160px);
+  max-width: 320px;
+  min-width: 320px;
+  height: 160px;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #858585;
+}
+
 /* Web responsive*/
 @media (max-width: 1500px) {
   .cont-instrucciones {
@@ -147,6 +173,9 @@
 @media (max-width: 900px) {
   .cont-instrucciones {
     width: 80%;
+  }
+  .aviso-centered {
+    font-size: 0.8rem;
   }
 }
 @media (max-width: 767px) {
@@ -168,7 +197,7 @@
 }
 @media (max-width: 500px) {
   .mg-l-sm {
-    margin-left: -5px !important;
+    margin-left: 10px !important;
   }
 }
 @media (max-width: 400px) {

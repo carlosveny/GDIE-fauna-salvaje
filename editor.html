@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fauna Salvaje | Editor</title>
-    <meta name="description" content="Un editor para introducir metadatos a cualquier video de animales." />
+    <meta name="description" content="Un editor para introducir metadatos a cualquier vídeo de animales." />
     <meta name="author" content="Carlos Veny">
     <meta name="author" content="Marc Rosselló">
     <meta name="author" content="Juan José Nieto">
@@ -245,7 +245,7 @@
                         oninput="revisarCamposVacios()">
                 </div>
                 <!-- Fila botones Inicio, Fin y Guardar -->
-                <div class="row mt-4 mb-2">
+                <div class="row mt-4 mb-2 mg-l-md">
                     <div class="col-2"></div>
                     <div class="col-md-4 row mb-3">
                         <div class="col-6 text-end">
@@ -292,20 +292,47 @@
         <h3 id="instrucciones" class="text-center">Instrucciones</h3>
         <div class="txt-instrucciones text-justify">
             Los siguientes pasos te ayudarán a incluir metadatos a un vídeo nuevo o un vídeo ya existente.
-            <div class="paso">1.&nbsp;&nbsp;Sube un vídeo de animales desde tu ordenador.
+            <div class="paso">1.&nbsp;&nbsp;Sube un vídeo de animales desde tu ordenador o selecciona uno ya existente,
+                usando los botones de la parte superior.
             </div>
             <div class="paso">2.&nbsp;&nbsp;Reproduce el vídeo y pausalo donde quieras que empiece un bloque de
                 metadatos.
             </div>
             <div class="paso">3.&nbsp;&nbsp;Si ya hay metadatos en ese punto aparecerán en el apartado derecho. Si no,
-                pulsa
-                el botón de "Inicio Metadatos".</div>
-            <div class="paso">4.&nbsp;&nbsp;Introduce los metadatos usando los campos correspondientes.</div>
-            <div class="paso">5.&nbsp;&nbsp;Sigue reproduciendo el vídeo hasta el momento donde quieres que finalice el
-                bloque de metadatos y pon pausa.</div>
-            <div class="paso">6.&nbsp;&nbsp;Pulsa el botón "Guardar Metadatos" para guardar el vídeo y los metadatos.
+                pulsa el botón de "Set Inicio".</div>
+            <div class="paso">4.&nbsp;&nbsp;Sigue reproduciendo el vídeo hasta donde quieras que duren los metadatos,
+                pon pausa y pulsa el botón "Set Final".</div>
+            <div class="paso">5.&nbsp;&nbsp;Rellena todos los campos de metadatos y pulsa el boton "Guardar" para
+                guardar los metadatos (en local).</div>
+            <div class="paso">6.&nbsp;&nbsp;Si quieres eliminar un bloque de metadatos pon pausa en el momento en que se
+                esté reproduciendo el bloque y pulsa el boton "Eliminar".
+            </div>
+            <div class="paso">7.&nbsp;&nbsp;Puedes modificar el tiempo de inicio y fin de los metadatos que aún no están
+                guardados usando los botones "Set Inicio" y "Set Final".
+            </div>
+            <div class="paso">8.&nbsp;&nbsp;Para subir los cambios al servidor pulsa el botón "Subir cambios al
+                Servidor".
+            </div>
+            <div class="paso">9.&nbsp;&nbsp;Si ya has terminado y quieres modificar otro vídeo simplemente recarga la
+                página.
             </div>
         </div>
+    </div>
+
+
+    <div id="parent" class="centered-login">
+        <form id="form_login">
+            <h4 class="mt-3 mb-3">Inicia Sesión</h4>
+            <p>
+                <input type="text" id="username" placeholder="usuario" />
+            </p>
+            <p>
+                <input type="password" id="password" placeholder="contraseña" onkeydown="enterKey(event)" />
+            </p>
+            <p class="mb-3">
+                <button id="submitbutton" type="button" class="boton-guardar" onclick="peticionLogin()">Acceder</button>
+            </p>
+        </form>
     </div>
 </body>
 
