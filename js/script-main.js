@@ -2,6 +2,12 @@
 var video; // objeto de video
 var cueActual; // VTTCue actual
 
+var seleccionAnimal = "todos";
+var seleccionAlimentacion = "herbivoro";
+var seleccionMedio = "todos";
+var seleccionEsqueleto = "todos";
+var seleccionContinente = "todos";
+
 function loaded() {
     // Inicializacion variable global
     video = document.getElementById("player");
@@ -38,9 +44,87 @@ function cargarVideo(path) {
     track.setAttribute("src", "assets/videos/animales-metadata.vtt");
     track.default = true;
     track.addEventListener("load", loadedMetadatos);
+    //Inicialización botones filtros al cargarse los cues
+    track.addEventListener("load", cargarFiltros);
     video.appendChild(track);
 
 }
+
+//Funcion que actualiza los cues que se van a mostrar según los filtros activos
+function actualizaFiltros(filtro, seleccion){
+    console.log(filtro + ": " + seleccion);
+    switch (filtro) {
+       /* case "video":
+            break;*/
+        case "animales":
+            //saltar al animal directamente
+            break;
+        case "alimentacion":
+            //actualizar variable de filtro y saltar al primer animal que cumple con el requisito
+            
+            break;
+        case "medio":
+            // code block
+            break;
+        case "esqueleto":
+            // code block
+            break;
+        case "continente":
+            // code block
+            break;
+        default:
+            console.log("es un video");
+    }
+}
+
+//devuelve el tiempo para el siguiente cue que cumpla los filtros
+function siguienteCue(numCueAct){
+    var cues = video.textTracks[0].cues;
+    console.log("cargar siguiente cue");
+    //si no quedan más cues ...
+    if (numCueAct+1 > cues.length){
+        return null;
+    }
+
+    for (var i = numCueAct+1 ; i < cues.length; i++){
+        if (cumpleFiltros(i)){
+            console.log(cues[i].startTime);
+            return cues[i].startTime;
+        }
+    }
+
+    return null;
+}
+
+function cumpleFiltros(numCue){
+    var cues = video.textTracks[0].cues;
+    if (cues.length <= numCue){
+        video.pause();
+        return true;
+    }
+
+    var cue = cues[numCue];
+    console.log(cue)
+
+    var info = JSON.parse(cue.text);
+
+    var alimentacionActual = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var medioActual = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var esqueletoActual = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var continenteActual = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    
+    //if que mira si algún filtro no se cumple para el cue pasado por parametro
+    if ((alimentacionActual == seleccionAlimentacion || seleccionAlimentacion == "todos") && (medioActual == seleccionMedio || seleccionMedio == "todos") && 
+    (esqueletoActual == seleccionEsqueleto || seleccionEsqueleto == "todos") && (continenteActual == seleccionContinente || seleccionContinente == "todos")){
+        console.log("cumple filtro")
+        return true;
+    }
+    console.log("no cumple filtro")
+    return false;
+}
+
+
+
 
 
 /* ---------------------------------------------------------------------------- */
@@ -49,17 +133,29 @@ function cargarVideo(path) {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
-    //Inicialización botones filtros al cargarse los cues
-    cargarFiltros();
 
     // Configurar los eventos de los metadatos
     var cues = video.textTracks[0].cues;
     for (var i = 0; i < cues.length; i++) {
         cues[i].addEventListener('enter', event => {
             updateDatos(event.target);
+            console.log("entra");
         });
         cues[i].addEventListener('exit', event => {
-            updateDatos(null);
+            var activeCue = video.textTracks[0].activeCues[0];
+            //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
+            if (!cumpleFiltros(getNumCue(cueActual)+1)){
+                var tiempo = siguienteCue(getNumCue(cueActual));
+                video.currentTime = tiempo;
+            }
+            
+            // Si justo empieza otra cue
+            if (activeCue != null) {
+                updateDatos(activeCue);
+            }
+            else {
+                updateDatos(null);
+            }
         });
     }
 }
@@ -137,23 +233,27 @@ function cargarFiltros(){
 
 function cargarDesplegable(array, id) {
     var filtro;
+    var tipoFiltro = id.replace("filtro", "");
+    tipoFiltro = tipoFiltro.toLowerCase();
     for (var i = 0; i < array.length; i++){
-        filtro = crearElementoFiltro(array[i]);
+        filtro = crearElementoFiltro(array[i], tipoFiltro);
         document.getElementById(id).appendChild(filtro);
     }
     var divisor = crearDivisorFiltro();
     document.getElementById(id).appendChild(divisor);
-    filtro = crearElementoFiltro("Ver todos");
+    filtro = crearElementoFiltro("Ver todos", tipoFiltro);
     document.getElementById(id).appendChild(filtro);
 }
 
 //Función que crea un elemento con el formato de las opciones de los filtros
-function crearElementoFiltro(nombre){
+function crearElementoFiltro(nombre, tipoFiltro){
     var filtro = document.createElement("li");
     var link = document.createElement("a");
     var texto = document.createTextNode(nombre);
     link.appendChild(texto);
-    setAttributes(link, {class: "dropdown-item", href: "#", onclick: "debug();"});
+    var normalizado = nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    normalizado = normalizado.replace("ver ", "");
+    setAttributes(link, {class: "dropdown-item", href: "#", onclick: "actualizaFiltros(\'"+tipoFiltro+"\', \'"+normalizado+"\');"});
     filtro.appendChild(link);
     return filtro;
 }
@@ -214,4 +314,14 @@ function checkArray(array, nuevaPalabra) {
         array.push(nuevaPalabra);
     }
     //return array
+}
+
+//Funcion que devuelve el número de cue correspondiente al siguiente cue del pasado por parametro
+function getNumCue(cue){
+    var cues = video.textTracks[0].cues;
+    for (var i = 0; i < cues.length; i++) {
+        if (cues[i].id == cue.id){
+            return i;
+        }
+    }
 }

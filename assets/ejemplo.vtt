@@ -1,7 +1,7 @@
 WEBVTT FILE
 
 leon
-00:02.004 --> 00:10.800
+00:02.200 --> 00:10.800
 {
 "nombreComun": "León",
 "nombreCientifico": "Panthera leo",
@@ -15,14 +15,44 @@ leon
 "esqueleto": "Vertebrado"
 }
 
+mosquito
+00:12.200 --> 00:17.800
+{
+"nombreComun": "Mosquito",
+"nombreCientifico": "Panthera leo",
+"descripcion": "Mos qui to mos qui to mos qui to",
+"geoLat": "8.457108",
+"geoLong": "23.036242",
+"continente": "Africa",
+"foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
+"medio": "Tierra",
+"alimentacion": "Omnivoro",
+"esqueleto": "Invertebrado"
+}
+
+pez
+00:17.200 --> 00:33.800
+{
+"nombreComun": "Pez",
+"nombreCientifico": "Panthera leo",
+"descripcion": "oooooooooooooooooooooooooooooooo",
+"geoLat": "8.457108",
+"geoLong": "23.036242",
+"continente": "Asia",
+"foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
+"medio": "Tierra",
+"alimentacion": "Herbivoro",
+"esqueleto": "Vertebrado"
+}
+
 mono
 02:18.900 --> 02:40.000
 {
 "nombreComun": "Mono",
 "nombreCientifico": "Blabla",
 "descripcion": "Blabla",
-"geoLat": "8.457108",
-"geoLong": "23.036242",
+"geoX": "8.457108",
+"geoY": "23.036242",
 "continente": "Africa",
 "foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
 "medio": "Tierra",

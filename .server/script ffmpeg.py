@@ -43,4 +43,4 @@ os.system("ffmpeg -i finalVideoNoAudio.mp4 -i audio.mp3 -map 0:v -map 1:a -c:v c
 #Transformación a webm
 os.system("ffmpeg -i conAudio.mp4 -c:v libvpx-vp9 -crf 30 -b:v 0 -b:a 128k -c:a libopus conAudio2.webm")
 
-#Captura cada segundo
+#Captura de pantalla por cada segundo
