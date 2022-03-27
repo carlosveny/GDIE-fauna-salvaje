@@ -3,7 +3,7 @@ var video; // objeto de video
 var cueActual; // VTTCue actual
 
 var seleccionAnimal = "todos";
-var seleccionAlimentacion = "todos";
+var seleccionAlimentacion = "herbivoro";
 var seleccionMedio = "todos";
 var seleccionEsqueleto = "todos";
 var seleccionContinente = "todos";
@@ -77,23 +77,33 @@ function actualizaFiltros(filtro, seleccion){
     }
 }
 
-function siguienteCue(cueAct){
-    //si no quedan más cues ...
-
-
-
+//devuelve el tiempo para el siguiente cue que cumpla los filtros
+function siguienteCue(numCueAct){
+    var cues = video.textTracks[0].cues;
     console.log("cargar siguiente cue");
-    return 140;
+    //si no quedan más cues ...
+    if (numCueAct+1 > cues.length){
+        return null;
+    }
+
+    for (var i = numCueAct+1 ; i < cues.length; i++){
+        if (cumpleFiltros(i)){
+            console.log(cues[i].startTime);
+            return cues[i].startTime;
+        }
+    }
+
+    return null;
 }
 
 function cumpleFiltros(numCue){
     var cues = video.textTracks[0].cues;
-    if (cues.length < numCue){
+    if (cues.length <= numCue){
         video.pause();
-        return false;
+        return true;
     }
 
-    cue = cues[numCue];
+    var cue = cues[numCue];
     console.log(cue)
 
     var info = JSON.parse(cue.text);
@@ -134,8 +144,8 @@ function loadedMetadatos() {
         cues[i].addEventListener('exit', event => {
             var activeCue = video.textTracks[0].activeCues[0];
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
-            if (!cumpleFiltros(getNumCueSiguiente(cueActual))){
-                var tiempo = siguienteCue(i);
+            if (!cumpleFiltros(getNumCue(cueActual)+1)){
+                var tiempo = siguienteCue(getNumCue(cueActual));
                 video.currentTime = tiempo;
             }
             
@@ -307,12 +317,11 @@ function checkArray(array, nuevaPalabra) {
 }
 
 //Funcion que devuelve el número de cue correspondiente al siguiente cue del pasado por parametro
-function getNumCueSiguiente(cue){
+function getNumCue(cue){
     var cues = video.textTracks[0].cues;
     for (var i = 0; i < cues.length; i++) {
         if (cues[i].id == cue.id){
-            console.log(i);
-            return i+1;
+            return i;
         }
     }
 }
