@@ -1,62 +1,32 @@
 WEBVTT FILE
 
-leon
-00:02.004 --> 00:10.800 
+ddd
+00:05.128 --> 00:10.085 
 {
-  "nombreComun": "León",
-  "nombreCientifico": "Panthera leo",
-  "descripcion": "El león (Panthera leo) es un mamífero carnívoro de la familia de los félidos y una de las cinco especies del género Panthera. Los leones salvajes viven en poblaciones cada vez más dispersas y fragmentadas perfectoyes",
-  "geoLat": "8.457108",
-  "geoLong": "23.036242",
+  "nombreComun": "ddd",
+  "nombreCientifico": "dd",
+  "descripcion": "dd",
+  "geoLat": "d",
+  "geoLong": "d",
   "continente": "África",
-  "foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
+  "foto": "aaaaaaa",
   "medio": "Tierra",
-  "alimentacion": "Carnívoro",
+  "alimentacion": "Herbívoro",
   "esqueleto": "Vertebrado"
 }
 
-mosquito
-00:20.000 --> 00:40.900
+aaa
+00:10.149 --> 00:12.345 
 {
-"nombreComun": "Mosquito",
-"nombreCientifico": "Blabla",
-"descripcion": "Blabla",
-"geoX": "8.457108",
-"geoY": "23.036242",
-"continente": "Africa",
-"foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
-"medio": "Aire",
-"alimentacion": "Omnivoro",
-"esqueleto": "Invertebrado"
-}
-
-pez
-01:18.900 --> 02:18.900
-{
-"nombreComun": "Pez",
-"nombreCientifico": "Blabla",
-"descripcion": "Blabla",
-"geoX": "8.457108",
-"geoY": "23.036242",
-"continente": "Africa",
-"foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
-"medio": "Agua",
-"alimentacion": "Herbivoro",
-"esqueleto": "Vertebrado"
-}
-
-mono
-02:18.900 --> 02:40.000 
-{
-  "nombreComun": "Mono",
-  "nombreCientifico": "Blabla",
-  "descripcion": "Blabla",
-  "geoLat": "8.457108",
-  "geoLong": "23.036242",
-  "continente": "Africa",
-  "foto": "https://cumbrepuebloscop20.org/wp-content/uploads/2018/09/Le%C3%B3n-2.jpg",
+  "nombreComun": "aaa",
+  "nombreCientifico": "aa",
+  "descripcion": "a",
+  "geoLat": "a",
+  "geoLong": "a",
+  "continente": "África",
+  "foto": "aa",
   "medio": "Tierra",
-  "alimentacion": "Carnívoro",
+  "alimentacion": "Herbívoro",
   "esqueleto": "Vertebrado"
 }
 

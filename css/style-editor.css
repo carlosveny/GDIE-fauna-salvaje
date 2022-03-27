@@ -35,6 +35,11 @@
   border-radius: 4px;
   border: 1px solid #858585;
 }
+.input-color-w:disabled {
+  background-color: rgb(245, 245, 245);
+  border-radius: 4px;
+  border: 1px solid #858585;
+}
 .max-w180 {
   max-width: 180px;
 }

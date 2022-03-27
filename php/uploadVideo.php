@@ -34,6 +34,12 @@ if (isset($_FILES['file']['name'])) {
         if (move_uploaded_file($_FILES['file']['tmp_name'], $location)) {
             $response = $location;
         }
+
+        // Check if there is a metadata file. If not, create it
+        $locationMetadata = str_replace(".mp4", "-metadata.vtt", $location);
+        if (!file_exists($locationMetadata)) {
+            file_put_contents($locationMetadata, "WEBVTT FILE\n\n");
+        }
     }
 
     echo $response;
