@@ -1,9 +1,10 @@
 
 var video; // objeto de video
 var cueActual; // VTTCue actual
+var allCues; //Cues del video actual
 
-var seleccionAnimal = "todos";
-var seleccionAlimentacion = "herbivoro";
+//var seleccionAnimal = "todos";
+var seleccionAlimentacion = "todos";
 var seleccionMedio = "todos";
 var seleccionEsqueleto = "todos";
 var seleccionContinente = "todos";
@@ -18,9 +19,9 @@ function loaded() {
         toggleInvert: false
     });
     peticionObtenerVideos();
-    
+
     cargarVideo("assets/animales.mp4");
-    
+
 }
 
 function cargarVideo(path) {
@@ -51,26 +52,70 @@ function cargarVideo(path) {
 }
 
 //Funcion que actualiza los cues que se van a mostrar según los filtros activos
-function actualizaFiltros(filtro, seleccion){
-    console.log(filtro + ": " + seleccion);
+function actualizaFiltros(filtro, seleccion) {
+
+    console.log("filtro: " + filtro + " selección: " + seleccion);
     switch (filtro) {
-       /* case "video":
-            break;*/
+        /* case "video":
+             break;*/
         case "animales":
+            seleccionAlimentacion = "todos";
+            seleccionMedio = "todos";
+            seleccionEsqueleto = "todos";
+            seleccionContinente = "todos";
+
+            if (seleccion == "todos"){
+                video.currentTime = 0;
+                video.play();
+                break;
+            }
             //saltar al animal directamente
+            for (var i = 0; i < allCues.length; i++) { //se puede cambiar el for para usar if (cumpleFiltros) pero da problemas de momento
+                var info = JSON.parse(allCues[i].text);
+                info = info.nombreComun.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                if (info == seleccion) {
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
             break;
         case "alimentacion":
             //actualizar variable de filtro y saltar al primer animal que cumple con el requisito
-            
+            seleccionAlimentacion = seleccion;
+
+            for (var i = 0; i < allCues.length; i++) {
+                if (cumpleFiltros(i)) {
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
             break;
         case "medio":
-            // code block
+            seleccionMedio = seleccion;
+            for (var i = 0; i < allCues.length; i++) {
+                if (cumpleFiltros(i)) {
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
             break;
         case "esqueleto":
-            // code block
+            seleccionEsqueleto = seleccion;
+            for (var i = 0; i < allCues.length; i++) {
+                if (cumpleFiltros(i)) {
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
             break;
         case "continente":
-            // code block
+            seleccionContinente = seleccion;
+            for (var i = 0; i < allCues.length; i++) {
+                if (cumpleFiltros(i)) {
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
             break;
         default:
             console.log("es un video");
@@ -78,16 +123,16 @@ function actualizaFiltros(filtro, seleccion){
 }
 
 //devuelve el tiempo para el siguiente cue que cumpla los filtros
-function siguienteCue(numCueAct){
+function siguienteCue(numCueAct) {
     var cues = video.textTracks[0].cues;
     console.log("cargar siguiente cue");
     //si no quedan más cues ...
-    if (numCueAct+1 > cues.length){
+    if (numCueAct + 1 > cues.length) {
         return null;
     }
 
-    for (var i = numCueAct+1 ; i < cues.length; i++){
-        if (cumpleFiltros(i)){
+    for (var i = numCueAct + 1; i < cues.length; i++) {
+        if (cumpleFiltros(i)) {
             console.log(cues[i].startTime);
             return cues[i].startTime;
         }
@@ -96,15 +141,15 @@ function siguienteCue(numCueAct){
     return null;
 }
 
-function cumpleFiltros(numCue){
+function cumpleFiltros(numCue) {
     var cues = video.textTracks[0].cues;
-    if (cues.length <= numCue){
+    //console.log(cues.length)
+    if (cues.length <= numCue) {
         video.pause();
         return true;
     }
 
     var cue = cues[numCue];
-    console.log(cue)
 
     var info = JSON.parse(cue.text);
 
@@ -112,14 +157,14 @@ function cumpleFiltros(numCue){
     var medioActual = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     var esqueletoActual = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     var continenteActual = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    
+
     //if que mira si algún filtro no se cumple para el cue pasado por parametro
-    if ((alimentacionActual == seleccionAlimentacion || seleccionAlimentacion == "todos") && (medioActual == seleccionMedio || seleccionMedio == "todos") && 
-    (esqueletoActual == seleccionEsqueleto || seleccionEsqueleto == "todos") && (continenteActual == seleccionContinente || seleccionContinente == "todos")){
-        console.log("cumple filtro")
+    if ((alimentacionActual == seleccionAlimentacion || seleccionAlimentacion == "todos") && (medioActual == seleccionMedio || seleccionMedio == "todos") &&
+        (esqueletoActual == seleccionEsqueleto || seleccionEsqueleto == "todos") && (continenteActual == seleccionContinente || seleccionContinente == "todos")) {
+        //console.log("cumple filtro")
         return true;
     }
-    console.log("no cumple filtro")
+    //console.log("no cumple filtro")
     return false;
 }
 
@@ -136,19 +181,19 @@ function loadedMetadatos() {
 
     // Configurar los eventos de los metadatos
     var cues = video.textTracks[0].cues;
+    allCues = cues;
     for (var i = 0; i < cues.length; i++) {
         cues[i].addEventListener('enter', event => {
             updateDatos(event.target);
-            console.log("entra");
         });
         cues[i].addEventListener('exit', event => {
             var activeCue = video.textTracks[0].activeCues[0];
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
-            if (!cumpleFiltros(getNumCue(cueActual)+1)){
+            if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
                 var tiempo = siguienteCue(getNumCue(cueActual));
                 video.currentTime = tiempo;
             }
-            
+
             // Si justo empieza otra cue
             if (activeCue != null) {
                 updateDatos(activeCue);
@@ -185,22 +230,39 @@ function updateDatos(cue) {
     var esqueleto = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
     $("#alimentacion").text(info.alimentacion);
-    $("#iconoAlimentacion").attr("src", "assets/icons/"+ alimentacion +".ico" );
+    $("#iconoAlimentacion").attr("src", "assets/icons/" + alimentacion + ".ico");
+    if (seleccionAlimentacion != "todos"){
+        $("#lock-alimentacion").attr("src", "assets/icons/locked.ico");
+    }else{
+        $("#lock-alimentacion").attr("src", "assets/icons/unlocked.ico");
+    }
+    
     $("#medio").text(info.medio);
-    $("#iconoMedio").attr("src", "assets/icons/"+ medio +".ico" );
+    $("#iconoMedio").attr("src", "assets/icons/" + medio + ".ico");
+    if (seleccionMedio != "todos"){
+        $("#lock-medio").attr("src", "assets/icons/locked.ico");
+    }else{
+        $("#lock-medio").attr("src", "assets/icons/unlocked.ico");
+    }
+
     $("#esqueleto").text(info.esqueleto);
-    $("#iconoEsqueleto").attr("src", "assets/icons/"+ esqueleto +".ico" );
+    $("#iconoEsqueleto").attr("src", "assets/icons/" + esqueleto + ".ico");
+    if (seleccionEsqueleto != "todos"){
+        $("#lock-esqueleto").attr("src", "assets/icons/locked.ico");
+    }else{
+        $("#lock-esqueleto").attr("src", "assets/icons/unlocked.ico");
+    }
 
     /* $("#md-geoLat").attr("value", info.geoLat);
     $("#md-geoLong").attr("value", info.geoLong);
-    $("#md-foto").attr("value", info.foto); */ 
+    $("#md-foto").attr("value", info.foto); */
 
-    
+
 
 }
 
 //Función que carga los filtros disponibles en la página principal según los datos del fichero .vtt
-function cargarFiltros(){
+function cargarFiltros() {
 
     var cues = video.textTracks[0].cues;
 
@@ -235,7 +297,7 @@ function cargarDesplegable(array, id) {
     var filtro;
     var tipoFiltro = id.replace("filtro", "");
     tipoFiltro = tipoFiltro.toLowerCase();
-    for (var i = 0; i < array.length; i++){
+    for (var i = 0; i < array.length; i++) {
         filtro = crearElementoFiltro(array[i], tipoFiltro);
         document.getElementById(id).appendChild(filtro);
     }
@@ -246,27 +308,27 @@ function cargarDesplegable(array, id) {
 }
 
 //Función que crea un elemento con el formato de las opciones de los filtros
-function crearElementoFiltro(nombre, tipoFiltro){
+function crearElementoFiltro(nombre, tipoFiltro) {
     var filtro = document.createElement("li");
     var link = document.createElement("a");
     var texto = document.createTextNode(nombre);
     link.appendChild(texto);
     var normalizado = nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     normalizado = normalizado.replace("ver ", "");
-    setAttributes(link, {class: "dropdown-item", href: "#", onclick: "actualizaFiltros(\'"+tipoFiltro+"\', \'"+normalizado+"\');"});
+    setAttributes(link, { class: "dropdown-item", href: "#", onclick: "actualizaFiltros(\'" + tipoFiltro + "\', \'" + normalizado + "\');" });
     filtro.appendChild(link);
     return filtro;
 }
 
-function crearDivisorFiltro(){
+function crearDivisorFiltro() {
     var divisor = document.createElement("li");
     var hr = document.createElement("hr");
-    setAttributes(hr, {class: "dropdown-divider"});
+    setAttributes(hr, { class: "dropdown-divider" });
     divisor.appendChild(hr);
     return divisor;
 }
 
-function debug(){
+function debug() {
     console.log("Succsessful!")
 }
 
@@ -289,7 +351,6 @@ function peticionObtenerVideos() {
                 filtro = crearElementoFiltro(nombre);
                 document.getElementById("filtroVideos").appendChild(filtro);
             }
-            console.log(JSON.parse(data));
         });
 }
 
@@ -317,10 +378,10 @@ function checkArray(array, nuevaPalabra) {
 }
 
 //Funcion que devuelve el número de cue correspondiente al siguiente cue del pasado por parametro
-function getNumCue(cue){
+function getNumCue(cue) {
     var cues = video.textTracks[0].cues;
     for (var i = 0; i < cues.length; i++) {
-        if (cues[i].id == cue.id){
+        if (cues[i].id == cue.id) {
             return i;
         }
     }
