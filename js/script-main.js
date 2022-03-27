@@ -231,10 +231,27 @@ function updateDatos(cue) {
 
     $("#alimentacion").text(info.alimentacion);
     $("#iconoAlimentacion").attr("src", "assets/icons/" + alimentacion + ".ico");
+    if (seleccionAlimentacion != "todos"){
+        $("#lock-alimentacion").attr("src", "assets/icons/locked.ico");
+    }else{
+        $("#lock-alimentacion").attr("src", "assets/icons/unlocked.ico");
+    }
+    
     $("#medio").text(info.medio);
     $("#iconoMedio").attr("src", "assets/icons/" + medio + ".ico");
+    if (seleccionMedio != "todos"){
+        $("#lock-medio").attr("src", "assets/icons/locked.ico");
+    }else{
+        $("#lock-medio").attr("src", "assets/icons/unlocked.ico");
+    }
+
     $("#esqueleto").text(info.esqueleto);
     $("#iconoEsqueleto").attr("src", "assets/icons/" + esqueleto + ".ico");
+    if (seleccionEsqueleto != "todos"){
+        $("#lock-esqueleto").attr("src", "assets/icons/locked.ico");
+    }else{
+        $("#lock-esqueleto").attr("src", "assets/icons/unlocked.ico");
+    }
 
     /* $("#md-geoLat").attr("value", info.geoLat);
     $("#md-geoLong").attr("value", info.geoLong);
