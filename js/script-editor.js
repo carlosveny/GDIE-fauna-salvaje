@@ -766,6 +766,7 @@ function peticionLogin() {
             }
             // Contraseña correcta
             else {
+                console.log(data);
                 document.getElementById("parent").remove();
                 var descr = "Credenciales aceptadas. Ya puedes empezar a editar!"
                 crearAviso("alert-success", "Éxito:", descr, 4000);
