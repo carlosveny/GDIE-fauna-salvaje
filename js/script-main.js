@@ -87,13 +87,25 @@ function reloadVideo(path) {
         console.log(path);
     }
 
-    // Crear elemento "source"
-    var src = document.createElement("source");
-    setAttributes(src, { id: "video-src", src: path, type: "video/mp4" });
-    video.appendChild(src);
-    if (document.getElementById("alerta-no-video") != null) {
-        document.getElementById("alerta-no-video").remove();
+    var pathMP4, pathWebm;
+    if (path.includes(".mp4")) {
+        pathMP4 = path;
+        pathWebm = path.replace("mp4", "webm");
     }
+    else {
+        pathWebm = path;
+        pathMP4 = path.replace("webm", "mp4");
+    }
+
+    // Crear elemento "source" con MP4
+    var src = document.createElement("source");
+    setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
+    video.appendChild(src);
+    
+    // Crear elemento "source" con webm
+    var src2 = document.createElement("source");
+    setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
+    video.appendChild(src2);
 
     var pathMetadata;
     var pathSubtitulos1;
@@ -293,8 +305,8 @@ function cumpleFiltros(numCue) {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
-    console.log("loaded metadatos")
-    console.log(video.textTracks[0].cues);
+    //console.log("loaded metadatos")
+    //console.log(video.textTracks[0].cues);
     // Configurar los eventos de los metadatos
     var cues = video.textTracks[0].cues;
     allCues = cues;
@@ -435,7 +447,7 @@ function crearElementoFiltro(nombre, tipoFiltro) {
     var normalizado = nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     normalizado = normalizado.replace("ver ", "");
     var identificador = tipoFiltro + "-" + normalizado;
-    console.log("id filtro: " + identificador);
+    //console.log("id filtro: " + identificador);
 
     var tick = document.createElement("img");
     var identificadorTick = identificador + "-tick";
@@ -481,15 +493,27 @@ function peticionObtenerVideos() {
         .done(function (data) {
             var paths = JSON.parse(data);
             var filtro;
+            var nombresVideos = [];
+            var pathsVideos = [];
             for (var i = 0; i < paths.length; i++) {
                 var nombre = paths[i].replace("assets/videos/", "");
                 nombre = nombre.replace(".mp4", "");
-                nombre = nombre.replace(".ogg", "");
+                //nombre = nombre.replace(".ogg", "");
                 nombre = nombre.replace(".webm", "");
                 nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
-                filtro = crearElementoFiltro(nombre, paths[i]);
+                var actualizado = checkArray(nombresVideos, nombre);
+                if (actualizado){
+                    pathsVideos.push(paths[i]);
+                }
+            }
+            console.log(nombresVideos)
+            console.log(pathsVideos)
+
+            for (var i = 0; i < nombresVideos.length; i++) {
+                filtro = crearElementoFiltro(nombresVideos[i], pathsVideos[i]);
                 document.getElementById("filtroVideos").appendChild(filtro);
             }
+
             //Por defecto carga el primer video
             cargarVideo(paths[0]);
         });
@@ -629,7 +653,9 @@ function checkArray(array, nuevaPalabra) {
     //console.log(nuevaPalabra);
     if (!array.includes(nuevaPalabra)) {
         array.push(nuevaPalabra);
+        return true;
     }
+    return false;
     //return array
 }
 
