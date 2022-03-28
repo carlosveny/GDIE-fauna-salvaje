@@ -28,6 +28,14 @@
   <!-- plyr -->
   <link rel="stylesheet" href="https://cdn.plyr.io/3.6.12/plyr.css" />
   <script src="https://cdn.plyr.io/3.6.12/plyr.polyfilled.js"></script>
+  <!-- leaflet api -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+  <script type="text/javascript" src="assets/leaflet/eu-countries.js"></script>
   <!-- Local -->
   <link rel="stylesheet" href="css/style-main.css">
   <script src="js/script-main.js"></script>
@@ -131,7 +139,7 @@
         <!-- Video -->
         <div class="row text-center col-lg-7">
           <div id="videotest" class="wrapper-video">
-            <video id="player" class="w-100" playsinline controls data-poster="" ></video>
+            <video id="player" class="w-100" playsinline controls data-poster=""></video>
           </div>
         </div>
         <!-- Info lateral derecho -->
@@ -183,10 +191,8 @@
         </div>
 
         <!-- Mapa -->
-        <div id="mapa" class="col-lg-4 border">
-          <h1 class="text-center">MAPA</h1>
+        <div id="map" class="col-lg-4 border">
         </div>
-
       </div>
     </div>
   </div>
