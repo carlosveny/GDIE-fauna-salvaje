@@ -9,7 +9,7 @@
 */
 
 // Hash de la contraseña correcta
-$hashCorrecto = "$2y$10$7Pxe.3i3uZbReqoRiW4oR.u47PLbHCgOk7ORuFWuozmdItSNjxWXS";
+$hashCorrecto = '$2y$10$O2h43HAj/1hRCJx8tD8x.eLn2bw2DzrZG8P14PbgQmeW2hOTx73my';
 
 // Comparar hash correcto con el de la contraseña a verificar
 if (password_verify($_REQUEST["password"], $hashCorrecto)) {
