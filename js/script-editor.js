@@ -12,6 +12,7 @@ var cueActual; // VTTCue actual
 var cueProximo; // VTTCue siguiente, para gestionar el solapamiento
 var pathMetadata;
 var pathSubtitulos1;
+var pathsVideos = []; // array doble de paths de videos [0]: .mp4 [1]: .webm
 // Si los datos se cargan del fichero y no se han modificado no se tienen que poder guardar de nuevo
 var datosYaGuardados = false; // hace referencia a cada cue
 // Para saber si activar/desactivar el boton "Subir al servidor"
@@ -23,6 +24,13 @@ var subtitulos = false;
 
 // Funcion que se ejecuta al cargarse la pagina
 function loaded() {
+    // Inicializar login (revisar en local storage si hay contraseña)
+    var pw = localStorage.getItem("password");
+    if (pw != null) {
+        $("#password").val(pw);
+        peticionLogin()
+    }
+
     // Inicializacion variable global
     video = document.getElementById("miVideo");
 
@@ -88,14 +96,38 @@ function cargarVideo(path) {
     }
 
     // Crear elemento "source"
-    var ext = "video/mp4";
-    if (!path.includes(".mp4")) ext = "video/webm";
-    var src = document.createElement("source");
-    setAttributes(src, { id: "video-src", src: path, type: ext });
-    video.appendChild(src);
+    var idx;
+    if (pathsVideos != null) {
+        for (var i = 0; i < pathsVideos.length; i++) {
+            if (pathsVideos[i][0] == path) {
+                idx = i;
+                break;
+            }
+        }
+    }
+
+    // Si solo hay 1 extension
+    if ((pathsVideos == null) || (pathsVideos[idx][1] == null)) {
+        var ext = "video/mp4";
+        if (!path.includes(".mp4")) ext = "video/webm";
+        var src = document.createElement("source");
+        setAttributes(src, { id: "video-src", src: path, type: ext });
+        video.appendChild(src);
+    }
+    // Hay 2 extensiones del mismo video
+    else {
+        var src = document.createElement("source");
+        setAttributes(src, { id: "video-src1", src: pathsVideos[idx][0], type: "video/mp4" });
+        video.appendChild(src);
+        var src = document.createElement("source");
+        setAttributes(src, { id: "video-src2", src: pathsVideos[idx][1], type: "video/webm" });
+        video.appendChild(src);
+        path = pathsVideos[idx][0];
+    }
     if (document.getElementById("alerta-no-video") != null) {
         document.getElementById("alerta-no-video").remove();
     }
+
 
     // Deshabilitar la seleccion de nuevos videos
     document.getElementById("file-input").disabled = true;
@@ -112,7 +144,7 @@ function cargarVideo(path) {
         pathMetadata = path.replace(".webm", "-metadata.vtt");
         pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
     }
-    
+
 
     // Configurar los listeners del video
     video.addEventListener('play', playPulsado);
@@ -569,7 +601,28 @@ function peticionObtenerVideos() {
             for (var i = 0; i < paths.length; i++) {
                 var option = document.createElement("option");
                 option.setAttribute("value", paths[i]);
-                option.innerHTML = paths[i].replace("assets/videos/", "");
+
+                // Llenar array multidimensional de paths
+                // (si es el mismo archivo con distinta extension, misma posicion del array)
+                pathsVideos.push([paths[i], null]);
+                if (paths[i].includes(".mp4")) {
+                    if (paths.includes(paths[i].replace(".mp4", ".webm"))) {
+                        // Video en .mp4 y .webm
+                        var idx = paths.indexOf(paths[i].replace(".mp4", ".webm"))
+                        pathsVideos[i][1] = paths[idx];
+                        paths.splice(idx, 1);
+                        option.innerHTML = paths[i].replace("assets/videos/", "").replace(".mp4", " (mp4/webm)");
+                    }
+                    else {
+                        // Video solo en .mp4
+                        option.innerHTML = paths[i].replace("assets/videos/", "").replace(".mp4", " (mp4)");
+                    }
+                }
+                else {
+                    // Video solo en .webm
+                    option.innerHTML = paths[i].replace("assets/videos/", "").replace(".webm", " (webm)");
+                }
+
                 select.appendChild(option);
             }
             $('#file-selector').val("default");
@@ -579,6 +632,7 @@ function peticionObtenerVideos() {
 
 // Funcion que sube un video al servidor
 function peticionSubirVideo() {
+    pathsVideos = null; // Para evitar errores al cargar el path
     // Mostrar aviso de cargando
     crearAviso("alert-info", "Info:", "Se está subiendo el archivo. Espera por favor.", 0);
 
@@ -717,14 +771,10 @@ function peticionLogin() {
                 crearAviso("alert-success", "Éxito:", descr, 4000);
                 $("#file-input").prop("disabled", false);
                 $("#file-selector").prop("disabled", false);
+
+                // Guardar en local storage
+                localStorage.setItem("password", password);
             }
-
-            // // Crear aviso
-            // var descr = "Los metadatos se han guardado en el servidor."
-            // crearAviso("alert-success", "Éxito:", descr, 4000);
-
-            // // Actualizar botones
-            // $("#bt-subir").prop("disabled", true);
         });
 }
 function enterKey(e) {
