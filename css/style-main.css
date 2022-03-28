@@ -8,6 +8,15 @@
     width: 25px;
 }
 
+.seleccionado{
+    background-color: #d2f1d2;
+}
+
+.tickFiltros{
+    height: 20px;
+    width: 20px;
+}
+
 .botones{
     width: 50px;
 }

@@ -3,7 +3,7 @@ var video; // objeto de video
 var cueActual; // VTTCue actual
 var allCues; //Cues del video actual
 
-//var seleccionAnimal = "todos";
+var seleccionAnimal = "todos";
 var seleccionAlimentacion = "todos";
 var seleccionMedio = "todos";
 var seleccionEsqueleto = "todos";
@@ -65,9 +65,9 @@ function cargarVideo(path) {
 
 }
 
-function reloadVideo(path){
+function reloadVideo(path) {
     document.getElementById('player').remove();
-    document.getElementById('videotest').innerHTML='<video id="player" class="w-100" playsinline controls data-poster="" ></video>';
+    document.getElementById('videotest').innerHTML = '<video id="player" class="w-100" playsinline controls data-poster="" ></video>';
     video = document.getElementById('player');
 
     // Inicializacion del media player "plyr"
@@ -115,59 +115,6 @@ function reloadVideo(path){
 
     //video.load();
     video.play();
-
-    //VERSION INICIAL
-    /*
-    // Si es un objeto se ha elegido un video existente
-    if ((typeof path) == "object") {
-        path = path.value;
-        console.log(path);
-    }
-    // Modificar elemento "source"
-    video.pause();
-    //console.log("recargando...   ");
-    $("#video-src").attr("src", path);
-    
-    var pathMetadata;
-    var pathSubtitulos1;
-
-    // Cargar fichero de metadatos
-    if (path.includes(".mp4")) {
-        pathMetadata = path.replace(".mp4", "-metadata.vtt");
-        pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
-    }
-    else {
-        pathMetadata = path.replace(".webm", "-metadata.vtt");
-        pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
-    }
-
-    console.log(pathMetadata)
-
-    document.getElementById("track").remove();
-
-    // Cargar fichero de metadatos NO FUNCIONA
-    var track = document.createElement("track");
-    setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
-    track.setAttribute("src", pathMetadata);
-    track.default = true;
-    track.addEventListener("load", loadedMetadatos);
-    //Inicialización botones filtros al cargarse los cues
-    track.addEventListener("load", cargarFiltros);
-    video.appendChild(track);
-
-     // Recargar fichero de metadatos
-    //$("#track").attr("src", pathMetadata);
-    //document.getElementById("track").addEventListener("load", loadedMetadatos);
-    //Inicialización botones filtros al cargarse los cues
-    //document.getElementById("track").addEventListener("load", cargarFiltros); 
-
-    video.load();
-    video.play();
-    console.log("nuevos text tracks")
-    console.log(video.textTracks[0].cues);
-    */
-
-
 }
 
 //Funcion que actualiza los cues que se van a mostrar según los filtros activos
@@ -182,8 +129,9 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionMedio = "todos";
             seleccionEsqueleto = "todos";
             seleccionContinente = "todos";
+            seleccionAnimal = seleccion;
 
-            if (seleccion == "todos"){
+            if (seleccion == "todos") {
                 video.currentTime = 0;
                 video.play();
                 break;
@@ -201,6 +149,7 @@ function actualizaFiltros(filtro, seleccion) {
         case "alimentacion":
             //actualizar variable de filtro y saltar al primer animal que cumple con el requisito
             seleccionAlimentacion = seleccion;
+            seleccionAnimal = "todos";
 
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
@@ -211,6 +160,7 @@ function actualizaFiltros(filtro, seleccion) {
             break;
         case "medio":
             seleccionMedio = seleccion;
+            seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
                     video.currentTime = allCues[i].startTime;
@@ -220,6 +170,7 @@ function actualizaFiltros(filtro, seleccion) {
             break;
         case "esqueleto":
             seleccionEsqueleto = seleccion;
+            seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
                     video.currentTime = allCues[i].startTime;
@@ -229,6 +180,7 @@ function actualizaFiltros(filtro, seleccion) {
             break;
         case "continente":
             seleccionContinente = seleccion;
+            seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
                     video.currentTime = allCues[i].startTime;
@@ -242,6 +194,7 @@ function actualizaFiltros(filtro, seleccion) {
             console.log("es un video");
             reloadVideo(filtro);
     }
+    updateTicks();
 }
 
 //devuelve el tiempo para el siguiente cue que cumpla los filtros
@@ -354,25 +307,25 @@ function updateDatos(cue) {
 
     $("#alimentacion").text(info.alimentacion);
     $("#iconoAlimentacion").attr("src", "assets/icons/" + alimentacion + ".ico");
-    if (seleccionAlimentacion != "todos"){
+    if (seleccionAlimentacion != "todos") {
         $("#lock-alimentacion").attr("src", "assets/icons/locked.ico");
-    }else{
+    } else {
         $("#lock-alimentacion").attr("src", "assets/icons/unlocked.ico");
     }
-    
+
     $("#medio").text(info.medio);
     $("#iconoMedio").attr("src", "assets/icons/" + medio + ".ico");
-    if (seleccionMedio != "todos"){
+    if (seleccionMedio != "todos") {
         $("#lock-medio").attr("src", "assets/icons/locked.ico");
-    }else{
+    } else {
         $("#lock-medio").attr("src", "assets/icons/unlocked.ico");
     }
 
     $("#esqueleto").text(info.esqueleto);
     $("#iconoEsqueleto").attr("src", "assets/icons/" + esqueleto + ".ico");
-    if (seleccionEsqueleto != "todos"){
+    if (seleccionEsqueleto != "todos") {
         $("#lock-esqueleto").attr("src", "assets/icons/locked.ico");
-    }else{
+    } else {
         $("#lock-esqueleto").attr("src", "assets/icons/unlocked.ico");
     }
 
@@ -388,11 +341,11 @@ function updateDatos(cue) {
 function cargarFiltros() {
 
     //Limpiar filtros anteriores
-    document.getElementById("filtroAnimales").innerHTML="";
-    document.getElementById("filtroAlimentacion").innerHTML="";
-    document.getElementById("filtroMedio").innerHTML="";
-    document.getElementById("filtroEsqueleto").innerHTML="";
-    document.getElementById("filtroContinente").innerHTML="";
+    document.getElementById("filtroAnimales").innerHTML = "";
+    document.getElementById("filtroAlimentacion").innerHTML = "";
+    document.getElementById("filtroMedio").innerHTML = "";
+    document.getElementById("filtroEsqueleto").innerHTML = "";
+    document.getElementById("filtroContinente").innerHTML = "";
 
     var cues = video.textTracks[0].cues;
 
@@ -445,8 +398,28 @@ function crearElementoFiltro(nombre, tipoFiltro) {
     link.appendChild(texto);
     var normalizado = nombre.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     normalizado = normalizado.replace("ver ", "");
-    setAttributes(link, { class: "dropdown-item", href: "#", onclick: "actualizaFiltros(\'" + tipoFiltro + "\', \'" + normalizado + "\');" });
+    var identificador = tipoFiltro + "-" + normalizado;
+    console.log("id filtro: " + identificador);
+
+    var tick = document.createElement("img");
+    var identificadorTick = identificador + "-tick";
+    setAttributes(tick, { id: identificadorTick });
+    //Si es la opción "ver todos" marcar como seleccionada por defecto
+    if (normalizado == "todos") {
+        setAttributes(link, { id: identificador, class: "dropdown-item", href: "#", onclick: "actualizaFiltros(\'" + tipoFiltro + "\', \'" + normalizado + "\');" });
+        //añadir tick
+        setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
+    } else {
+        setAttributes(link, { id: identificador, class: "dropdown-item", href: "#", onclick: "actualizaFiltros(\'" + tipoFiltro + "\', \'" + normalizado + "\');" });
+    }
+
+    var label = document.createElement("label");
+    label.innerHTML = "&nbsp";
+    link.appendChild(label);
+
+    link.appendChild(tick);
     filtro.appendChild(link);
+
     return filtro;
 }
 
@@ -517,4 +490,117 @@ function getNumCue(cue) {
             return i;
         }
     }
+}
+
+function updateTicks() {
+
+    var animales = [];
+    var alimentacion = [];
+    var medio = [];
+    var esqueleto = [];
+    var continente = [];
+
+    var info;
+
+    //Se recorren todos los cues y se añaden todos los filtros disponibles a los arrays
+    for (var i = 0; i < allCues.length; i++) {
+        info = JSON.parse(allCues[i].text);
+        checkArray(animales, info.nombreComun);
+        checkArray(alimentacion, info.alimentacion);
+        checkArray(medio, info.medio);
+        checkArray(esqueleto, info.esqueleto);
+        checkArray(continente, info.continente);
+    }
+
+    //Eliminar todos los ticks || CODIGO ZOMBI :(
+
+    for (var i = 0; i < animales.length; i++) {
+        console.log(animales[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        if (document.getElementById("animales-" + animales[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
+            document.getElementById("animales-" + animales[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
+        }
+        if (document.getElementById("animales-todos-tick") != null) {
+            document.getElementById("animales-todos-tick").remove();
+        }
+    }
+    for (var i = 0; i < alimentacion.length; i++) {
+        console.log(alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        if (document.getElementById("alimentacion-" + alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
+            document.getElementById("alimentacion-" + alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
+        }
+        if (document.getElementById("alimentacion-todos-tick") != null) {
+            document.getElementById("alimentacion-todos-tick").remove();
+        }
+    }
+    for (var i = 0; i < medio.length; i++) {
+        console.log(medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        if (document.getElementById("medio-" + medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
+            document.getElementById("medio-" + medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
+        }
+        if (document.getElementById("medio-todos-tick") != null) {
+            document.getElementById("medio-todos-tick").remove();
+        }
+    }
+    for (var i = 0; i < esqueleto.length; i++) {
+        console.log(esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        if (document.getElementById("esqueleto-" + esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
+            document.getElementById("esqueleto-" + esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
+        }
+        if (document.getElementById("esqueleto-todos-tick") != null) {
+            document.getElementById("esqueleto-todos-tick").remove();
+        }
+    }
+    for (var i = 0; i < continente.length; i++) {
+        console.log(continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        if (document.getElementById("continente-" + continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
+            document.getElementById("continente-" + continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
+        }
+        if (document.getElementById("continente-todos-tick") != null) {
+            document.getElementById("continente-todos-tick").remove();
+        }
+    }
+    //Añadir ticks
+    var link, identificador, tick, identificadorTick;
+
+    link = document.getElementById("animales-" + seleccionAnimal.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+    identificador = "animales-" + seleccionAnimal.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    tick = document.createElement("img");
+    identificadorTick = identificador + "-tick";
+    setAttributes(tick, { id: identificadorTick });
+    setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
+    link.appendChild(tick);
+
+    link = document.getElementById("alimentacion-" + seleccionAlimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+    identificador = "alimentacion-" + seleccionAlimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    tick = document.createElement("img");
+    identificadorTick = identificador + "-tick";
+    setAttributes(tick, { id: identificadorTick });
+    setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
+    link.appendChild(tick);
+
+    link = document.getElementById("medio-" + seleccionMedio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+    identificador = "medio-" + seleccionMedio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    tick = document.createElement("img");
+    identificadorTick = identificador + "-tick";
+    setAttributes(tick, { id: identificadorTick });
+    setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
+    link.appendChild(tick);
+
+    link = document.getElementById("esqueleto-" + seleccionEsqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+    identificador = "esqueleto-" + seleccionEsqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    tick = document.createElement("img");
+    identificadorTick = identificador + "-tick";
+    setAttributes(tick, { id: identificadorTick });
+    setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
+    link.appendChild(tick);
+
+    link = document.getElementById("continente-" + seleccionContinente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+    identificador = "continente-" + seleccionContinente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    tick = document.createElement("img");
+    identificadorTick = identificador + "-tick";
+    setAttributes(tick, { id: identificadorTick });
+    setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
+    link.appendChild(tick);
+
+
 }
