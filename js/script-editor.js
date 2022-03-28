@@ -323,7 +323,6 @@ function botonGuardar() {
         }
     }
 
-
     // Crear nueva cue
     crearCue();
     // Mostrar cue siguiente
