@@ -9,6 +9,11 @@ var seleccionMedio = "todos";
 var seleccionEsqueleto = "todos";
 var seleccionContinente = "todos";
 
+var map;
+var geoJson;
+var geoJson2;
+var casoAmerica;
+
 function loaded() {
     // Inicializacion variable global
     video = document.getElementById("player");
@@ -21,7 +26,7 @@ function loaded() {
     peticionObtenerVideos();
 
     //cargarVideo("assets/animales.mp4");
-    cargarMapa();
+    cargarMapa("todo");
 
 }
 
@@ -142,6 +147,8 @@ function actualizaFiltros(filtro, seleccion) {
                 var info = JSON.parse(allCues[i].text);
                 info = info.nombreComun.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 if (info == seleccion) {
+                    console.log(info)
+                    //cargarMapa(info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
@@ -151,9 +158,10 @@ function actualizaFiltros(filtro, seleccion) {
             //actualizar variable de filtro y saltar al primer animal que cumple con el requisito
             seleccionAlimentacion = seleccion;
             seleccionAnimal = "todos";
-
+            //cargarMapa(allCues[i].continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
+                    console.log(allCues[i])
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
@@ -164,6 +172,7 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
+                    //cargarMapa(allCues[i].continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
@@ -174,6 +183,7 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
+                    //cargarMapa(allCues[i].continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
@@ -184,6 +194,7 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
+                    //cargarMapa(allCues[i].continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
@@ -305,6 +316,8 @@ function updateDatos(cue) {
     var medio = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     var alimentacion = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     var esqueleto = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    updateMapa(continente);
 
     $("#alimentacion").text(info.alimentacion);
     $("#iconoAlimentacion").attr("src", "assets/icons/" + alimentacion + ".ico");
@@ -462,36 +475,117 @@ function peticionObtenerVideos() {
 
 
 //FUNCIONES MAPAS
-function cargarMapa(){
-    var map = L.map('map');
+function cargarMapa(continent) {
 
-	map.createPane('labels');
 
-	// This pane is above markers but below popups
-	map.getPane('labels').style.zIndex = 650;
+    var myGeoJSONPath = 'assets/leaflet/continents.json';
 
-	// Layers in this pane are non-interactive and do not obscure mouse/touch events
-	map.getPane('labels').style.pointerEvents = 'none';
+    $.getJSON(myGeoJSONPath, function (data) {
 
-	var cartodbAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>';
+        map = L.map('map');
+        map.createPane('labels');
 
-	var positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-		attribution: cartodbAttribution
-	}).addTo(map);
+        // This pane is above markers but below popups
+        map.getPane('labels').style.zIndex = 650;
 
-	var positronLabels = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
-		attribution: cartodbAttribution,
-		pane: 'labels'
-	}).addTo(map);
+        // Layers in this pane are non-interactive and do not obscure mouse/touch events
+        map.getPane('labels').style.pointerEvents = 'none';
+        var cartodbAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>';
 
-	/* global euCountries */
-	var geojson = L.geoJson(euCountries).addTo(map);
+        var positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+            attribution: cartodbAttribution
+        }).addTo(map);
 
-	geojson.eachLayer(function (layer) {
-		layer.bindPopup(layer.feature.properties.name);
-	});
+        var positronLabels = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
+            attribution: cartodbAttribution,
+            pane: 'labels'
+        }).addTo(map);
 
-	map.setView({lat: 47.040182144806664, lng: 9.667968750000002}, 4);
+        geoJson = L.geoJson(data, {
+        }).addTo(map);
+
+        geoJson.eachLayer(function (layer) {
+            layer.bindPopup(layer.feature.properties.name);
+        });
+
+        map.setView({ lat: 47.040182144806664, lng: 9.667968750000002 }, 0);
+    })
+
+
+
+}
+
+function updateMapa(continent){
+    var numContinent = 99;
+
+    switch (continent) {
+        case "africa":
+            var numContinent = 1;
+            break;
+        case "asia":
+            var numContinent = 0;
+            break;
+        case "america":
+            var numContinent = 3;
+            break;
+        case "europa":
+            var numContinent = 2;
+            break;
+        case "oceania":
+            var numContinent = 4;
+            break;
+        case "antartida":
+            var numContinent = 99;
+            break;
+        default:
+            var numContinent = 99;
+    }
+
+
+    var myGeoJSONPath = 'assets/leaflet/continents.json';
+
+    $.getJSON(myGeoJSONPath, function (data) {
+        console.log(data["features"]);
+        var newdata;
+
+        map.removeLayer(geoJson);
+        if (casoAmerica){
+            map.removeLayer(geoJson2);
+            casoAmerica = false;
+        }
+        
+
+        if (numContinent != 99) {
+            newdata = data["features"][numContinent];
+        }
+
+        if(numContinent == 3){
+            newdata2 = data["features"][5];
+        }
+
+        geoJson = L.geoJson(newdata, {
+        }).addTo(map);
+
+        if(numContinent == 3){
+            casoAmerica = true;
+            geoJson2 = L.geoJson(newdata2, {
+            }).addTo(map);
+        }
+
+        geoJson.eachLayer(function (layer) {
+            layer.bindPopup(layer.feature.properties.name);
+        });
+
+
+        var info = JSON.parse(cueActual.text);
+        var latitud = info.geoLat;
+        var longitud = info.geoLong;
+        console.log(latitud);
+        console.log(longitud)
+
+        map.setView({ lat: latitud, lng: longitud }, 2);
+    })
+
 }
 
 // FUNCIONES AUXILIARES
