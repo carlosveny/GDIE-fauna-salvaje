@@ -528,6 +528,7 @@ function revisarCamposVacios() {
 // Funcion que muestra los campos de metadatos/subtitulos
 function cambiarTipoMetadatos() {
     $("#metadata-selector").prop("disabled", true);
+    var random = Math.floor(Math.random() * 10000);
     if ($("#metadata-selector").val() == "metadatos") {
         document.getElementById("container-metadatos").style.removeProperty("display");
         document.getElementById("container-subtitulos").remove();
@@ -535,7 +536,7 @@ function cambiarTipoMetadatos() {
         // Cargar fichero de metadatos
         var track1 = document.createElement("track");
         setAttributes(track1, { id: "track", kind: "metadata", label: "Metadatos" });
-        track1.setAttribute("src", pathMetadata);
+        track1.setAttribute("src", pathMetadata + "?" + random);
         track1.addEventListener("load", loadedMetadatos);
         track1.default = true;
         video.appendChild(track1);
@@ -548,7 +549,7 @@ function cambiarTipoMetadatos() {
         // Cargar fichero de metadatos
         var track2 = document.createElement("track");
         setAttributes(track2, { id: "español", kind: "subtitles", label: "Español", srclang: "es" });
-        track2.setAttribute("src", pathSubtitulos1);
+        track2.setAttribute("src", pathSubtitulos1 + "?" + random);
         track2.addEventListener("load", loadedMetadatos);
         track2.default = true;
         video.appendChild(track2);
