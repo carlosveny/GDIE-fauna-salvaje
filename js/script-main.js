@@ -140,6 +140,7 @@ function actualizaFiltros(filtro, seleccion) {
             if (seleccion == "todos") {
                 video.currentTime = 0;
                 video.play();
+                $("#drop-animales").removeClass("filtroActivo");
                 break;
             }
             //saltar al animal directamente
@@ -147,18 +148,24 @@ function actualizaFiltros(filtro, seleccion) {
                 var info = JSON.parse(allCues[i].text);
                 info = info.nombreComun.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 if (info == seleccion) {
-                    console.log(info)
-                    //cargarMapa(info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
+            }
+            if (seleccionAnimal != "todos") {
+                $("#drop-animales").addClass("filtroActivo");
+                $("#drop-alimentacion").removeClass("filtroActivo");
+                $("#drop-medio").removeClass("filtroActivo");
+                $("#drop-esqueleto").removeClass("filtroActivo");
+                $("#drop-continentes").removeClass("filtroActivo");
+            } else {
+                $("#drop-animales").removeClass("filtroActivo");
             }
             break;
         case "alimentacion":
             //actualizar variable de filtro y saltar al primer animal que cumple con el requisito
             seleccionAlimentacion = seleccion;
             seleccionAnimal = "todos";
-            //cargarMapa(allCues[i].continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
                     console.log(allCues[i])
@@ -166,16 +173,27 @@ function actualizaFiltros(filtro, seleccion) {
                     break;
                 }
             }
+            if (seleccionAlimentacion != "todos") {
+                $("#drop-alimentacion").addClass("filtroActivo");
+                $("#drop-animales").removeClass("filtroActivo");
+            } else {
+                $("#drop-alimentacion").removeClass("filtroActivo");
+            }
             break;
         case "medio":
             seleccionMedio = seleccion;
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
-                    //cargarMapa(allCues[i].continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
+            }
+            if (seleccionMedio != "todos") {
+                $("#drop-medio").addClass("filtroActivo");
+                $("#drop-animales").removeClass("filtroActivo");
+            } else {
+                $("#drop-medio").removeClass("filtroActivo");
             }
             break;
         case "esqueleto":
@@ -183,10 +201,15 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
-                    //cargarMapa(allCues[i].continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
+            }
+            if (seleccionEsqueleto != "todos") {
+                $("#drop-esqueleto").addClass("filtroActivo");
+                $("#drop-animales").removeClass("filtroActivo");
+            } else {
+                $("#drop-esqueleto").removeClass("filtroActivo");
             }
             break;
         case "continente":
@@ -194,10 +217,15 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
-                    //cargarMapa(allCues[i].continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase())
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
+            }
+            if (seleccionContinente != "todos") {
+                $("#drop-continentes").addClass("filtroActivo");
+                $("#drop-animales").removeClass("filtroActivo");
+            } else {
+                $("#drop-continentes").removeClass("filtroActivo");
             }
             break;
         default:
@@ -342,12 +370,6 @@ function updateDatos(cue) {
     } else {
         $("#lock-esqueleto").attr("src", "assets/icons/unlocked.ico");
     }
-
-    /* $("#md-geoLat").attr("value", info.geoLat);
-    $("#md-geoLong").attr("value", info.geoLong);
-    $("#md-foto").attr("value", info.foto); */
-
-
 
 }
 

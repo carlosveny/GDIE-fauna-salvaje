@@ -1,11 +1,11 @@
 .icono{
-    height: 30px;
-    width: 30px;
+    max-height: 30px;
+    max-width: 30px;
 }
 
 .lock{
-    height: 25px;
-    width: 25px;
+    max-height: 25px;
+    max-width: 25px;
 }
 
 .seleccionado{
@@ -35,6 +35,10 @@
     max-width: 1425px;
 }
 
+.filtroActivo{
+    background-color: #ddffdd;
+}
+
 #filtros{
     height: 3rem;
 }
@@ -61,4 +65,6 @@
 #mapa{
     height: 200px;
 }
+
+
 
