@@ -105,7 +105,6 @@ function cargarVideo(path) {
             }
         }
     }
-
     // Si solo hay 1 extension
     if ((pathsVideos == null) || (pathsVideos[idx][1] == null)) {
         var ext = "video/mp4";
@@ -134,7 +133,7 @@ function cargarVideo(path) {
     document.getElementById("file-selector").disabled = true;
     document.getElementById("metadata-selector").disabled = false;
 
-    // Cargar fichero de metadatos
+    // Actualizar variables de paths de metadatos para cargarlos posteriormente
     $("#metadata-selector").prop("disabled", false);
     if (path.includes(".mp4")) {
         pathMetadata = path.replace(".mp4", "-metadata.vtt");
@@ -578,7 +577,7 @@ function cambiarTipoMetadatos() {
         document.getElementById("container-subtitulos").style.removeProperty("display");
         document.getElementById("container-metadatos").remove();
 
-        // Cargar fichero de metadatos
+        // Cargar fichero de subtitulos
         var track2 = document.createElement("track");
         setAttributes(track2, { id: "español", kind: "subtitles", label: "Español", srclang: "es" });
         track2.setAttribute("src", pathSubtitulos1 + "?" + random);
