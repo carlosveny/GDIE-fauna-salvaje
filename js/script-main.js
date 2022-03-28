@@ -20,7 +20,7 @@ function loaded() {
     });
     peticionObtenerVideos();
 
-    cargarVideo("assets/animales.mp4");
+    //cargarVideo("assets/animales.mp4");
 
 }
 
@@ -39,15 +39,134 @@ function cargarVideo(path) {
         document.getElementById("alerta-no-video").remove();
     }
 
+    var pathMetadata;
+    var pathSubtitulos1;
+
+    // Cargar fichero de metadatos
+    if (path.includes(".mp4")) {
+        pathMetadata = path.replace(".mp4", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
+    }
+    else {
+        pathMetadata = path.replace(".webm", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
+    }
+
     // Cargar fichero de metadatos
     var track = document.createElement("track");
     setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
-    track.setAttribute("src", "assets/videos/animales-metadata.vtt");
+    track.setAttribute("src", pathMetadata);
+    track.default = true;
+    track.addEventListener("load", loadedMetadatos);
+
+    //Inicialización botones filtros al cargarse los cues
+    track.addEventListener("load", cargarFiltros);
+    video.appendChild(track);
+
+}
+
+function reloadVideo(path){
+    document.getElementById('player').remove();
+    document.getElementById('videotest').innerHTML='<video id="player" class="w-100" playsinline controls data-poster="" ></video>';
+    video = document.getElementById('player');
+
+    // Inicializacion del media player "plyr"
+    const player = new Plyr('#player', {
+        invertTime: false,
+        toggleInvert: false
+    });
+    // Si es un objeto se ha elegido un video existente
+    if ((typeof path) == "object") {
+        path = path.value;
+        console.log(path);
+    }
+
+    // Crear elemento "source"
+    var src = document.createElement("source");
+    setAttributes(src, { id: "video-src", src: path, type: "video/mp4" });
+    video.appendChild(src);
+    if (document.getElementById("alerta-no-video") != null) {
+        document.getElementById("alerta-no-video").remove();
+    }
+
+    var pathMetadata;
+    var pathSubtitulos1;
+
+    // Cargar fichero de metadatos
+    if (path.includes(".mp4")) {
+        pathMetadata = path.replace(".mp4", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
+    }
+    else {
+        pathMetadata = path.replace(".webm", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
+    }
+
+    // Cargar fichero de metadatos
+    var track = document.createElement("track");
+    setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
+    track.setAttribute("src", pathMetadata);
+    track.default = true;
+    track.addEventListener("load", loadedMetadatos);
+
+    //Inicialización botones filtros al cargarse los cues
+    track.addEventListener("load", cargarFiltros);
+    video.appendChild(track);
+
+    //video.load();
+    video.play();
+
+    //VERSION INICIAL
+    /*
+    // Si es un objeto se ha elegido un video existente
+    if ((typeof path) == "object") {
+        path = path.value;
+        console.log(path);
+    }
+    // Modificar elemento "source"
+    video.pause();
+    //console.log("recargando...   ");
+    $("#video-src").attr("src", path);
+    
+    var pathMetadata;
+    var pathSubtitulos1;
+
+    // Cargar fichero de metadatos
+    if (path.includes(".mp4")) {
+        pathMetadata = path.replace(".mp4", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
+    }
+    else {
+        pathMetadata = path.replace(".webm", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
+    }
+
+    console.log(pathMetadata)
+
+    document.getElementById("track").remove();
+
+    // Cargar fichero de metadatos NO FUNCIONA
+    var track = document.createElement("track");
+    setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
+    track.setAttribute("src", pathMetadata);
     track.default = true;
     track.addEventListener("load", loadedMetadatos);
     //Inicialización botones filtros al cargarse los cues
     track.addEventListener("load", cargarFiltros);
     video.appendChild(track);
+
+     // Recargar fichero de metadatos
+    //$("#track").attr("src", pathMetadata);
+    //document.getElementById("track").addEventListener("load", loadedMetadatos);
+    //Inicialización botones filtros al cargarse los cues
+    //document.getElementById("track").addEventListener("load", cargarFiltros); 
+
+    video.load();
+    video.play();
+    console.log("nuevos text tracks")
+    console.log(video.textTracks[0].cues);
+    */
+
 
 }
 
@@ -118,7 +237,10 @@ function actualizaFiltros(filtro, seleccion) {
             }
             break;
         default:
+            //en este caso "filtro" no contiene el tipo de filtro sino el path del video
+            //para mantener mayúsculas y extensión del video
             console.log("es un video");
+            reloadVideo(filtro);
     }
 }
 
@@ -178,7 +300,8 @@ function cumpleFiltros(numCue) {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
-
+    console.log("loaded metadatos")
+    console.log(video.textTracks[0].cues);
     // Configurar los eventos de los metadatos
     var cues = video.textTracks[0].cues;
     allCues = cues;
@@ -264,6 +387,13 @@ function updateDatos(cue) {
 //Función que carga los filtros disponibles en la página principal según los datos del fichero .vtt
 function cargarFiltros() {
 
+    //Limpiar filtros anteriores
+    document.getElementById("filtroAnimales").innerHTML="";
+    document.getElementById("filtroAlimentacion").innerHTML="";
+    document.getElementById("filtroMedio").innerHTML="";
+    document.getElementById("filtroEsqueleto").innerHTML="";
+    document.getElementById("filtroContinente").innerHTML="";
+
     var cues = video.textTracks[0].cues;
 
     var animales = [];
@@ -348,9 +478,11 @@ function peticionObtenerVideos() {
                 nombre = nombre.replace(".ogg", "");
                 nombre = nombre.replace(".webm", "");
                 nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
-                filtro = crearElementoFiltro(nombre);
+                filtro = crearElementoFiltro(nombre, paths[i]);
                 document.getElementById("filtroVideos").appendChild(filtro);
             }
+            //Por defecto carga el primer video
+            cargarVideo(paths[0]);
         });
 }
 
