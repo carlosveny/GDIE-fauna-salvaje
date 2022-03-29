@@ -412,7 +412,7 @@ function loadedMetadatos() {
     video.play();
     setTimeout(() => {
         video.pause();
-    }, 10);
+    }, 50);
 
     // Habilitar y generar dropdown "irACue"
     $("#cue-selector").prop("disabled", false);
