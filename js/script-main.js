@@ -75,7 +75,8 @@ function cargarVideo(path) {
     // Cargar fichero de metadatos
     var track = document.createElement("track");
     setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
-    track.setAttribute("src", pathMetadata);
+    var random = Math.random();
+    track.setAttribute("src", pathMetadata + "?" + random); //Añadido ? + random cortesía de carlos
     track.default = true;
     track.addEventListener("load", loadedMetadatos);
 
@@ -330,7 +331,7 @@ function cumpleFiltros(numCue) {
     //console.log(cues.length)
     if (cues.length <= numCue) {
         video.pause();
-        return true;
+        return false;
     }
 
     var cue = cues[numCue];
@@ -375,7 +376,15 @@ function loadedMetadatos() {
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
             if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
                 var tiempo = siguienteCue(getNumCue(cueActual));
-                video.currentTime = tiempo;
+                if (tiempo != null){
+                    video.currentTime = tiempo;
+                }else{
+                    console.log("alerta")
+                    var descr = "Se han visualizado todos los animales que cumplen estos filtros"
+                    crearAviso("alert-success", "Completado:", descr, 4000);
+                    video.pause();
+                }
+                
             }
 
             // Si justo empieza otra cue
@@ -706,6 +715,7 @@ function updateMapa(continent) {
         });
 
         var info = JSON.parse(cueActual.text);
+        console.log(cueActual);
         var latitud = info.geoLat;
         var longitud = info.geoLong;
         console.log(latitud);
@@ -779,7 +789,7 @@ function updateTicks() {
     //Eliminar todos los ticks || CODIGO ZOMBI :(
 
     for (var i = 0; i < animales.length; i++) {
-        console.log(animales[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        //console.log(animales[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         if (document.getElementById("animales-" + animales[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("animales-" + animales[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
@@ -788,7 +798,7 @@ function updateTicks() {
         document.getElementById("animales-todos-tick").remove();
     }
     for (var i = 0; i < alimentacion.length; i++) {
-        console.log(alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        //console.log(alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         if (document.getElementById("alimentacion-" + alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("alimentacion-" + alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
@@ -797,7 +807,7 @@ function updateTicks() {
         document.getElementById("alimentacion-todos-tick").remove();
     }
     for (var i = 0; i < medio.length; i++) {
-        console.log(medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        //console.log(medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         if (document.getElementById("medio-" + medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("medio-" + medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
@@ -806,7 +816,7 @@ function updateTicks() {
         document.getElementById("medio-todos-tick").remove();
     }
     for (var i = 0; i < esqueleto.length; i++) {
-        console.log(esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        //console.log(esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         if (document.getElementById("esqueleto-" + esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("esqueleto-" + esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
@@ -815,7 +825,7 @@ function updateTicks() {
         document.getElementById("esqueleto-todos-tick").remove();
     }
     for (var i = 0; i < continente.length; i++) {
-        console.log(continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
+        //console.log(continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         if (document.getElementById("continente-" + continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("continente-" + continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
