@@ -101,7 +101,7 @@ function reloadVideo(path) {
     var src = document.createElement("source");
     setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
     video.appendChild(src);
-    
+
     // Crear elemento "source" con webm
     var src2 = document.createElement("source");
     setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
@@ -502,7 +502,7 @@ function peticionObtenerVideos() {
                 nombre = nombre.replace(".webm", "");
                 nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
                 var actualizado = checkArray(nombresVideos, nombre);
-                if (actualizado){
+                if (actualizado) {
                     pathsVideos.push(paths[i]);
                 }
             }
@@ -561,7 +561,7 @@ function cargarMapa(continent) {
 
 }
 
-function updateMapa(continent){
+function updateMapa(continent) {
     var numContinent = 99;
 
     switch (continent) {
@@ -595,24 +595,24 @@ function updateMapa(continent){
         var newdata;
 
         map.removeLayer(geoJson);
-        if (casoAmerica){
+        if (casoAmerica) {
             map.removeLayer(geoJson2);
             casoAmerica = false;
         }
-        
+
 
         if (numContinent != 99) {
             newdata = data["features"][numContinent];
         }
 
-        if(numContinent == 3){
+        if (numContinent == 3) {
             newdata2 = data["features"][5];
         }
 
         geoJson = L.geoJson(newdata, {
         }).addTo(map);
 
-        if(numContinent == 3){
+        if (numContinent == 3) {
             casoAmerica = true;
             geoJson2 = L.geoJson(newdata2, {
             }).addTo(map);
@@ -697,45 +697,45 @@ function updateTicks() {
         if (document.getElementById("animales-" + animales[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("animales-" + animales[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
-        if (document.getElementById("animales-todos-tick") != null) {
-            document.getElementById("animales-todos-tick").remove();
-        }
+    }
+    if (document.getElementById("animales-todos-tick") != null) {
+        document.getElementById("animales-todos-tick").remove();
     }
     for (var i = 0; i < alimentacion.length; i++) {
         console.log(alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         if (document.getElementById("alimentacion-" + alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("alimentacion-" + alimentacion[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
-        if (document.getElementById("alimentacion-todos-tick") != null) {
-            document.getElementById("alimentacion-todos-tick").remove();
-        }
+    }
+    if (document.getElementById("alimentacion-todos-tick") != null) {
+        document.getElementById("alimentacion-todos-tick").remove();
     }
     for (var i = 0; i < medio.length; i++) {
         console.log(medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         if (document.getElementById("medio-" + medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("medio-" + medio[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
-        if (document.getElementById("medio-todos-tick") != null) {
-            document.getElementById("medio-todos-tick").remove();
-        }
+    }
+    if (document.getElementById("medio-todos-tick") != null) {
+        document.getElementById("medio-todos-tick").remove();
     }
     for (var i = 0; i < esqueleto.length; i++) {
         console.log(esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         if (document.getElementById("esqueleto-" + esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("esqueleto-" + esqueleto[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
-        if (document.getElementById("esqueleto-todos-tick") != null) {
-            document.getElementById("esqueleto-todos-tick").remove();
-        }
+    }
+    if (document.getElementById("esqueleto-todos-tick") != null) {
+        document.getElementById("esqueleto-todos-tick").remove();
     }
     for (var i = 0; i < continente.length; i++) {
         console.log(continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase());
         if (document.getElementById("continente-" + continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick") != null) {
             document.getElementById("continente-" + continente[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() + "-tick").remove();
         }
-        if (document.getElementById("continente-todos-tick") != null) {
-            document.getElementById("continente-todos-tick").remove();
-        }
+    }
+    if (document.getElementById("continente-todos-tick") != null) {
+        document.getElementById("continente-todos-tick").remove();
     }
     //Añadir ticks
     var link, identificador, tick, identificadorTick;
