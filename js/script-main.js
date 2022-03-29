@@ -12,7 +12,10 @@ var seleccionContinente = "todos";
 var map;
 var geoJson;
 var geoJson2;
-var casoAmerica;
+var casoAmerica; //booleana, true si se marca América en el mapa
+var pinAnimal; 
+//                      Africa                      Asia                        America                      Europa                      Oceania                       Antártida
+var centroContinentes = [["2.089165", "23.420877"], ["32.833621", "90.013133"], ["14.585737", "-85.387716"], ["56.625777", "29.137090"], ["-27.718539", "142.608864"], ["-75.775488", "38.663171"]];
 
 function loaded() {
     // Inicializacion variable global
@@ -537,7 +540,11 @@ function peticionObtenerVideos() {
 }
 
 
-//FUNCIONES MAPAS
+/* ---------------------------------------------------------------------------- */
+
+//FUNCIONES MAPA
+
+//Función que carga e inicializa el mapa con todos los continentes marcados y el mínimo de zoom
 function cargarMapa(continent) {
     var myGeoJSONPath = 'assets/leaflet/continents.json';
 
@@ -573,38 +580,58 @@ function cargarMapa(continent) {
     })
 }
 
+//Función que actualiza el mapa marcando el continente del animal actual (Antartida no implementado a falta de coordenadas)
 function updateMapa(continent) {
+    var latitudCentro, longitudCentro;
     var numContinent = 99;
+    //Se selecciona el índice correspondiente para acceder a las coordenadas del continente seleccionado
     switch (continent) {
         case "africa":
             var numContinent = 1;
+            latitudCentro = centroContinentes[0][0];
+            longitudCentro = centroContinentes[0][1];
             break;
         case "asia":
             var numContinent = 0;
+            latitudCentro = centroContinentes[1][0];
+            longitudCentro = centroContinentes[1][1];
             break;
         case "america":
             var numContinent = 3;
+            latitudCentro = centroContinentes[2][0];
+            longitudCentro = centroContinentes[2][1];
             break;
         case "europa":
             var numContinent = 2;
+            latitudCentro = centroContinentes[3][0];
+            longitudCentro = centroContinentes[3][1];
             break;
         case "oceania":
             var numContinent = 4;
+            latitudCentro = centroContinentes[4][0];
+            longitudCentro = centroContinentes[4][1];
             break;
         case "antartida":
-            var numContinent = 99;
+            var numContinent = 6;
+            latitudCentro = centroContinentes[5][0];
+            longitudCentro = centroContinentes[5][1];
             break;
         default:
             var numContinent = 99;
     }
-
-
+    //path de los datos de fronteras de los continentes
     var myGeoJSONPath = 'assets/leaflet/continents.json';
 
     $.getJSON(myGeoJSONPath, function (data) {
-        console.log(data["features"]);
+        //console.log(data["features"]);
         var newdata;
 
+        //Se elimina el pin actual
+        if (pinAnimal != null){
+            map.removeLayer(pinAnimal);
+        }
+
+        //Se eliminan las zonas marcadas anteriormente
         map.removeLayer(geoJson);
         if (casoAmerica) {
             map.removeLayer(geoJson2);
@@ -617,9 +644,11 @@ function updateMapa(continent) {
             newdata2 = data["features"][5];
         }
 
+        //Se añade al mapa la zona que tiene que ser marcada
         geoJson = L.geoJson(newdata, {
         }).addTo(map);
 
+        //En el caso que el contiente sea América hay que marcar tanto norteamerica y sudamerica
         if (numContinent == 3) {
             casoAmerica = true;
             geoJson2 = L.geoJson(newdata2, {
@@ -630,6 +659,13 @@ function updateMapa(continent) {
             layer.bindPopup(layer.feature.properties.name);
         });
 
+        //Se marca con un pin la longitud y latitud del ficher vtt
+        var pinIcon = L.icon({
+            iconUrl: 'assets/icons/pin.ico',
+            iconSize:     [40, 40], // size of the icon
+            iconAnchor:   [20, 40], // point of the icon which will correspond to marker's location
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+        });
 
         var info = JSON.parse(cueActual.text);
         var latitud = info.geoLat;
@@ -637,7 +673,11 @@ function updateMapa(continent) {
         console.log(latitud);
         console.log(longitud)
 
-        map.setView({ lat: latitud, lng: longitud }, 2);
+        pinAnimal = L.marker([latitud, longitud], {icon: pinIcon}).addTo(map);
+
+        //Se posiciona la vista en el centro del continente
+        
+        map.setView({ lat: latitudCentro, lng: longitudCentro }, 2);
     })
 
 }
