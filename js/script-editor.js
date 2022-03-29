@@ -403,6 +403,10 @@ function botonGuardar() {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
+    // Evitar errores
+    video.play();
+    video.pause();
+
     // Habilitar y generar dropdown "irACue"
     $("#cue-selector").prop("disabled", false);
     actualizarDropdownCues();
