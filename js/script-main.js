@@ -13,7 +13,7 @@ var map;
 var geoJson;
 var geoJson2;
 var casoAmerica; //booleana, true si se marca América en el mapa
-var pinAnimal; 
+var pinAnimal;
 //                      Africa                      Asia                        America                      Europa                      Oceania                       Antártida
 var centroContinentes = [["2.089165", "23.420877"], ["32.833621", "90.013133"], ["14.585737", "-85.387716"], ["56.625777", "29.137090"], ["-27.718539", "142.608864"], ["-75.775488", "38.663171"]];
 
@@ -151,7 +151,8 @@ function reloadVideo(path) {
 
 //Funcion que actualiza los cues que se van a mostrar según los filtros activos
 function actualizaFiltros(filtro, seleccion) {
-    console.log("filtro: " + filtro + " selección: " + seleccion);
+    //console.log("filtro: " + filtro + " selección: " + seleccion);
+    var combinacionPosible = false;
     switch (filtro) {
         /* case "video":
              break;*/
@@ -193,11 +194,19 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
-                    console.log(allCues[i])
+                    combinacionPosible = true;
+                    //console.log(allCues[i])
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
             }
+
+            if (!combinacionPosible) {
+                seleccionAlimentacion = "todos";
+                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+
             if (seleccionAlimentacion != "todos") {
                 $("#drop-alimentacion").addClass("filtroActivo");
                 $("#drop-animales").removeClass("filtroActivo");
@@ -210,10 +219,18 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
+                    combinacionPosible = true;
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
             }
+
+            if (!combinacionPosible) {
+                seleccionMedio = "todos";
+                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+
             if (seleccionMedio != "todos") {
                 $("#drop-medio").addClass("filtroActivo");
                 $("#drop-animales").removeClass("filtroActivo");
@@ -226,10 +243,18 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
+                    combinacionPosible = true;
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
             }
+
+            if (!combinacionPosible) {
+                seleccionEsqueleto = "todos";
+                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+
             if (seleccionEsqueleto != "todos") {
                 $("#drop-esqueleto").addClass("filtroActivo");
                 $("#drop-animales").removeClass("filtroActivo");
@@ -242,10 +267,18 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
+                    combinacionPosible = true;
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
             }
+
+            if (!combinacionPosible) {
+                seleccionContinente = "todos";
+                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+
             if (seleccionContinente != "todos") {
                 $("#drop-continentes").addClass("filtroActivo");
                 $("#drop-animales").removeClass("filtroActivo");
@@ -577,6 +610,11 @@ function cargarMapa(continent) {
         });
 
         map.setView({ lat: 47.040182144806664, lng: 9.667968750000002 }, 0);
+
+
+        //Añadir pins en todos los animales disponibles (pendiente)
+
+
     })
 }
 
@@ -627,7 +665,7 @@ function updateMapa(continent) {
         var newdata;
 
         //Se elimina el pin actual
-        if (pinAnimal != null){
+        if (pinAnimal != null) {
             map.removeLayer(pinAnimal);
         }
 
@@ -662,9 +700,9 @@ function updateMapa(continent) {
         //Se marca con un pin la longitud y latitud del ficher vtt
         var pinIcon = L.icon({
             iconUrl: 'assets/icons/pin.ico',
-            iconSize:     [40, 40], // size of the icon
-            iconAnchor:   [20, 40], // point of the icon which will correspond to marker's location
-            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+            iconSize: [40, 40], // size of the icon
+            iconAnchor: [20, 40], // point of the icon which will correspond to marker's location
+            popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
 
         var info = JSON.parse(cueActual.text);
@@ -673,10 +711,10 @@ function updateMapa(continent) {
         console.log(latitud);
         console.log(longitud)
 
-        pinAnimal = L.marker([latitud, longitud], {icon: pinIcon}).addTo(map);
+        pinAnimal = L.marker([latitud, longitud], { icon: pinIcon }).addTo(map);
 
         //Se posiciona la vista en el centro del continente
-        
+
         map.setView({ lat: latitudCentro, lng: longitudCentro }, 2);
     })
 
@@ -827,4 +865,35 @@ function updateTicks() {
     setAttributes(tick, { id: identificadorTick });
     setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
     link.appendChild(tick);
+}
+
+// Funcion que crea un aviso de bootstrap dado el tipo, titulo y descripcion
+// tipo: alert-danger, alert-warning, alert-success. (Clases de Bootstrap)
+function crearAviso(tipo, titulo, descr, tiempo) {
+    // Crear aviso
+    var aviso = document.createElement("div");
+    aviso.classList.add("myAlert-top", "alert", "alert-dismissible", "fade", "show", tipo);
+    aviso.innerHTML = "<strong>" + titulo + " </strong>" + descr;
+    var cerrar = document.createElement("button");
+    cerrar.setAttribute("type", "button");
+    cerrar.classList.add("btn-close");
+    cerrar.setAttribute("data-bs-dismiss", "alert");
+    cerrar.setAttribute("aria-label", "Close");
+
+    // Append
+    aviso.appendChild(cerrar);
+    document.getElementById("cuerpo").appendChild(aviso);
+
+    // Mostrar y ocultar tras X segundos
+    $(".myAlert-top").show();
+    if (tiempo > 0) {
+        setTimeout(function () {
+            // Quitar aviso
+            $(".myAlert-top").hide();
+            const boxes = document.querySelectorAll('.myAlert-top');
+            boxes.forEach(box => {
+                box.remove();
+            });
+        }, tiempo);
+    }
 }

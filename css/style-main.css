@@ -39,6 +39,26 @@
     background-color: #ddffdd;
 }
 
+.greenHighlight{
+    color: green;
+}
+
+.greenHighlight:hover{
+    color: lawngreen;
+}
+
+.abajo{
+    text-align: center;
+}
+
+/* Aviso flotante (https://codepen.io/Dinamo/pen/rNVOZmr) */
+.myAlert-top{
+    position: fixed;
+    top: 90px; 
+    left: 25%;
+    width: 50%;
+  }
+
 #filtros{
     height: 3rem;
 }
@@ -57,14 +77,26 @@
     margin-right: 5px;
 }
 
+#bottom-container{
+    min-height: 200px;
+    height: 250px;
+    max-height: 300px;
+}
+
 #quiz{
-    margin-right: 5px;
-    height: 200px;
+    margin-right: 30px;
 }
 
-#mapa{
-    height: 200px;
+#gitFooter{
+    font-size: 20px;
 }
 
+#faunaFooter{
+    font-size: 30px;
+}
+
+#footer{
+    margin-top: 150px;
+}
 
 
