@@ -9,6 +9,9 @@ var seleccionMedio = "todos";
 var seleccionEsqueleto = "todos";
 var seleccionContinente = "todos";
 
+var usadoFiltro = false;
+var seguirReproduccion = true;
+
 var map;
 var geoJson;
 var geoJson2;
@@ -27,6 +30,10 @@ function loaded() {
         toggleInvert: false
     });
     peticionObtenerVideos();
+
+    video.onseeked = function () {
+        clearFiltros();
+    };
 
     //cargarVideo("assets/animales.mp4");
     cargarMapa("todo");
@@ -152,6 +159,7 @@ function reloadVideo(path) {
 
 //Funcion que actualiza los cues que se van a mostrar según los filtros activos
 function actualizaFiltros(filtro, seleccion) {
+    usadoFiltro = true;
     //console.log("filtro: " + filtro + " selección: " + seleccion);
     var combinacionPosible = false;
     switch (filtro) {
@@ -196,6 +204,7 @@ function actualizaFiltros(filtro, seleccion) {
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
                     combinacionPosible = true;
+                    seguirReproduccion = true;
                     //console.log(allCues[i])
                     video.currentTime = allCues[i].startTime;
                     break;
@@ -221,6 +230,7 @@ function actualizaFiltros(filtro, seleccion) {
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
                     combinacionPosible = true;
+                    seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
@@ -245,6 +255,7 @@ function actualizaFiltros(filtro, seleccion) {
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
                     combinacionPosible = true;
+                    seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
@@ -269,6 +280,7 @@ function actualizaFiltros(filtro, seleccion) {
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
                     combinacionPosible = true;
+                    seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
                     break;
                 }
@@ -305,6 +317,32 @@ function actualizaFiltros(filtro, seleccion) {
             reloadVideo(filtro);
     }
     updateTicks();
+
+}
+
+//Funcion que borra todos los filtros
+function clearFiltros() {
+    //Si se ha entrado en la función por la selección de un filtro no borra nada
+    //en caso contrario significa que el usuario ha tocado la barra de reproducción
+    if (!usadoFiltro) {
+        console.log("clear");
+
+        $("#drop-animales").removeClass("filtroActivo");
+        $("#drop-alimentacion").removeClass("filtroActivo");
+        $("#drop-medio").removeClass("filtroActivo");
+        $("#drop-esqueleto").removeClass("filtroActivo");
+        $("#drop-continentes").removeClass("filtroActivo");
+
+        seleccionAlimentacion = "todos";
+        seleccionMedio = "todos";
+        seleccionEsqueleto = "todos";
+        seleccionContinente = "todos";
+        seleccionAnimal = "todos";
+
+        updateTicks();
+    }
+    usadoFiltro = false;
+
 }
 
 //devuelve el tiempo para el siguiente cue que cumpla los filtros
@@ -376,15 +414,19 @@ function loadedMetadatos() {
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
             if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
                 var tiempo = siguienteCue(getNumCue(cueActual));
-                if (tiempo != null){
+                if (tiempo != null) {
                     video.currentTime = tiempo;
-                }else{
-                    console.log("alerta")
-                    var descr = "Se han visualizado todos los animales que cumplen estos filtros"
-                    crearAviso("alert-success", "Completado:", descr, 4000);
-                    video.pause();
+                } else {
+                    if (seguirReproduccion) {
+                        console.log("seguir reproduccion");
+                    } else {
+                        console.log("alerta")
+                        var descr = "Se han visualizado todos los animales que cumplen estos filtros"
+                        crearAviso("alert-success", "Completado:", descr, 4000);
+                        video.pause();
+                    }
+                    seguirReproduccion = false;
                 }
-                
             }
 
             // Si justo empieza otra cue
@@ -715,11 +757,10 @@ function updateMapa(continent) {
         });
 
         var info = JSON.parse(cueActual.text);
-        console.log(cueActual);
         var latitud = info.geoLat;
         var longitud = info.geoLong;
-        console.log(latitud);
-        console.log(longitud)
+        //console.log(latitud);
+        //console.log(longitud)
 
         pinAnimal = L.marker([latitud, longitud], { icon: pinIcon }).addTo(map);
 
