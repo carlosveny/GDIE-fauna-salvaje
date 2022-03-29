@@ -27,7 +27,6 @@ function loaded() {
 
     //cargarVideo("assets/animales.mp4");
     cargarMapa("todo");
-
 }
 
 function cargarVideo(path) {
@@ -149,7 +148,6 @@ function reloadVideo(path) {
 
 //Funcion que actualiza los cues que se van a mostrar según los filtros activos
 function actualizaFiltros(filtro, seleccion) {
-
     console.log("filtro: " + filtro + " selección: " + seleccion);
     switch (filtro) {
         /* case "video":
@@ -253,9 +251,20 @@ function actualizaFiltros(filtro, seleccion) {
             }
             break;
         default:
+            $("#drop-animales").removeClass("filtroActivo");
+            $("#drop-alimentacion").removeClass("filtroActivo");
+            $("#drop-medio").removeClass("filtroActivo");
+            $("#drop-esqueleto").removeClass("filtroActivo");
+            $("#drop-continentes").removeClass("filtroActivo");
+
+            seleccionAlimentacion = "todos";
+            seleccionMedio = "todos";
+            seleccionEsqueleto = "todos";
+            seleccionContinente = "todos";
+            seleccionAnimal = "todos";
+
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
-            console.log("es un video");
             reloadVideo(filtro);
     }
     updateTicks();
@@ -306,10 +315,6 @@ function cumpleFiltros(numCue) {
     //console.log("no cumple filtro")
     return false;
 }
-
-
-
-
 
 /* ---------------------------------------------------------------------------- */
 
@@ -397,7 +402,6 @@ function updateDatos(cue) {
     } else {
         $("#lock-esqueleto").attr("src", "assets/icons/unlocked.ico");
     }
-
 }
 
 //Función que carga los filtros disponibles en la página principal según los datos del fichero .vtt
@@ -435,8 +439,6 @@ function cargarFiltros() {
     cargarDesplegable(medio, "filtroMedio");
     cargarDesplegable(esqueleto, "filtroEsqueleto");
     cargarDesplegable(continente, "filtroContinente");
-
-
 }
 
 function cargarDesplegable(array, id) {
@@ -537,8 +539,6 @@ function peticionObtenerVideos() {
 
 //FUNCIONES MAPAS
 function cargarMapa(continent) {
-
-
     var myGeoJSONPath = 'assets/leaflet/continents.json';
 
     $.getJSON(myGeoJSONPath, function (data) {
@@ -571,14 +571,10 @@ function cargarMapa(continent) {
 
         map.setView({ lat: 47.040182144806664, lng: 9.667968750000002 }, 0);
     })
-
-
-
 }
 
 function updateMapa(continent) {
     var numContinent = 99;
-
     switch (continent) {
         case "africa":
             var numContinent = 1;
@@ -614,12 +610,9 @@ function updateMapa(continent) {
             map.removeLayer(geoJson2);
             casoAmerica = false;
         }
-
-
         if (numContinent != 99) {
             newdata = data["features"][numContinent];
         }
-
         if (numContinent == 3) {
             newdata2 = data["features"][5];
         }
@@ -794,6 +787,4 @@ function updateTicks() {
     setAttributes(tick, { id: identificadorTick });
     setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
     link.appendChild(tick);
-
-
 }
