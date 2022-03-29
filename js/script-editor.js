@@ -51,13 +51,15 @@ function loaded() {
     document.getElementById("file-input-div").appendChild(input);
     $("#file-input").prop("disabled", true);
 
-    // Inicializacion del dropdown "Video Existente"
+    // Inicializacion dropdown "Video Existente"
     peticionObtenerVideos();
     $("#file-selector").prop("disabled", true);
 
-    // Inicializacion dropdown de tipo de datos
-    //$("#metadata-selector").prop("disabled", true);
+    // Inicializacion dropdowns "tipo de datos" y "moverACue"
     $("#metadata-selector").val("default");
+    $("#metadata-selector").prop("disabled", true);
+    $("#cue-selector").val("default");
+    $("#cue-selector").prop("disabled", true);
 
     // Desmarcar botones
     $("#bt-inicio").prop("disabled", true);
@@ -131,7 +133,6 @@ function cargarVideo(path) {
     // Deshabilitar la seleccion de nuevos videos
     document.getElementById("file-input").disabled = true;
     document.getElementById("file-selector").disabled = true;
-    document.getElementById("metadata-selector").disabled = false;
 
     // Actualizar variables de paths de metadatos para cargarlos posteriormente
     $("#metadata-selector").prop("disabled", false);
@@ -154,7 +155,15 @@ function cargarVideo(path) {
             habilitarInputs(true);
         }
         else {
-            habilitarInputs(false);
+            var cueActual = video.textTracks[0].activeCues[0];
+            if (cueActual != null && video.paused) {
+                habilitarInputs(true);
+                $("#bt-inicio").prop("disabled", true);
+                $("#bt-fin").prop("disabled", true);
+                $("#bt-eliminar").prop("disabled", false);
+                $("#bt-guardar").prop("disabled", true);
+            }
+            else habilitarInputs(false);
         }
     });
 }
@@ -251,6 +260,41 @@ function habilitarInputs(enable) {
     $("#md-foto").prop("disabled", !enable);
 }
 
+// Funcion que actualiza el dropdown con el listado de las cues existentes
+function actualizarDropdownCues() {
+    // Borrar opciones actuales
+    var select = document.getElementById("cue-selector");
+    while (select.lastChild.value != "default") {
+        select.removeChild(select.lastChild);
+    }
+
+    // Crear nuevas opciones
+    var cues = video.textTracks[0].cues;
+    console.log(cues);
+    var select = document.getElementById("cue-selector");
+    for (var i = 0; i < cues.length; i++) {
+        // Guardar startTime y poner el titulo (id o parte del subtitulo)
+        var option = document.createElement("option");
+        option.setAttribute("value", cues[i].startTime + 0.1);
+        var time = formatSeconds(cues[i].startTime, false);
+        if (subtitulos) {
+            var subt = cues[i].text.substring(0, 9) + "...";
+            option.innerHTML = "[" + time + "] " + subt;
+        }
+        else {
+            var time
+            option.innerHTML = "[" + time + "] " + cues[i].id;
+        }
+        select.appendChild(option);
+    }
+}
+
+// Funcion que posiciona el video en el momento de una cue
+function irACue(time) {
+    video.currentTime = time.value;
+    $("#cue-selector").val("default");
+}
+
 /* ---------------------------------------------------------------------------- */
 
 // FUNCIONES REFERENTES A BOTONES (set inicio, final, eliminar, guardar y subir al servidor)
@@ -296,8 +340,9 @@ function botonEliminar() {
     // Obtener cue actual
     var activeCues = video.textTracks[0].activeCues;
 
-    // Borrar cue del text track
+    // Borrar cue del text track y actualizar dropdown de cues
     video.textTracks[0].removeCue(activeCues[0]);
+    actualizarDropdownCues();
 
     // Dejar los campos en blanco
     borrarCampos();
@@ -323,8 +368,10 @@ function botonGuardar() {
         }
     }
 
-    // Crear nueva cue
+    // Crear nueva cue y actualizar dropdown de cues
     crearCue();
+    actualizarDropdownCues();
+
     // Mostrar cue siguiente
     if (cueProximo != null) {
         // Quitar aviso
@@ -356,8 +403,10 @@ function botonGuardar() {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
+    // Habilitar y generar dropdown "irACue"
+    $("#cue-selector").prop("disabled", false);
+    actualizarDropdownCues();
 
-    console.log(video.textTracks);
     // Dejar todos los campos en blanco
     borrarCampos();
 
@@ -630,6 +679,15 @@ function peticionObtenerVideos() {
 
 // Funcion que sube un video al servidor
 function peticionSubirVideo() {
+    // Revisar la extension (por si tiene mayusculas)
+    var name = document.getElementById("file-input").files[0].name;
+    if ((!name.includes(".mp4")) && (!name.includes(".webm"))) {
+        var descr = "El vídeo seleccionado no tiene el formato adecuado (.mp4 o .webm).";
+        descr = descr + " Revisa las mayúsculas.";
+        crearAviso("alert-danger", "Error:", descr, 4000);
+        return;
+    }
+
     pathsVideos = null; // Para evitar errores al cargar el path
     // Mostrar aviso de cargando
     crearAviso("alert-info", "Info:", "Se está subiendo el archivo. Espera por favor.", 0);
@@ -764,7 +822,6 @@ function peticionLogin() {
             }
             // Contraseña correcta
             else {
-                console.log(data);
                 document.getElementById("parent").remove();
                 var descr = "Credenciales aceptadas. Ya puedes empezar a editar!"
                 crearAviso("alert-success", "Éxito:", descr, 4000);
@@ -800,12 +857,14 @@ function replaceAll(str, find, replace) {
 
 // Funcion para formatear el tiempo en minutos y segundos
 // https://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
-function formatSeconds(time) {
+function formatSeconds(time, mil) {
     //1:43.000
-    // console.log(Math.floor(time % 60))
     var minutes = ("0" + Math.floor(time / 60)).slice(-2);
     var seconds = ('0' + Math.floor(time % 60)).slice(-2);
     var milis = ("00" + (parseInt((time % 1) * 1000))).slice(-3);
+    if (mil != null) {
+        return minutes + ':' + seconds;
+    }
     return minutes + ':' + seconds + "." + milis;
 }
 
