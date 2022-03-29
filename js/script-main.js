@@ -37,13 +37,25 @@ function cargarVideo(path) {
         console.log(path);
     }
 
-    // Crear elemento "source"
-    var src = document.createElement("source");
-    setAttributes(src, { id: "video-src", src: path, type: "video/mp4" });
-    video.appendChild(src);
-    if (document.getElementById("alerta-no-video") != null) {
-        document.getElementById("alerta-no-video").remove();
+    var pathMP4, pathWebm;
+    if (path.includes(".mp4")) {
+        pathMP4 = path;
+        pathWebm = path.replace("mp4", "webm");
     }
+    else {
+        pathWebm = path;
+        pathMP4 = path.replace("webm", "mp4");
+    }
+
+    // Crear elemento "source" con MP4
+    var src = document.createElement("source");
+    setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
+    video.appendChild(src);
+
+    // Crear elemento "source" con webm
+    var src2 = document.createElement("source");
+    setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
+    video.appendChild(src2);
 
     var pathMetadata;
     var pathSubtitulos1;
@@ -315,6 +327,9 @@ function loadedMetadatos() {
             updateDatos(event.target);
         });
         cues[i].addEventListener('exit', event => {
+            seleccionAnimal = "todos";
+            updateTicks();
+            $("#drop-animales").removeClass("filtroActivo");
             var activeCue = video.textTracks[0].activeCues[0];
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
             if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
