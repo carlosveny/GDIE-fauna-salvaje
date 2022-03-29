@@ -1,17 +1,25 @@
+/* ---------------------------------------------------------------------------- */
 
+
+/* ---------------------------------------------------------------------------- */
+
+//GLOBAL
 var video; // objeto de video
 var cueActual; // VTTCue actual
 var allCues; //Cues del video actual
 
+//Control filtros
 var seleccionAnimal = "todos";
 var seleccionAlimentacion = "todos";
 var seleccionMedio = "todos";
 var seleccionEsqueleto = "todos";
 var seleccionContinente = "todos";
 
+//Gestión funcionalidad filtros
 var usadoFiltro = false;
 var seguirReproduccion = true;
 
+//Gestión mapa
 var map;
 var geoJson;
 var geoJson2;
@@ -20,6 +28,12 @@ var pinAnimal;
 //                      Africa                      Asia                        America                      Europa                      Oceania                       Antártida
 var centroContinentes = [["2.089165", "23.420877"], ["32.833621", "90.013133"], ["14.585737", "-85.387716"], ["56.625777", "29.137090"], ["-27.718539", "142.608864"], ["-75.775488", "38.663171"]];
 
+
+/* ---------------------------------------------------------------------------- */
+//FUNCIONES
+/* ---------------------------------------------------------------------------- */
+
+//Función inicial tras cargar la página
 function loaded() {
     // Inicializacion variable global
     video = document.getElementById("player");
@@ -39,6 +53,11 @@ function loaded() {
     cargarMapa("todo");
 }
 
+/* ---------------------------------------------------------------------------- */
+
+//FUNCIONES INICIALIZACIÓN Y CONTROL PLAYER
+
+//Función que carga un video en el player con sus correspondientes tracks
 function cargarVideo(path) {
     // Si es un objeto se ha elegido un video existente
     if ((typeof path) == "object") {
@@ -93,6 +112,7 @@ function cargarVideo(path) {
 
 }
 
+//Función que cambia el video cargado en el player
 function reloadVideo(path) {
     document.getElementById('player').remove();
     document.getElementById('videotest').innerHTML = '<video id="player" class="w-100" playsinline controls data-poster="" ></video>';
@@ -157,243 +177,9 @@ function reloadVideo(path) {
     video.play();
 }
 
-//Funcion que actualiza los cues que se van a mostrar según los filtros activos
-function actualizaFiltros(filtro, seleccion) {
-    usadoFiltro = true;
-    //console.log("filtro: " + filtro + " selección: " + seleccion);
-    var combinacionPosible = false;
-    switch (filtro) {
-        /* case "video":
-             break;*/
-        case "animales":
-            seleccionAlimentacion = "todos";
-            seleccionMedio = "todos";
-            seleccionEsqueleto = "todos";
-            seleccionContinente = "todos";
-            seleccionAnimal = seleccion;
-
-            if (seleccion == "todos") {
-                video.currentTime = 0;
-                video.play();
-                $("#drop-animales").removeClass("filtroActivo");
-                break;
-            }
-            //saltar al animal directamente
-            for (var i = 0; i < allCues.length; i++) { //se puede cambiar el for para usar if (cumpleFiltros) pero da problemas de momento
-                var info = JSON.parse(allCues[i].text);
-                info = info.nombreComun.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                if (info == seleccion) {
-                    video.currentTime = allCues[i].startTime;
-                    break;
-                }
-            }
-            if (seleccionAnimal != "todos") {
-                $("#drop-animales").addClass("filtroActivo");
-                $("#drop-alimentacion").removeClass("filtroActivo");
-                $("#drop-medio").removeClass("filtroActivo");
-                $("#drop-esqueleto").removeClass("filtroActivo");
-                $("#drop-continentes").removeClass("filtroActivo");
-            } else {
-                $("#drop-animales").removeClass("filtroActivo");
-            }
-            break;
-        case "alimentacion":
-            //actualizar variable de filtro y saltar al primer animal que cumple con el requisito
-            seleccionAlimentacion = seleccion;
-            seleccionAnimal = "todos";
-            for (var i = 0; i < allCues.length; i++) {
-                if (cumpleFiltros(i)) {
-                    combinacionPosible = true;
-                    seguirReproduccion = true;
-                    //console.log(allCues[i])
-                    video.currentTime = allCues[i].startTime;
-                    break;
-                }
-            }
-
-            if (!combinacionPosible) {
-                seleccionAlimentacion = "todos";
-                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
-                crearAviso("alert-danger", "Error:", descr, 4000);
-            }
-
-            if (seleccionAlimentacion != "todos") {
-                $("#drop-alimentacion").addClass("filtroActivo");
-                $("#drop-animales").removeClass("filtroActivo");
-            } else {
-                $("#drop-alimentacion").removeClass("filtroActivo");
-            }
-            break;
-        case "medio":
-            seleccionMedio = seleccion;
-            seleccionAnimal = "todos";
-            for (var i = 0; i < allCues.length; i++) {
-                if (cumpleFiltros(i)) {
-                    combinacionPosible = true;
-                    seguirReproduccion = true;
-                    video.currentTime = allCues[i].startTime;
-                    break;
-                }
-            }
-
-            if (!combinacionPosible) {
-                seleccionMedio = "todos";
-                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
-                crearAviso("alert-danger", "Error:", descr, 4000);
-            }
-
-            if (seleccionMedio != "todos") {
-                $("#drop-medio").addClass("filtroActivo");
-                $("#drop-animales").removeClass("filtroActivo");
-            } else {
-                $("#drop-medio").removeClass("filtroActivo");
-            }
-            break;
-        case "esqueleto":
-            seleccionEsqueleto = seleccion;
-            seleccionAnimal = "todos";
-            for (var i = 0; i < allCues.length; i++) {
-                if (cumpleFiltros(i)) {
-                    combinacionPosible = true;
-                    seguirReproduccion = true;
-                    video.currentTime = allCues[i].startTime;
-                    break;
-                }
-            }
-
-            if (!combinacionPosible) {
-                seleccionEsqueleto = "todos";
-                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
-                crearAviso("alert-danger", "Error:", descr, 4000);
-            }
-
-            if (seleccionEsqueleto != "todos") {
-                $("#drop-esqueleto").addClass("filtroActivo");
-                $("#drop-animales").removeClass("filtroActivo");
-            } else {
-                $("#drop-esqueleto").removeClass("filtroActivo");
-            }
-            break;
-        case "continente":
-            seleccionContinente = seleccion;
-            seleccionAnimal = "todos";
-            for (var i = 0; i < allCues.length; i++) {
-                if (cumpleFiltros(i)) {
-                    combinacionPosible = true;
-                    seguirReproduccion = true;
-                    video.currentTime = allCues[i].startTime;
-                    break;
-                }
-            }
-
-            if (!combinacionPosible) {
-                seleccionContinente = "todos";
-                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
-                crearAviso("alert-danger", "Error:", descr, 4000);
-            }
-
-            if (seleccionContinente != "todos") {
-                $("#drop-continentes").addClass("filtroActivo");
-                $("#drop-animales").removeClass("filtroActivo");
-            } else {
-                $("#drop-continentes").removeClass("filtroActivo");
-            }
-            break;
-        default:
-            $("#drop-animales").removeClass("filtroActivo");
-            $("#drop-alimentacion").removeClass("filtroActivo");
-            $("#drop-medio").removeClass("filtroActivo");
-            $("#drop-esqueleto").removeClass("filtroActivo");
-            $("#drop-continentes").removeClass("filtroActivo");
-
-            seleccionAlimentacion = "todos";
-            seleccionMedio = "todos";
-            seleccionEsqueleto = "todos";
-            seleccionContinente = "todos";
-            seleccionAnimal = "todos";
-
-            //en este caso "filtro" no contiene el tipo de filtro sino el path del video
-            //para mantener mayúsculas y extensión del video
-            reloadVideo(filtro);
-    }
-    updateTicks();
-
-}
-
-//Funcion que borra todos los filtros
-function clearFiltros() {
-    //Si se ha entrado en la función por la selección de un filtro no borra nada
-    //en caso contrario significa que el usuario ha tocado la barra de reproducción
-    if (!usadoFiltro) {
-        console.log("clear");
-
-        $("#drop-animales").removeClass("filtroActivo");
-        $("#drop-alimentacion").removeClass("filtroActivo");
-        $("#drop-medio").removeClass("filtroActivo");
-        $("#drop-esqueleto").removeClass("filtroActivo");
-        $("#drop-continentes").removeClass("filtroActivo");
-
-        seleccionAlimentacion = "todos";
-        seleccionMedio = "todos";
-        seleccionEsqueleto = "todos";
-        seleccionContinente = "todos";
-        seleccionAnimal = "todos";
-
-        updateTicks();
-    }
-    usadoFiltro = false;
-
-}
-
-//devuelve el tiempo para el siguiente cue que cumpla los filtros
-function siguienteCue(numCueAct) {
-    var cues = video.textTracks[0].cues;
-    console.log("cargar siguiente cue");
-    //si no quedan más cues ...
-    if (numCueAct + 1 > cues.length) {
-        return null;
-    }
-
-    for (var i = numCueAct + 1; i < cues.length; i++) {
-        if (cumpleFiltros(i)) {
-            console.log(cues[i].startTime);
-            return cues[i].startTime;
-        }
-    }
-
-    return null;
-}
-
-function cumpleFiltros(numCue) {
-    var cues = video.textTracks[0].cues;
-    //console.log(cues.length)
-    if (cues.length <= numCue) {
-        video.pause();
-        return false;
-    }
-
-    var cue = cues[numCue];
-
-    var info = JSON.parse(cue.text);
-
-    var alimentacionActual = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    var medioActual = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    var esqueletoActual = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    var continenteActual = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-
-    //if que mira si algún filtro no se cumple para el cue pasado por parametro
-    if ((alimentacionActual == seleccionAlimentacion || seleccionAlimentacion == "todos") && (medioActual == seleccionMedio || seleccionMedio == "todos") &&
-        (esqueletoActual == seleccionEsqueleto || seleccionEsqueleto == "todos") && (continenteActual == seleccionContinente || seleccionContinente == "todos")) {
-        //console.log("cumple filtro")
-        return true;
-    }
-    //console.log("no cumple filtro")
-    return false;
-}
-
 /* ---------------------------------------------------------------------------- */
 
-// FUNCIONES QUE MANEJAN EVENTOS
+// FUNCIONES QUE MANEJAN METADATOS
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
@@ -418,9 +204,9 @@ function loadedMetadatos() {
                     video.currentTime = tiempo;
                 } else {
                     if (seguirReproduccion) {
-                        console.log("seguir reproduccion");
+                        //console.log("seguir reproduccion");
                     } else {
-                        console.log("alerta")
+                        //console.log("alerta")
                         var descr = "Se han visualizado todos los animales que cumplen estos filtros"
                         crearAviso("alert-success", "Completado:", descr, 4000);
                         video.pause();
@@ -440,7 +226,7 @@ function loadedMetadatos() {
     }
 }
 
-
+//Función que actualiza los datos que se muestran en el visor
 function updateDatos(cue) {
     // Si es null significa que la cue ya ha emitido "exit"
     if (cue == null) {
@@ -491,6 +277,54 @@ function updateDatos(cue) {
     }
 }
 
+//Función que devuelve el tiempo del siguiente cue que cumple los filtros
+function siguienteCue(numCueAct) {
+    var cues = video.textTracks[0].cues;
+    //si no quedan más cues ...
+    if (numCueAct + 1 > cues.length) {
+        return null;
+    }
+
+    for (var i = numCueAct + 1; i < cues.length; i++) {
+        if (cumpleFiltros(i)) {
+            //console.log(cues[i].startTime);
+            return cues[i].startTime;
+        }
+    }
+    return null;
+}
+
+//Función booleana que examina si un cue cumple con los filtros
+function cumpleFiltros(numCue) {
+    var cues = video.textTracks[0].cues;
+    //console.log(cues.length)
+    if (cues.length <= numCue) {
+        video.pause();
+        return false;
+    }
+
+    var cue = cues[numCue];
+    var info = JSON.parse(cue.text);
+
+    var alimentacionActual = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var medioActual = info.medio.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var esqueletoActual = info.esqueleto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    var continenteActual = info.continente.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    //Comprobar si algún filtro no se cumple para el cue pasado por parametro
+    if ((alimentacionActual == seleccionAlimentacion || seleccionAlimentacion == "todos") && (medioActual == seleccionMedio || seleccionMedio == "todos") &&
+        (esqueletoActual == seleccionEsqueleto || seleccionEsqueleto == "todos") && (continenteActual == seleccionContinente || seleccionContinente == "todos")) {
+        //console.log("cumple filtro")
+        return true;
+    }
+    //console.log("no cumple filtro")
+    return false;
+}
+
+/* ---------------------------------------------------------------------------- */
+
+//FUNCIONES QUE CONTROLAN LOS FILTROS
+
 //Función que carga los filtros disponibles en la página principal según los datos del fichero .vtt
 function cargarFiltros() {
 
@@ -528,6 +362,7 @@ function cargarFiltros() {
     cargarDesplegable(continente, "filtroContinente");
 }
 
+//Función que crea un desplegable en el id seleccionado con los elementos del array
 function cargarDesplegable(array, id) {
     var filtro;
     var tipoFiltro = id.replace("filtro", "");
@@ -575,6 +410,7 @@ function crearElementoFiltro(nombre, tipoFiltro) {
     return filtro;
 }
 
+//Función que crea una barra divisora para ser insertada en el dropdown
 function crearDivisorFiltro() {
     var divisor = document.createElement("li");
     var hr = document.createElement("hr");
@@ -583,8 +419,228 @@ function crearDivisorFiltro() {
     return divisor;
 }
 
-function debug() {
-    console.log("Succsessful!")
+//Funcion que actualiza los cues que se van a mostrar según los filtros activos
+function actualizaFiltros(filtro, seleccion) {
+    usadoFiltro = true;
+    //console.log("filtro: " + filtro + " selección: " + seleccion);
+    var combinacionPosible = false;
+    switch (filtro) {
+        /* case "video":
+             break;*/
+        case "animales":
+            //Si se selecciona un animal concreto se eliminan todos los filtros
+            seleccionAlimentacion = "todos";
+            seleccionMedio = "todos";
+            seleccionEsqueleto = "todos";
+            seleccionContinente = "todos";
+            seleccionAnimal = seleccion;
+
+            if (seleccion == "todos") {
+                video.currentTime = 0;
+                video.play();
+                $("#drop-animales").removeClass("filtroActivo");
+                break;
+            }
+            //saltar al animal directamente
+            for (var i = 0; i < allCues.length; i++) { //se puede cambiar el for para usar if (cumpleFiltros) pero da problemas de momento
+                var info = JSON.parse(allCues[i].text);
+                info = info.nombreComun.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                if (info == seleccion) {
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
+            //Se actualiza el feedback de los filtros
+            if (seleccionAnimal != "todos") {
+                $("#drop-animales").addClass("filtroActivo");
+                $("#drop-alimentacion").removeClass("filtroActivo");
+                $("#drop-medio").removeClass("filtroActivo");
+                $("#drop-esqueleto").removeClass("filtroActivo");
+                $("#drop-continentes").removeClass("filtroActivo");
+            } else {
+                $("#drop-animales").removeClass("filtroActivo");
+            }
+            break;
+        case "alimentacion":
+            //actualizar variables de filtro y saltar al primer animal que cumple con el requisito
+            seleccionAlimentacion = seleccion;
+            seleccionAnimal = "todos";
+            for (var i = 0; i < allCues.length; i++) {
+                if (cumpleFiltros(i)) {
+                    combinacionPosible = true;
+                    seguirReproduccion = true;
+                    //console.log(allCues[i])
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
+            //Comprobar si la combinación de filtros es posible
+            if (!combinacionPosible) {
+                seleccionAlimentacion = "todos";
+                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+            //Se actualiza el feedback de los filtros
+            if (seleccionAlimentacion != "todos") {
+                $("#drop-alimentacion").addClass("filtroActivo");
+                $("#drop-animales").removeClass("filtroActivo");
+            } else {
+                $("#drop-alimentacion").removeClass("filtroActivo");
+            }
+            break;
+        case "medio":
+            //actualizar variables de filtro y saltar al primer animal que cumple con el requisito
+            seleccionMedio = seleccion;
+            seleccionAnimal = "todos";
+            for (var i = 0; i < allCues.length; i++) {
+                if (cumpleFiltros(i)) {
+                    combinacionPosible = true;
+                    seguirReproduccion = true;
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
+            //Comprobar si la combinación de filtros es posible
+            if (!combinacionPosible) {
+                seleccionMedio = "todos";
+                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+            //Se actualiza el feedback de los filtros
+            if (seleccionMedio != "todos") {
+                $("#drop-medio").addClass("filtroActivo");
+                $("#drop-animales").removeClass("filtroActivo");
+            } else {
+                $("#drop-medio").removeClass("filtroActivo");
+            }
+            break;
+        case "esqueleto":
+            //actualizar variables de filtro y saltar al primer animal que cumple con el requisito
+            seleccionEsqueleto = seleccion;
+            seleccionAnimal = "todos";
+            for (var i = 0; i < allCues.length; i++) {
+                if (cumpleFiltros(i)) {
+                    combinacionPosible = true;
+                    seguirReproduccion = true;
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
+            //Comprobar si la combinación de filtros es posible
+            if (!combinacionPosible) {
+                seleccionEsqueleto = "todos";
+                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+            //Se actualiza el feedback de los filtros
+            if (seleccionEsqueleto != "todos") {
+                $("#drop-esqueleto").addClass("filtroActivo");
+                $("#drop-animales").removeClass("filtroActivo");
+            } else {
+                $("#drop-esqueleto").removeClass("filtroActivo");
+            }
+            break;
+        case "continente":
+            //actualizar variables de filtro y saltar al primer animal que cumple con el requisito
+            seleccionContinente = seleccion;
+            seleccionAnimal = "todos";
+            for (var i = 0; i < allCues.length; i++) {
+                if (cumpleFiltros(i)) {
+                    combinacionPosible = true;
+                    seguirReproduccion = true;
+                    video.currentTime = allCues[i].startTime;
+                    break;
+                }
+            }
+            //Comprobar si la combinación de filtros es posible
+            if (!combinacionPosible) {
+                seleccionContinente = "todos";
+                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
+                crearAviso("alert-danger", "Error:", descr, 4000);
+            }
+            //Se actualiza el feedback de los filtros
+            if (seleccionContinente != "todos") {
+                $("#drop-continentes").addClass("filtroActivo");
+                $("#drop-animales").removeClass("filtroActivo");
+            } else {
+                $("#drop-continentes").removeClass("filtroActivo");
+            }
+            break;
+        default:
+            //En caso de seleccionar un video se resetean todos los filtros
+            $("#drop-animales").removeClass("filtroActivo");
+            $("#drop-alimentacion").removeClass("filtroActivo");
+            $("#drop-medio").removeClass("filtroActivo");
+            $("#drop-esqueleto").removeClass("filtroActivo");
+            $("#drop-continentes").removeClass("filtroActivo");
+
+            seleccionAlimentacion = "todos";
+            seleccionMedio = "todos";
+            seleccionEsqueleto = "todos";
+            seleccionContinente = "todos";
+            seleccionAnimal = "todos";
+
+            //en este caso "filtro" no contiene el tipo de filtro sino el path del video
+            //para mantener mayúsculas y extensión del video
+            reloadVideo(filtro);
+    }
+    updateTicks();
+}
+
+//Funcion que borra todos los filtros
+function clearFiltros() {
+    //Si se ha entrado en la función por la selección de un filtro no borra nada
+    //en caso contrario significa que el usuario ha tocado la barra de reproducción
+    if (!usadoFiltro) {
+        console.log("clear");
+
+        $("#drop-animales").removeClass("filtroActivo");
+        $("#drop-alimentacion").removeClass("filtroActivo");
+        $("#drop-medio").removeClass("filtroActivo");
+        $("#drop-esqueleto").removeClass("filtroActivo");
+        $("#drop-continentes").removeClass("filtroActivo");
+
+        seleccionAlimentacion = "todos";
+        seleccionMedio = "todos";
+        seleccionEsqueleto = "todos";
+        seleccionContinente = "todos";
+        seleccionAnimal = "todos";
+
+        updateTicks();
+    }
+    usadoFiltro = false;
+}
+
+
+// Funcion que crea un aviso de bootstrap dado el tipo, titulo y descripcion
+// tipo: alert-danger, alert-warning, alert-success. (Clases de Bootstrap)
+function crearAviso(tipo, titulo, descr, tiempo) {
+    // Crear aviso
+    var aviso = document.createElement("div");
+    aviso.classList.add("myAlert-top", "alert", "alert-dismissible", "fade", "show", tipo);
+    aviso.innerHTML = "<strong>" + titulo + " </strong>" + descr;
+    var cerrar = document.createElement("button");
+    cerrar.setAttribute("type", "button");
+    cerrar.classList.add("btn-close");
+    cerrar.setAttribute("data-bs-dismiss", "alert");
+    cerrar.setAttribute("aria-label", "Close");
+
+    // Append
+    aviso.appendChild(cerrar);
+    document.getElementById("cuerpo").appendChild(aviso);
+
+    // Mostrar y ocultar tras X segundos
+    $(".myAlert-top").show();
+    if (tiempo > 0) {
+        setTimeout(function () {
+            // Quitar aviso
+            $(".myAlert-top").hide();
+            const boxes = document.querySelectorAll('.myAlert-top');
+            boxes.forEach(box => {
+                box.remove();
+            });
+        }, tiempo);
+    }
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -610,8 +666,6 @@ function peticionObtenerVideos() {
                     pathsVideos.push(paths[i]);
                 }
             }
-            console.log(nombresVideos)
-            console.log(pathsVideos)
 
             for (var i = 0; i < nombresVideos.length; i++) {
                 filtro = crearElementoFiltro(nombresVideos[i], pathsVideos[i]);
@@ -648,7 +702,7 @@ function cargarMapa(continent) {
             attribution: cartodbAttribution
         }).addTo(map);
 
-        var positronLabels = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
+        var positronLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
             attribution: cartodbAttribution,
             pane: 'labels'
         }).addTo(map);
@@ -768,10 +822,11 @@ function updateMapa(continent) {
 
         map.setView({ lat: latitudCentro, lng: longitudCentro }, 2);
     })
-
 }
 
-// FUNCIONES AUXILIARES
+/* ---------------------------------------------------------------------------- */
+
+// FUNCIONES AUXILIARES GENÉRICAS
 // Funcion auxiliar para añadir mas de 1 atributo a la vez (a un mismo elemento)
 // https://stackoverflow.com/questions/12274748/setting-multiple-attributes-for-an-element-at-once-with-javascript
 function setAttributes(el, attrs) {
@@ -916,35 +971,4 @@ function updateTicks() {
     setAttributes(tick, { id: identificadorTick });
     setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
     link.appendChild(tick);
-}
-
-// Funcion que crea un aviso de bootstrap dado el tipo, titulo y descripcion
-// tipo: alert-danger, alert-warning, alert-success. (Clases de Bootstrap)
-function crearAviso(tipo, titulo, descr, tiempo) {
-    // Crear aviso
-    var aviso = document.createElement("div");
-    aviso.classList.add("myAlert-top", "alert", "alert-dismissible", "fade", "show", tipo);
-    aviso.innerHTML = "<strong>" + titulo + " </strong>" + descr;
-    var cerrar = document.createElement("button");
-    cerrar.setAttribute("type", "button");
-    cerrar.classList.add("btn-close");
-    cerrar.setAttribute("data-bs-dismiss", "alert");
-    cerrar.setAttribute("aria-label", "Close");
-
-    // Append
-    aviso.appendChild(cerrar);
-    document.getElementById("cuerpo").appendChild(aviso);
-
-    // Mostrar y ocultar tras X segundos
-    $(".myAlert-top").show();
-    if (tiempo > 0) {
-        setTimeout(function () {
-            // Quitar aviso
-            $(".myAlert-top").hide();
-            const boxes = document.querySelectorAll('.myAlert-top');
-            boxes.forEach(box => {
-                box.remove();
-            });
-        }, tiempo);
-    }
 }
