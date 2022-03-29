@@ -16,8 +16,9 @@ var seleccionEsqueleto = "todos";
 var seleccionContinente = "todos";
 
 //Gestión funcionalidad filtros
-var usadoFiltro = false;
+//var usadoFiltro = true;
 var seguirReproduccion = true;
+var nuevoCambio = false;
 
 //Gestión mapa
 var map;
@@ -45,9 +46,9 @@ function loaded() {
     });
     peticionObtenerVideos();
 
-    video.onseeked = function () {
+    /* video.onseeked = function () {
         clearFiltros();
-    };
+    }; */
 
     //cargarVideo("assets/animales.mp4");
     cargarMapa("todo");
@@ -198,22 +199,27 @@ function loadedMetadatos() {
             $("#drop-animales").removeClass("filtroActivo");
             var activeCue = video.textTracks[0].activeCues[0];
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
-            if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
-                var tiempo = siguienteCue(getNumCue(cueActual));
-                if (tiempo != null) {
-                    video.currentTime = tiempo;
-                } else {
-                    if (seguirReproduccion) {
-                        //console.log("seguir reproduccion");
+            if (!nuevoCambio){
+                if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
+                    var tiempo = siguienteCue(getNumCue(cueActual));
+                    if (tiempo != null) {
+                        video.currentTime = tiempo;
                     } else {
-                        //console.log("alerta")
-                        var descr = "Se han visualizado todos los animales que cumplen estos filtros"
-                        crearAviso("alert-success", "Completado:", descr, 4000);
-                        video.pause();
+                        if (seguirReproduccion) {
+                            //console.log("seguir reproduccion");
+                        } else {
+                            //console.log("alerta")
+                            var descr = "Se han visualizado todos los animales que cumplen estos filtros"
+                            crearAviso("alert-success", "Completado:", descr, 4000);
+                            video.pause();
+                            clearFiltros();
+                        }
+    
                     }
-                    seguirReproduccion = false;
                 }
             }
+            nuevoCambio = false;
+            seguirReproduccion = false;
 
             // Si justo empieza otra cue
             if (activeCue != null) {
@@ -296,14 +302,14 @@ function siguienteCue(numCueAct) {
 
 //Función booleana que examina si un cue cumple con los filtros
 function cumpleFiltros(numCue) {
-    var cues = video.textTracks[0].cues;
+    //var cues = video.textTracks[0].cues;
     //console.log(cues.length)
-    if (cues.length <= numCue) {
+    if (allCues.length <= numCue) {
         video.pause();
         return false;
     }
 
-    var cue = cues[numCue];
+    var cue = allCues[numCue];
     var info = JSON.parse(cue.text);
 
     var alimentacionActual = info.alimentacion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -421,7 +427,6 @@ function crearDivisorFiltro() {
 
 //Funcion que actualiza los cues que se van a mostrar según los filtros activos
 function actualizaFiltros(filtro, seleccion) {
-    usadoFiltro = true;
     //console.log("filtro: " + filtro + " selección: " + seleccion);
     var combinacionPosible = false;
     switch (filtro) {
@@ -437,6 +442,7 @@ function actualizaFiltros(filtro, seleccion) {
 
             if (seleccion == "todos") {
                 video.currentTime = 0;
+                nuevoCambio = true;
                 video.play();
                 $("#drop-animales").removeClass("filtroActivo");
                 break;
@@ -447,6 +453,7 @@ function actualizaFiltros(filtro, seleccion) {
                 info = info.nombreComun.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 if (info == seleccion) {
                     video.currentTime = allCues[i].startTime;
+                    nuevoCambio = true;
                     break;
                 }
             }
@@ -467,10 +474,14 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
+                    console.log(i);
+                    console.log(cumpleFiltros(i))
                     combinacionPosible = true;
                     seguirReproduccion = true;
-                    //console.log(allCues[i])
+                    console.log(allCues[i])
                     video.currentTime = allCues[i].startTime;
+                    nuevoCambio = true;
+                    console.log(allCues[i].startTime)
                     break;
                 }
             }
@@ -497,6 +508,7 @@ function actualizaFiltros(filtro, seleccion) {
                     combinacionPosible = true;
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
+                    nuevoCambio = true;
                     break;
                 }
             }
@@ -523,6 +535,7 @@ function actualizaFiltros(filtro, seleccion) {
                     combinacionPosible = true;
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
+                    nuevoCambio = true;
                     break;
                 }
             }
@@ -549,6 +562,7 @@ function actualizaFiltros(filtro, seleccion) {
                     combinacionPosible = true;
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
+                    nuevoCambio = true;
                     break;
                 }
             }
@@ -591,24 +605,23 @@ function actualizaFiltros(filtro, seleccion) {
 function clearFiltros() {
     //Si se ha entrado en la función por la selección de un filtro no borra nada
     //en caso contrario significa que el usuario ha tocado la barra de reproducción
-    if (!usadoFiltro) {
-        console.log("clear");
 
-        $("#drop-animales").removeClass("filtroActivo");
-        $("#drop-alimentacion").removeClass("filtroActivo");
-        $("#drop-medio").removeClass("filtroActivo");
-        $("#drop-esqueleto").removeClass("filtroActivo");
-        $("#drop-continentes").removeClass("filtroActivo");
+    console.log("clear");
 
-        seleccionAlimentacion = "todos";
-        seleccionMedio = "todos";
-        seleccionEsqueleto = "todos";
-        seleccionContinente = "todos";
-        seleccionAnimal = "todos";
+    $("#drop-animales").removeClass("filtroActivo");
+    $("#drop-alimentacion").removeClass("filtroActivo");
+    $("#drop-medio").removeClass("filtroActivo");
+    $("#drop-esqueleto").removeClass("filtroActivo");
+    $("#drop-continentes").removeClass("filtroActivo");
 
-        updateTicks();
-    }
-    usadoFiltro = false;
+    seleccionAlimentacion = "todos";
+    seleccionMedio = "todos";
+    seleccionEsqueleto = "todos";
+    seleccionContinente = "todos";
+    seleccionAnimal = "todos";
+
+    updateTicks();
+
 }
 
 
