@@ -7,6 +7,7 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/TextTrack/cues (add cues)
 
 // VARIABLES GLOBALES
+var player;
 var video; // objeto de video
 var cueActual; // VTTCue actual
 var cueProximo; // VTTCue siguiente, para gestionar el solapamiento
@@ -35,7 +36,7 @@ function loaded() {
     video = document.getElementById("miVideo");
 
     // Inicializacion del media player "plyr"
-    const player = new Plyr('#miVideo', {
+    player = new Plyr('#miVideo', {
         invertTime: false,
         toggleInvert: false
     });
@@ -409,7 +410,7 @@ function botonGuardar() {
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
     // Evitar errores
-    video.play();
+    player.play();
     setTimeout(() => {
         video.pause();
     }, 10);
