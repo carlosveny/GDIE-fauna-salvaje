@@ -59,67 +59,6 @@ function loaded() {
 
 //FUNCIONES INICIALIZACIÓN Y CONTROL PLAYER
 
-//Función que carga un video en el player con sus correspondientes tracks
-/* function cargarVideo(path) {
-    // Si es un objeto se ha elegido un video existente
-    if ((typeof path) == "object") {
-        path = path.value;
-        console.log(path);
-    }
-
-    var pathMP4, pathWebm;
-    if (path.includes(".mp4")) {
-        pathMP4 = path;
-        pathWebm = path.replace("mp4", "webm");
-    }
-    else {
-        pathWebm = path;
-        pathMP4 = path.replace("webm", "mp4");
-    }
-
-    // Crear elemento "source" con MP4
-    var src = document.createElement("source");
-    setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
-    video.appendChild(src);
-
-    // Crear elemento "source" con webm
-    var src2 = document.createElement("source");
-    setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
-    video.appendChild(src2);
-
-    var pathMetadata;
-    var pathSubtitulos1;
-
-    // Cargar fichero de metadatos
-    if (path.includes(".mp4")) {
-        pathMetadata = path.replace(".mp4", "-metadata.vtt");
-        pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
-    }
-    else {
-        pathMetadata = path.replace(".webm", "-metadata.vtt");
-        pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
-    }
-
-    // Cargar fichero de metadatos
-    var track = document.createElement("track");
-    setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
-    var random = Math.random();
-    track.setAttribute("src", pathMetadata + "?" + random); //Añadido ? + random cortesía de carlos
-    track.default = true;
-    track.addEventListener("load", loadedMetadatos);
-    //Inicialización botones filtros al cargarse los cues
-    track.addEventListener("load", cargarFiltros);
-    video.appendChild(track);
-
-    // Cargar subtítulos
-    var track2 = document.createElement("track");
-    setAttributes(track2, { id: "track", kind: "subtitles", label: "Subtítulos" });
-    track2.setAttribute("src", pathSubtitulos1); 
-    track2.default = true;
-    video.appendChild(track2);
-
-} */
-
 //Función que cambia el video cargado en el player
 function reloadVideo(path) {
     document.getElementById('player').remove();
@@ -257,7 +196,6 @@ function updateDatos(cue) {
     }
     cueActual = cue;
 
-
     //var textTracks = video.textTracks;
     //var cues = textTracks[0].cues;
     //console.log(JSON.parse(cues[0].text));
@@ -297,6 +235,27 @@ function updateDatos(cue) {
     } else {
         $("#lock-esqueleto").attr("src", "assets/icons/unlocked.ico");
     }
+}
+
+//Función que borra todos los datos en pantalla (de momento no se usa porque probablemente cuando los metadatos empiecen desde el 00:00 no se notará nada)
+function clearDatos(){
+    $("#nombreComun").html("");
+    $("#nombreCientifico").text("");
+    $("#descripcion").html("");
+
+    updateMapa("todos");
+
+    $("#alimentacion").text("");
+    $("#iconoAlimentacion").attr("src", "");
+    $("#lock-alimentacion").attr("src", "");
+
+    $("#medio").text("");
+    $("#iconoMedio").attr("src", "");
+    $("#lock-medio").attr("src", "");
+
+    $("#esqueleto").text("");
+    $("#iconoEsqueleto").attr("src", "");
+    $("#lock-esqueleto").attr("src", "");
 }
 
 //Función que devuelve el tiempo del siguiente cue que cumple los filtros
@@ -610,6 +569,12 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionContinente = "todos";
             seleccionAnimal = "todos";
 
+            /* if (seleccion != videoActual){
+                clearDatos();
+            } */
+            
+            
+
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
             reloadVideo(filtro);
@@ -746,9 +711,7 @@ function cargarMapa(continent) {
 
         map.setView({ lat: 47.040182144806664, lng: 9.667968750000002 }, 0);
 
-
         //Añadir pins en todos los animales disponibles (pendiente)
-
 
     })
 }
@@ -812,6 +775,8 @@ function updateMapa(continent) {
         }
         if (numContinent != 99) {
             newdata = data["features"][numContinent];
+        }else{
+            newdata = data;
         }
         if (numContinent == 3) {
             newdata2 = data["features"][5];
@@ -1002,3 +967,64 @@ function updateTicks() {
     setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
     link.appendChild(tick);
 }
+
+//Función que carga un video en el player con sus correspondientes tracks
+/* function cargarVideo(path) {
+    // Si es un objeto se ha elegido un video existente
+    if ((typeof path) == "object") {
+        path = path.value;
+        console.log(path);
+    }
+
+    var pathMP4, pathWebm;
+    if (path.includes(".mp4")) {
+        pathMP4 = path;
+        pathWebm = path.replace("mp4", "webm");
+    }
+    else {
+        pathWebm = path;
+        pathMP4 = path.replace("webm", "mp4");
+    }
+
+    // Crear elemento "source" con MP4
+    var src = document.createElement("source");
+    setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
+    video.appendChild(src);
+
+    // Crear elemento "source" con webm
+    var src2 = document.createElement("source");
+    setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
+    video.appendChild(src2);
+
+    var pathMetadata;
+    var pathSubtitulos1;
+
+    // Cargar fichero de metadatos
+    if (path.includes(".mp4")) {
+        pathMetadata = path.replace(".mp4", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
+    }
+    else {
+        pathMetadata = path.replace(".webm", "-metadata.vtt");
+        pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
+    }
+
+    // Cargar fichero de metadatos
+    var track = document.createElement("track");
+    setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
+    var random = Math.random();
+    track.setAttribute("src", pathMetadata + "?" + random); //Añadido ? + random cortesía de carlos
+    track.default = true;
+    track.addEventListener("load", loadedMetadatos);
+    //Inicialización botones filtros al cargarse los cues
+    track.addEventListener("load", cargarFiltros);
+    video.appendChild(track);
+
+    // Cargar subtítulos
+    var track2 = document.createElement("track");
+    setAttributes(track2, { id: "track", kind: "subtitles", label: "Subtítulos" });
+    track2.setAttribute("src", pathSubtitulos1); 
+    track2.default = true;
+    video.appendChild(track2);
+
+} */
