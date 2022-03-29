@@ -8,6 +8,8 @@ var video; // objeto de video
 var cueActual; // VTTCue actual
 var allCues; //Cues del video actual
 
+var recargando = false;
+
 //Control filtros
 var seleccionAnimal = "todos";
 var seleccionAlimentacion = "todos";
@@ -59,7 +61,7 @@ function loaded() {
 //FUNCIONES INICIALIZACIÓN Y CONTROL PLAYER
 
 //Función que carga un video en el player con sus correspondientes tracks
-function cargarVideo(path) {
+/* function cargarVideo(path) {
     // Si es un objeto se ha elegido un video existente
     if ((typeof path) == "object") {
         path = path.value;
@@ -106,12 +108,18 @@ function cargarVideo(path) {
     track.setAttribute("src", pathMetadata + "?" + random); //Añadido ? + random cortesía de carlos
     track.default = true;
     track.addEventListener("load", loadedMetadatos);
-
     //Inicialización botones filtros al cargarse los cues
     track.addEventListener("load", cargarFiltros);
     video.appendChild(track);
 
-}
+    // Cargar subtítulos
+    var track2 = document.createElement("track");
+    setAttributes(track2, { id: "track", kind: "subtitles", label: "Subtítulos" });
+    track2.setAttribute("src", pathSubtitulos1); 
+    track2.default = true;
+    video.appendChild(track2);
+
+} */
 
 //Función que cambia el video cargado en el player
 function reloadVideo(path) {
@@ -169,13 +177,22 @@ function reloadVideo(path) {
     track.setAttribute("src", pathMetadata);
     track.default = true;
     track.addEventListener("load", loadedMetadatos);
-
     //Inicialización botones filtros al cargarse los cues
     track.addEventListener("load", cargarFiltros);
     video.appendChild(track);
 
+    // Cargar subtítulos
+    var track2 = document.createElement("track");
+    setAttributes(track2, { id: "track", kind: "subtitles", label: "Subtítulos" });
+    track2.setAttribute("src", pathSubtitulos1); 
+    track2.default = true;
+    video.appendChild(track2);
+
     //video.load();
-    video.play();
+    if (recargando){
+        video.play();
+    }
+    
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -686,7 +703,8 @@ function peticionObtenerVideos() {
             }
 
             //Por defecto carga el primer video
-            cargarVideo(paths[0]);
+            reloadVideo(paths[0]);
+            recargando = true;
         });
 }
 
