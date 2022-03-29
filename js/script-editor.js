@@ -410,9 +410,9 @@ function botonGuardar() {
 function loadedMetadatos() {
     // Evitar errores
     video.play();
-    // setTimeout(() => {
-    //     video.pause();
-    // }, 300);
+    setTimeout(() => {
+        video.pause();
+    }, 10);
 
     // Habilitar y generar dropdown "irACue"
     $("#cue-selector").prop("disabled", false);
