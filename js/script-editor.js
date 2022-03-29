@@ -7,6 +7,7 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/TextTrack/cues (add cues)
 
 // VARIABLES GLOBALES
+var player;
 var video; // objeto de video
 var cueActual; // VTTCue actual
 var cueProximo; // VTTCue siguiente, para gestionar el solapamiento
@@ -35,7 +36,7 @@ function loaded() {
     video = document.getElementById("miVideo");
 
     // Inicializacion del media player "plyr"
-    const player = new Plyr('#miVideo', {
+    player = new Plyr('#miVideo', {
         invertTime: false,
         toggleInvert: false
     });
@@ -293,6 +294,11 @@ function actualizarDropdownCues() {
 function irACue(time) {
     video.currentTime = time.value;
     $("#cue-selector").val("default");
+    // Evitar errores
+    video.play();
+    setTimeout(() => {
+        video.pause();
+    }, 10);
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -403,6 +409,12 @@ function botonGuardar() {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
+    // Evitar errores
+    player.play();
+    setTimeout(() => {
+        video.pause();
+    }, 10);
+
     // Habilitar y generar dropdown "irACue"
     $("#cue-selector").prop("disabled", false);
     actualizarDropdownCues();
