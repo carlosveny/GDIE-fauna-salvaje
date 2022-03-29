@@ -52,7 +52,6 @@ function loaded() {
         clearFiltros();
     }; */
 
-    //cargarVideo("assets/animales.mp4");
     cargarMapa("todo");
 }
 

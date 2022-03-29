@@ -94,7 +94,7 @@
   </header>
   <!-- Fin Navbar -->
   <div class="mx-5">
-    <div class="mx-auto panPrincipal">
+    <div id="panPrincipal" class="mx-auto">
       <!-- Filtros -->
       <div id="filtros" class="my-2">
         <!-- Botón seleccionar video -->
@@ -146,17 +146,17 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row justify-content-center">
         <!-- Video -->
-        <div class="row text-center col-lg-6">
+        <div id="cont-video-test" class="row text-center col-lg-6">
           <div id="videotest" class="wrapper-video">
             <video id="player" class="w-100" playsinline controls data-poster=""></video>
           </div>
         </div>
         <!-- Info lateral derecho -->
-        <div id="panel-der" class="row col">
+        <div id="panel-der" class="row col-lg-6">
           <!-- Info lateral derecho -->
-          <div id="info" class="col-lg-8">
+          <div id="info" class="col-lg-7">
 
             <div class="row">
               <h3 id="nombreComun"></h3>
@@ -189,21 +189,20 @@
               <img id="lock-esqueleto" class="lock" src="">
             </div>
           </div>
+        </div>
+        <!-- Info -->
+        <div id="bottom-container" class="row mx-auto mb-5">
+          <!-- Quiz / Extras -->
+          <div id="quiz" class="col border rounded">
+            <h1 class="text-center">QUIZ</h1>
+          </div>
 
-
+          <!-- Mapa -->
+          <div id="map" class="col-lg-4 border"></div>
         </div>
       </div>
 
-      <!-- Info -->
-      <div id="bottom-container" class="row mt-3 mb-5">
-        <!-- Quiz / Extras -->
-        <div id="quiz" class="col border rounded height25">
-          <h1 class="text-center">QUIZ</h1>
-        </div>
 
-        <!-- Mapa -->
-        <div id="map" class="col-lg-4 border"></div>
-      </div>
     </div>
   </div>
   <!-- Footer -->

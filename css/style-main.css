@@ -31,10 +31,6 @@
     color: black;
 }
 
-.panPrincipal{
-    max-width: 1425px;
-}
-
 .filtroActivo{
     background-color: #ddffdd;
 }
@@ -57,7 +53,11 @@
     top: 90px; 
     left: 25%;
     width: 50%;
-  }
+}
+
+#panPrincipal{
+    max-width: 1425px;
+}
 
 #filtros{
     height: 3rem;
@@ -75,12 +75,17 @@
 
 #info{
     margin-right: 5px;
+    min-width: 350px; 
 }
 
 #bottom-container{
+    margin-top: 30px;
     min-height: 200px;
     height: 250px;
-    max-height: 300px;
+}
+
+#map{
+    min-height: 200px;
 }
 
 #quiz{
@@ -97,6 +102,80 @@
 
 #footer{
     margin-top: 150px;
+}
+
+/* Web responsive*/
+@media (max-width: 1500px) {
+
+}
+@media (max-width: 1200px) {
+    #bottom-container{
+        max-width: 800px !important;
+    }
+    #quiz{
+        margin-right: 0px;
+        max-width: 800px;
+        min-width: 700px;
+        margin-bottom: 20px;
+    }
+    #map{
+        width: 800px;
+    }
+    #filtros{
+        height: auto;
+    }
+    #cont-video-test{
+        width: 800px;
+    }
+    #videotest{
+        width: 800px;
+    }
+    #panel-der{
+        margin-top: 20px;
+        width: 800px;
+    }
+    #datos{
+        width: auto;
+        max-width: 200px;
+    }
+    #info{
+        width: 570px;
+    }
+    .myAlert-top{
+        left: 15%;
+        width: 70%;
+    }
+}
+@media (max-width: 990px) {
+    #panel-der{
+        margin-top: 20px;
+    }
+    #datos{
+        margin-top: 20px;
+    }
+}
+@media (max-width: 905px) {
+    #quiz{
+        min-width: 0px;
+    }
+}
+@media (max-width: 767px) {
+
+.myAlert-top{
+    left: 5%;
+    width: 90%;
+}
+}
+@media (max-width: 600px) {
+
+}
+@media (max-width: 500px) {
+    #info{
+        min-width: 200px; 
+    }
+}
+@media (max-width: 400px) {
+
 }
 
 
