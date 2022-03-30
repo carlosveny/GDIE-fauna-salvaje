@@ -95,17 +95,31 @@
 
 #quiz{
     margin-right: 30px;
-    font-size: 1.6rem;
 	display: grid;
 	place-items: center;
 	min-height: 200px;
-	border: 8px solid;
+	border: 6px solid;
 	padding: 1rem;
     border-image: linear-gradient(45deg, green, greenyellow) 1;
 }
 
 #quiz:hover{
+    /* border-image: linear-gradient(45deg, greenyellow, green) 1; */
     border-image: linear-gradient(45deg, greenyellow, turquoise) 1;
+}
+
+#inicioQuiz{
+    height: 70px;
+    width: 250px;
+    font-size: 1.6rem;
+    display: grid;
+	place-items: center;
+    background-image: linear-gradient(45deg, green, greenyellow);
+    cursor: pointer;
+}
+
+#inicioQuiz:hover{
+    background-image: linear-gradient(45deg, greenyellow, turquoise);
 }
 
 #gitFooter{
@@ -156,6 +170,9 @@
     }
     #info{
         width: 570px;
+    }
+    #footer{
+        margin-top: 150px;
     }
     .myAlert-top{
         left: 15%;
