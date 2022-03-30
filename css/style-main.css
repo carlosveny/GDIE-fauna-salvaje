@@ -47,6 +47,10 @@
     text-align: center;
 }
 
+.justificado{
+    text-align: justify;
+}
+
 /* Aviso flotante (https://codepen.io/Dinamo/pen/rNVOZmr) */
 .myAlert-top{
     position: fixed;
@@ -101,7 +105,7 @@
 }
 
 #footer{
-    margin-top: 150px;
+    margin-top: 100px;
 }
 
 /* Web responsive*/
@@ -158,6 +162,13 @@
     #quiz{
         min-width: 0px;
     }
+    #gitFooter{
+        font-size: 15px;
+    }
+    
+    #faunaFooter{
+        font-size: 25px;
+    }
 }
 @media (max-width: 767px) {
 
@@ -172,6 +183,13 @@
 @media (max-width: 500px) {
     #info{
         min-width: 200px; 
+    }
+    #gitFooter{
+        font-size: 15px;
+    }
+    
+    #faunaFooter{
+        font-size: 20px;
     }
 }
 @media (max-width: 400px) {
