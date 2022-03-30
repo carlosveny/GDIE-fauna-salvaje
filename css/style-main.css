@@ -51,6 +51,7 @@
     text-align: justify;
 }
 
+
 /* Aviso flotante (https://codepen.io/Dinamo/pen/rNVOZmr) */
 .myAlert-top{
     position: fixed;
@@ -94,6 +95,17 @@
 
 #quiz{
     margin-right: 30px;
+    font-size: 1.6rem;
+	display: grid;
+	place-items: center;
+	min-height: 200px;
+	border: 8px solid;
+	padding: 1rem;
+    border-image: linear-gradient(45deg, green, greenyellow) 1;
+}
+
+#quiz:hover{
+    border-image: linear-gradient(45deg, greenyellow, turquoise) 1;
 }
 
 #gitFooter{
