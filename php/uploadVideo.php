@@ -51,9 +51,13 @@ if (isset($_FILES['file']['name'])) {
             if (!file_exists($locationMetadata)) {
                 file_put_contents($locationMetadata, "WEBVTT FILE\n\n");
             }
-            $locationSubtitulos = str_replace(".mp4", "-castellano.vtt", $location);
-            if (!file_exists($locationSubtitulos)) {
-                file_put_contents($locationSubtitulos, "WEBVTT FILE\n\n");
+            $locationSubtitulos1 = str_replace(".mp4", "-castellano.vtt", $location);
+            if (!file_exists($locationSubtitulos1)) {
+                file_put_contents($locationSubtitulos1, "WEBVTT FILE\n\n");
+            }
+            $locationSubtitulos2 = str_replace(".mp4", "-ingles.vtt", $location);
+            if (!file_exists($locationSubtitulos2)) {
+                file_put_contents($locationSubtitulos2, "WEBVTT FILE\n\n");
             }
         }
         else {
@@ -61,9 +65,9 @@ if (isset($_FILES['file']['name'])) {
             if (!file_exists($locationMetadata)) {
                 file_put_contents($locationMetadata, "WEBVTT FILE\n\n");
             }
-            $locationSubtitulos = str_replace(".webm", "-castellano.vtt", $location);
-            if (!file_exists($locationSubtitulos)) {
-                file_put_contents($locationSubtitulos, "WEBVTT FILE\n\n");
+            $locationSubtitulos2 = str_replace(".webm", "-ingles.vtt", $location);
+            if (!file_exists($locationSubtitulos2)) {
+                file_put_contents($locationSubtitulos2, "WEBVTT FILE\n\n");
             }
         }
     }

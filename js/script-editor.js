@@ -13,6 +13,7 @@ var cueActual; // VTTCue actual
 var cueProximo; // VTTCue siguiente, para gestionar el solapamiento
 var pathMetadata;
 var pathSubtitulos1;
+var pathVideoActual; // array con el path del video (2 posiciones si es .mp4 y .webm)
 var pathsVideos = []; // array doble de paths de videos [0]: .mp4 [1]: .webm
 // Si los datos se cargan del fichero y no se han modificado no se tienen que poder guardar de nuevo
 var datosYaGuardados = false; // hace referencia a cada cue
@@ -88,7 +89,7 @@ function cargarVideo(path) {
     descr += "detectado y cargado los ficheros de metadatos.";
     if ($("#file-selector").val() == null) {
         descr = "El vídeo se ha subido al servidor. También se han creado los ficheros ";
-        descr += "de metadatos vacíos porque no se han detectado metadatos para este vídeo."
+        descr += "de metadatos vacíos que faltaban para este vídeo."
     }
     crearAviso("alert-success", "Éxito:", descr, 5500);
 
@@ -110,6 +111,8 @@ function cargarVideo(path) {
     }
     // Si solo hay 1 extension
     if ((pathsVideos == null) || (pathsVideos[idx][1] == null)) {
+        pathVideoActual = [path];
+
         var ext = "video/mp4";
         if (!path.includes(".mp4")) ext = "video/webm";
         var src = document.createElement("source");
@@ -118,6 +121,8 @@ function cargarVideo(path) {
     }
     // Hay 2 extensiones del mismo video
     else {
+        pathVideoActual = [pathsVideos[idx][0], pathsVideos[idx][1]];
+
         var src = document.createElement("source");
         setAttributes(src, { id: "video-src1", src: pathsVideos[idx][0], type: "video/mp4" });
         video.appendChild(src);
@@ -146,27 +151,7 @@ function cargarVideo(path) {
         pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
     }
 
-
-    // Configurar los listeners del video
-    video.addEventListener('play', playPulsado);
-    video.addEventListener('pause', pausePulsado);
-    video.addEventListener('timeupdate', (event) => {
-        // Actualizar botones
-        if (($("#md-inicio").val() != "") && ($("#md-fin").val() != "") && video.paused) {
-            habilitarInputs(true);
-        }
-        else {
-            var cueActual = video.textTracks[0].activeCues[0];
-            if (cueActual != null && video.paused) {
-                habilitarInputs(true);
-                $("#bt-inicio").prop("disabled", true);
-                $("#bt-fin").prop("disabled", true);
-                $("#bt-eliminar").prop("disabled", false);
-                $("#bt-guardar").prop("disabled", true);
-            }
-            else habilitarInputs(false);
-        }
-    });
+    configurarListeners();
 }
 
 // Funcion que deja todos los campos de inputs (metadatos) en blanco
@@ -174,6 +159,7 @@ function borrarCampos() {
     $("#md-inicio").val('');
     $("#md-fin").val('');
     $("#md-español").val('');
+    $("#md-ingles").val('');
     $('#md-nombreComun').val('');
     $("#md-nombreCientifico").val('');
     $("#md-descripcion").val('');
@@ -215,15 +201,21 @@ function crearCue() {
     var startTime = $("#md-inicio").attr("name");
     var endTime = $("#md-fin").attr("name");
     var cue;
+    var cue2;
     if (subtitulos) {
         cue = new VTTCue(startTime, endTime, $('#md-español').val());
+        cue2 = new VTTCue(startTime, endTime, $('#md-ingles').val());
     }
     else {
         cue = new VTTCue(startTime, endTime, JSON.stringify(contenidoJSON));
         cue.id = $('#md-nombreComun').val().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     }
+
     video.textTracks[0].addCue(cue);
-    console.log(video.textTracks[0].cues);
+    if (subtitulos) {
+        video.textTracks[1].addCue(cue2);
+    }
+    //console.log(video.textTracks[0].cues);
 
     // Añadir listeners a la nueva cue
     cue.addEventListener('enter', event => {
@@ -242,13 +234,14 @@ function crearCue() {
 
     // Actualizar los campos de input
     borrarCampos();
-    updateDatos(cue);
+    //updateDatos(cue);
     $("#bt-eliminar").prop("disabled", false);
 }
 
 // Funcion que habilita/deshabilita los inputs segun el parametro
 function habilitarInputs(enable) {
     $("#md-español").prop("disabled", !enable);
+    $("#md-ingles").prop("disabled", !enable);
     $("#md-nombreComun").prop("disabled", !enable);
     $("#md-nombreCientifico").prop("disabled", !enable);
     $("#md-descripcion").prop("disabled", !enable);
@@ -271,7 +264,7 @@ function actualizarDropdownCues() {
 
     // Crear nuevas opciones
     var cues = video.textTracks[0].cues;
-    console.log(cues);
+    //console.log(cues);
     var select = document.getElementById("cue-selector");
     for (var i = 0; i < cues.length; i++) {
         // Guardar startTime y poner el titulo (id o parte del subtitulo)
@@ -317,6 +310,9 @@ function botonInicio() {
     // Borrar campo endTime (por si hubiese)
     $("#md-fin").val("");
     $("#md-fin").attr("name", "");
+
+    // Desmarcar "Set Final" (por si estuviese marcado)
+    $("#bt-fin").prop("disabled", true);
 }
 
 // Funcion que marca el endTime (en los inputs) de una posible nueva cue
@@ -348,6 +344,10 @@ function botonEliminar() {
 
     // Borrar cue del text track y actualizar dropdown de cues
     video.textTracks[0].removeCue(activeCues[0]);
+    if (subtitulos) {
+        var active2 = video.textTracks[1].activeCues[0];
+        video.textTracks[1].removeCue(active2);
+    }
     actualizarDropdownCues();
 
     // Dejar los campos en blanco
@@ -371,6 +371,12 @@ function botonGuardar() {
         if (activeCues.length > 0) {
             eliminado = true;
             video.textTracks[0].removeCue(activeCues[0]);
+            if (subtitulos) {
+                var active2 = video.textTracks[1].activeCues;
+                if (active2.length > 0) {
+                    video.textTracks[1].removeCue(active2[0]);
+                }
+            }
         }
     }
 
@@ -409,6 +415,9 @@ function botonGuardar() {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
+    console.log(video.textTracks[0].cues);
+    //console.log(video.textTracks[1].cues);
+
     // Evitar errores
     player.play();
     setTimeout(() => {
@@ -481,7 +490,10 @@ function updateDatos(cue) {
     $("#md-fin").attr("name", cueActual.endTime);
 
     if (subtitulos) {
+        //console.log(cueActual.text);
         $("#md-español").val(cueActual.text);
+        console.log(video.textTracks[1].activeCues[0]);
+        $("#md-ingles").val(video.textTracks[1].activeCues[0].text);
     }
     else {
         var info = JSON.parse(cueActual.text);
@@ -589,7 +601,8 @@ function revisarCamposVacios() {
     // Revisar si hay algun campo vacio
     var vacios = false;
     if (subtitulos) {
-        if ($("#md-español").val() == "") vacios = true;
+        if ($("#md-español").val() == "" && !vacios) vacios = true;
+        if ($("#md-ingles").val() == "" && !vacios) vacios = true;
     }
     else {
         if ($("#md-inicio").val() == "" && !vacios) vacios = true;
@@ -637,13 +650,32 @@ function cambiarTipoMetadatos() {
         document.getElementById("container-subtitulos").style.removeProperty("display");
         document.getElementById("container-metadatos").remove();
 
+        recargarVideo();
         // Cargar fichero de subtitulos
         var track2 = document.createElement("track");
         setAttributes(track2, { id: "español", kind: "subtitles", label: "Español", srclang: "es" });
         track2.setAttribute("src", pathSubtitulos1 + "?" + random);
-        track2.addEventListener("load", loadedMetadatos);
+        track2.addEventListener("load", (event) => {
+            video.textTracks[0].mode = "hidden";
+            video.textTracks[1].mode = "showing";
+        });
         track2.default = true;
         video.appendChild(track2);
+        var track3 = document.createElement("track");
+        setAttributes(track3, { id: "ingles", kind: "subtitles", label: "Inglés", srclang: "en" });
+        track3.setAttribute("src", pathSubtitulos1.replace("castellano", "ingles") + "?" + random);
+        track3.addEventListener("load", (event) => {
+            video.textTracks[1].mode = "hidden";
+            loadedMetadatos();
+        });
+        track3.default = true;
+        video.appendChild(track3);
+
+        // Inicializacion (de nuevo) del media player "plyr"
+        player = new Plyr('#miVideo', {
+            invertTime: false,
+            toggleInvert: false
+        });
     }
 }
 
@@ -762,12 +794,16 @@ function peticionSubirVideo() {
 function peticionSubirMetadatos() {
     var cues = video.textTracks[0].cues;
     var contenido = "WEBVTT FILE\n\n";
+    var contenido2 = contenido;
     for (var i = 0; i < cues.length; i++) {
         var start = formatSeconds(cues[i].startTime);
         var end = formatSeconds(cues[i].endTime);
         contenido += cues[i].id + "\n" + start + " --> " + end + " \n";
+        contenido2 += cues[i].id + "\n" + start + " --> " + end + " \n";
         if (subtitulos) {
+            var cues2 = video.textTracks[1].cues;
             contenido += cues[i].text + "\n\n";
+            contenido2 += cues2[i].text + "\n\n";
         }
         else {
             var info = JSON.parse(cues[i].text);
@@ -787,16 +823,21 @@ function peticionSubirMetadatos() {
         }
     }
 
-    var pth = "../" + pathMetadata;
+    var pth = ["../" + pathMetadata];
+    var cont = [contenido];
     if (subtitulos) {
-        pth = "../" + pathSubtitulos1;
+        var pth2 = "../" + pathSubtitulos1.replace("castellano", "ingles");
+        pth = [("../" + pathSubtitulos1), pth2];
+        cont = [contenido, contenido2];
     }
-    //console.log(contenido);
+
+    console.log(pth);
+    console.log(cont);
 
     // Peticion POST al servidor para subir los metadatos (o sobreescribirlos)
     $.post("php/uploadMetadata.php", {
         path: pth,
-        texto: contenido,
+        texto: cont,
         password: password
     })
         .done(function (data) {
@@ -909,4 +950,61 @@ function crearAviso(tipo, titulo, descr, tiempo) {
             });
         }, tiempo);
     }
+}
+
+// Funcion que recarga el video para cargar los subtitulos
+function recargarVideo() {
+    // Eliminar elemento video
+    video.remove();
+
+    // Crear elemento video
+    video = document.createElement("video");
+    setAttributes(video, { id: "miVideo", class: "w-100", playsinline: "", controls: "" });
+    video.setAttribute("data-poster", "");
+
+    // Crear elemento "source"
+    // Si solo hay 1 extension
+    console.log(pathVideoActual);
+    if ((pathVideoActual.length == 1)) {
+        var ext = "video/mp4";
+        if (!pathVideoActual[0].includes(".mp4")) ext = "video/webm";
+        var src = document.createElement("source");
+        setAttributes(src, { id: "video-src", src: pathVideoActual[0], type: ext });
+        video.appendChild(src);
+    }
+    // Hay 2 extensiones del mismo video
+    else {
+        var src = document.createElement("source");
+        setAttributes(src, { id: "video-src1", src: pathVideoActual[0], type: "video/mp4" });
+        video.appendChild(src);
+        var src = document.createElement("source");
+        setAttributes(src, { id: "video-src2", src: pathVideoActual[1], type: "video/webm" });
+        video.appendChild(src);
+    }
+    document.getElementById("wrapper-video").appendChild(video);
+    configurarListeners();
+}
+
+// Funcion que configura los listeners del video
+function configurarListeners() {
+    // Configurar los listeners del video
+    video.addEventListener('play', playPulsado);
+    video.addEventListener('pause', pausePulsado);
+    video.addEventListener('timeupdate', (event) => {
+        // Actualizar botones
+        if (($("#md-inicio").val() != "") && ($("#md-fin").val() != "") && video.paused) {
+            habilitarInputs(true);
+        }
+        else {
+            var cueActual = video.textTracks[0].activeCues[0];
+            if (cueActual != null && video.paused) {
+                habilitarInputs(true);
+                $("#bt-inicio").prop("disabled", true);
+                $("#bt-fin").prop("disabled", true);
+                $("#bt-eliminar").prop("disabled", false);
+                $("#bt-guardar").prop("disabled", true);
+            }
+            else habilitarInputs(false);
+        }
+    });
 }

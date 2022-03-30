@@ -1,0 +1,47 @@
+/* Footer */
+
+#gitFooter{
+    font-size: 20px;
+}
+  
+#faunaFooter{
+    font-size: 30px;
+}
+  
+#footer{
+    margin-top: 100px;
+}
+  
+.greenHighlight{
+    color: green;
+}
+  
+.greenHighlight:hover{
+    color: lawngreen;
+}
+  
+@media (max-width: 1200px) {
+    #footer{
+        margin-top: 150px;
+    }
+}
+  
+@media (max-width: 905px) {
+    #gitFooter{
+        font-size: 15px;
+    }
+    
+    #faunaFooter{
+        font-size: 25px;
+    }
+}
+  
+@media (max-width: 500px) {
+    #gitFooter{
+        font-size: 15px;
+    }
+    
+    #faunaFooter{
+        font-size: 20px;
+    }
+}

@@ -14,7 +14,10 @@ if (password_verify($_POST["password"], $hashCorrecto)) {
     exit;
 }
 
-$path = $_POST["path"];
-$contenido = $_POST["texto"];
-$output = file_put_contents($path, $contenido);
-echo $output;
+for ($i = 0; $i < count($_POST["path"]); $i++) {
+    $path = $_POST["path"][$i];
+    $contenido = $_POST["texto"][$i];
+    file_put_contents($path, $contenido);
+}
+
+echo "Correcto";

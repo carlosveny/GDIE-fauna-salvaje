@@ -35,6 +35,7 @@
     <script src="https://cdn.plyr.io/3.6.12/plyr.polyfilled.js"></script>
     <!-- Local -->
     <link rel="stylesheet" href="css/style-player.css">
+    <link rel="stylesheet" href="css/style-footer.css">
     <link rel="stylesheet" href="css/style-editor.css">
     <script src="js/script-editor.js"></script>
 </head>
@@ -121,7 +122,7 @@
                     </select>
                 </div>
                 <div class="row text-center mt-4">
-                    <div class="wrapper-video">
+                    <div id="wrapper-video" class="wrapper-video">
                         <video id="miVideo" class="w-100" playsinline controls data-poster="">
                             <!-- <source id="video-src" src="assets/animales.mp4" type="video/mp4" /> -->
                             <!-- <source src="/path/to/video.webm" type="video/webm" /> -->
@@ -309,12 +310,23 @@
                         </div>
                     </div>
                     <!-- Fila descripcion -->
-                    <div class="row mb-3">
+                    <div class="row">
                         <div class="col-1"></div>
                         <div class="col-10 ms-4 m-auto mt-1">
                             <div class="row mt-3">Subtítulos Español:</div>
-                            <div class="row mb-4">
+                            <div class="row mb-2">
                                 <textarea id="md-español" class="font-size-input" cols="40" rows="5"
+                                    oninput="revisarCamposVacios()"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-1"></div>
+                        <div class="col-10 ms-4 m-auto mt-1">
+                            <div class="row">Subtítulos Inglés:</div>
+                            <div class="row mb-4">
+                                <textarea id="md-ingles" class="font-size-input" cols="40" rows="5"
                                     oninput="revisarCamposVacios()"></textarea>
                             </div>
                         </div>
@@ -360,7 +372,7 @@
 
     <!-- Inicio Instrucciones -->
     <div class="mg-top-md"></div>
-    <div class="cont-instrucciones mb-3 m-auto">
+    <div class="cont-instrucciones m-auto">
         <h3 id="instrucciones" class="text-center">Instrucciones</h3>
         <div class="txt-instrucciones text-justify">
             <h5>Los siguientes pasos te ayudarán a incluir metadatos/subtítulos a un vídeo nuevo o un vídeo ya
@@ -402,7 +414,7 @@
                 cambios al
                 Servidor".
             </div>
-            <div class="paso"><strong>11.</strong>&nbsp;&nbsp;Si ya has terminado y quieres modificar otro vídeo o el
+            <div class="paso mg-bt-lg-neg"><strong>11.</strong>&nbsp;&nbsp;Si ya has terminado y quieres modificar otro vídeo o el
                 tipo de datos (metadatos/subtítulos) simplemente recarga la
                 página.
             </div>
@@ -427,6 +439,31 @@
         </form>
     </div>
     <!-- Fin Login -->
+
+    <!-- Inicio Footer -->
+    <footer id="footer" class="bg-dark">
+        <div class="container pt-3 pb-2">
+            <div class="row">
+                <div class="col text-center my-auto">
+                    <a id="faunaFooter" class="greenHighlight" href="#">
+                        Fauna Salvaje
+                    </a>
+                </div>
+                <div class="col text-center my-auto">
+                    <a id="gitFooter" class="greenHighlight no-padding-bottom"
+                        href="https://github.com/carlosveny/GDIE-fauna-salvaje" target="_blank">
+                        Repositorio GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="text-center p-1 text-white" style="font-size: 12px; background-color: rgba(0, 0, 0, 0.2);">
+            © 2022 Copyright: FaunaSalvaje
+        </div>
+    </footer>
+    <!-- Fin Footer -->
 </body>
 
 </html>
