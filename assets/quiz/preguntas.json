@@ -1,0 +1,24 @@
+[
+    {
+      "id": "cocodrilo",
+      "pregunta": "¿Qué comida prefieren los cocodrilos?",
+      "respuestaCorrecta": 0,
+      "respuestas": [
+        "Ñues",
+        "Gacelas",
+        "Peces"
+      ]
+    },
+    {
+        "id": "leon",
+        "pregunta": "¿Qué velocidad puede alcanzar un león?",
+        "respuestaCorrecta": 1,
+        "respuestas": [
+          "10km/h",
+          "50km/h",
+          "300km/h"
+        ]
+      }
+  ]
+  
+  

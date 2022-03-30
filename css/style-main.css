@@ -51,6 +51,41 @@
     text-align: justify;
 }
 
+.elementoQuiz{
+    width: 100%;
+    height: 100px;
+    margin: 5px;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    grid-auto-flow: column;
+    color: black;
+    font-size: 1.4rem;
+}
+
+.botonQuiz{
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    width: 150px;
+    height: 50px;
+    margin: 15px;
+    background-image: linear-gradient(45deg, green, greenyellow);
+    cursor: pointer;
+}
+
+.botonQuiz:hover{
+    background-image: linear-gradient(45deg, greenyellow, turquoise);
+}
+
+
+.disable-select {
+    -webkit-user-select: none;  
+    -moz-user-select: none;    
+    -ms-user-select: none;      
+    user-select: none;
+  }
+
 
 /* Aviso flotante (https://codepen.io/Dinamo/pen/rNVOZmr) */
 .myAlert-top{
@@ -200,6 +235,17 @@
     }
 }
 @media (max-width: 767px) {
+
+   /*  pendiente de cambio */
+.botonQuiz{
+    width: 100%;
+    height: 100px;
+    margin-top: 5px;
+    display: grid;
+	place-items: center;
+    color: black;
+    font-size: 1.4rem;
+}
 
 .myAlert-top{
     left: 5%;

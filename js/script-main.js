@@ -122,15 +122,15 @@ function reloadVideo(path) {
     // Cargar subtítulos
     var track2 = document.createElement("track");
     setAttributes(track2, { id: "track", kind: "subtitles", label: "Subtítulos" });
-    track2.setAttribute("src", pathSubtitulos1); 
+    track2.setAttribute("src", pathSubtitulos1);
     track2.default = true;
     video.appendChild(track2);
 
     //video.load();
-    if (recargando){
+    if (recargando) {
         video.play();
     }
-    
+
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -154,7 +154,7 @@ function loadedMetadatos() {
             $("#drop-animales").removeClass("filtroActivo");
             var activeCue = video.textTracks[0].activeCues[0];
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
-            if (!nuevoCambio){
+            if (!nuevoCambio) {
                 if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
                     var tiempo = siguienteCue(getNumCue(cueActual));
                     if (tiempo != null) {
@@ -169,7 +169,7 @@ function loadedMetadatos() {
                             video.pause();
                             clearFiltros();
                         }
-    
+
                     }
                 }
             }
@@ -238,7 +238,7 @@ function updateDatos(cue) {
 }
 
 //Función que borra todos los datos en pantalla (de momento no se usa porque probablemente cuando los metadatos empiecen desde el 00:00 no se notará nada)
-function clearDatos(){
+function clearDatos() {
     $("#nombreComun").html("");
     $("#nombreCientifico").text("");
     $("#descripcion").html("");
@@ -572,8 +572,8 @@ function actualizaFiltros(filtro, seleccion) {
             /* if (seleccion != videoActual){
                 clearDatos();
             } */
-            
-            
+
+
 
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
@@ -775,7 +775,7 @@ function updateMapa(continent) {
         }
         if (numContinent != 99) {
             newdata = data["features"][numContinent];
-        }else{
+        } else {
             newdata = data;
         }
         if (numContinent == 3) {
@@ -817,6 +817,48 @@ function updateMapa(continent) {
 
         map.setView({ lat: latitudCentro, lng: longitudCentro }, 2);
     })
+}
+
+/* ---------------------------------------------------------------------------- */
+
+// FUNCIONES QUIZ
+
+function inicioQuiz() {
+    console.log("quiz iniciado");
+    $.getJSON("assets/quiz/preguntas.json", function (json) {
+        console.log(json);
+        console.log(json[0].pregunta);
+        
+        var quiz = document.getElementById("quiz");
+        //Borrar botón inicio quiz
+        var botonquiz = document.getElementById("inicioQuiz");
+        botonquiz.remove();
+
+        //Crear divs de preguntas y respuestas
+        quiz.classList.add("quizPreguntas");
+
+        var perguntas = document.createElement("div");
+        var respuestas = document.createElement("div");
+
+        setAttributes(perguntas, { id: "preguntas", class: "elementoQuiz" });
+        setAttributes(respuestas, { id: "respuestas", class: "elementoQuiz" });
+
+        for (var i = 0; i < 3; i++){
+            var nuevoBoton = document.createElement("div");
+            setAttributes(nuevoBoton, {id: "botonQuiz"+i, class: "botonQuiz disable-select"});
+
+            respuestas.appendChild(nuevoBoton);
+        }
+
+        quiz.appendChild(perguntas);
+        quiz.appendChild(respuestas);
+
+        $("#botonQuiz0").html(json[0].respuestas[0]);
+        $("#botonQuiz1").html(json[0].respuestas[1]);
+        $("#botonQuiz2").html(json[0].respuestas[2]);
+
+        $("#preguntas").html(json[0].pregunta);
+    });
 }
 
 /* ---------------------------------------------------------------------------- */
