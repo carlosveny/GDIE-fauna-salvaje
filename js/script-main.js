@@ -19,10 +19,11 @@ var seleccionContinente = "todos";
 
 //Gestión funcionalidad filtros
 //var usadoFiltro = true;
+var hardPass = false;
 var seguirReproduccion = true;
 var filtroUsado = false; //indica si el cambio de cue se ha producido por los filtros
-                         // ya que en caso de ser así se debe ignorar el evento exit
-                         // del cue actual para que no se busque el cue siguiente
+// ya que en caso de ser así se debe ignorar el evento exit
+// del cue actual para que no se busque el cue siguiente
 
 //Gestión mapa
 var map;
@@ -157,7 +158,7 @@ function loadedMetadatos() {
                 + " // nuevocabmio: " + filtroUsado)
             //console.log("Nuevo cambio: " + filtroUsado)
 
-            if (seleccionAnimal == "todos"){
+            if (seleccionAnimal == "todos") {
                 updateTicks();
                 $("#drop-animales").removeClass("filtroActivo");
             }
@@ -165,7 +166,7 @@ function loadedMetadatos() {
 
             var activeCue = video.textTracks[0].activeCues[0];
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
-            if (!filtroUsado) {                
+            if (!filtroUsado || hardPass) {
                 if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
                     var tiempo = siguienteCue(getNumCue(cueActual));
                     if (tiempo != null) {
@@ -177,16 +178,16 @@ function loadedMetadatos() {
                             //console.log("alerta")
                             var descr = "Se han visualizado todos los animales que cumplen estos filtros"
                             crearAviso("alert-success", "Completado:", descr, 4000);
-                            video.currentTime = video.currentTime - 1; //para que al volver a reproducir se ejecute el exit de nuevo
+                            video.currentTime = video.currentTime - 0.2; //para que al volver a reproducir se ejecute el exit de nuevo
                             video.pause();
                             clearFiltros();
                         }
-
                     }
                 }
             }
             filtroUsado = false;
             seguirReproduccion = false;
+            hardPass = false;
 
             // Si justo empieza otra cue
             if (activeCue != null) {
@@ -427,6 +428,11 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionContinente = "todos";
             seleccionAnimal = seleccion;
 
+            $("#drop-alimentacion").removeClass("filtroActivo");
+            $("#drop-medio").removeClass("filtroActivo");
+            $("#drop-esqueleto").removeClass("filtroActivo");
+            $("#drop-continentes").removeClass("filtroActivo");
+
             if (seleccion == "todos") {
                 video.currentTime = 0;
                 filtroUsado = true;
@@ -447,10 +453,6 @@ function actualizaFiltros(filtro, seleccion) {
             //Se actualiza el feedback de los filtros
             if (seleccionAnimal != "todos") {
                 $("#drop-animales").addClass("filtroActivo");
-                $("#drop-alimentacion").removeClass("filtroActivo");
-                $("#drop-medio").removeClass("filtroActivo");
-                $("#drop-esqueleto").removeClass("filtroActivo");
-                $("#drop-continentes").removeClass("filtroActivo");
             } else {
                 $("#drop-animales").removeClass("filtroActivo");
             }
@@ -465,6 +467,12 @@ function actualizaFiltros(filtro, seleccion) {
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
                     filtroUsado = true;
+                    //console.log(getNumCue(cueActual))
+                    //console.log(i)
+                    if (getNumCue(cueActual) == i) {
+                        hardPass = true;
+                    }
+                    //console.log(hardPass)
                     break;
                 }
             }
@@ -492,6 +500,9 @@ function actualizaFiltros(filtro, seleccion) {
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
                     filtroUsado = true;
+                    if (getNumCue(cueActual) == i) {
+                        hardPass = true;
+                    }
                     break;
                 }
             }
@@ -519,6 +530,9 @@ function actualizaFiltros(filtro, seleccion) {
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
                     filtroUsado = true;
+                    if (getNumCue(cueActual) == i) {
+                        hardPass = true;
+                    }
                     break;
                 }
             }
@@ -546,6 +560,9 @@ function actualizaFiltros(filtro, seleccion) {
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
                     filtroUsado = true;
+                    if (getNumCue(cueActual) == i) {
+                        hardPass = true;
+                    }
                     break;
                 }
             }
@@ -581,8 +598,7 @@ function actualizaFiltros(filtro, seleccion) {
                 clearDatos();
             } */
 
-
-
+            filtroUsado = false;
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
             reloadVideo(filtro);
