@@ -4,9 +4,19 @@
       "pregunta": "¿Qué comida prefieren los cocodrilos?",
       "respuestaCorrecta": 0,
       "respuestas": [
-        "Ñues",
-        "Gacelas",
+        "Ñúes",
+        "Gallinas",
         "Peces"
+      ]
+    },
+    {
+      "id": "tigre",
+      "pregunta": "¿Qué velocidad puede alcanzar un tigre?",
+      "respuestaCorrecta": 1,
+      "respuestas": [
+        "10km/h",
+        "50km/h",
+        "300km/h"
       ]
     },
     {
@@ -15,8 +25,108 @@
         "respuestaCorrecta": 1,
         "respuestas": [
           "10km/h",
-          "50km/h",
-          "300km/h"
+          "40km/h",
+          "200km/h"
+        ]
+      },
+      {
+        "id": "loro",
+        "pregunta": "¿Cuánto puede llegar a medir un loro?",
+        "respuestaCorrecta": 2,
+        "respuestas": [
+          "1,50m",
+          "1cm",
+          "1m"
+        ]
+      },
+      {
+        "id": "pez payaso",
+        "pregunta": "¿Cuál de los siguientes colores tiene un pez payaso?",
+        "respuestaCorrecta": 1,
+        "respuestas": [
+          "Azul",
+          "Naranja",
+          "Verde"
+        ]
+      },
+      {
+        "id": "cebra",
+        "pregunta": "¿A qué família pertenece la cebra?",
+        "respuestaCorrecta": 0,
+        "respuestas": [
+          "Caballo",
+          "Jirafa",
+          "Okapi"
+        ]
+      },
+      {
+        "id": "medusa",
+        "pregunta": "¿Qué porcentaje de las medusas es agua?",
+        "respuestaCorrecta": 2,
+        "respuestas": [
+          "85%",
+          "90%",
+          "95%"
+        ]
+      },
+      {
+        "id": "flamenco",
+        "pregunta": "¿Qué esperanza de vida tiene un flamenco?",
+        "respuestaCorrecta": 0,
+        "respuestas": [
+          "30 años",
+          "10 años",
+          "50 años"
+        ]
+      },
+      {
+        "id": "abeja",
+        "pregunta": "¿Aproximadamente, cuántas especies de abeja existen?",
+        "respuestaCorrecta": 2,
+        "respuestas": [
+          "200",
+          "2.000",
+          "20.000"
+        ]
+      },
+      {
+        "id": "jirafa",
+        "pregunta": "¿Cuánto puede llegar a medir el cuello de una jirafa?",
+        "respuestaCorrecta": 0,
+        "respuestas": [
+          "3m",
+          "3,5m",
+          "4m"
+        ]
+      },
+      {
+        "id": "tangana dorada",
+        "pregunta": "¿Dónde se puede encontrar la Tangana Dorada?",
+        "respuestaCorrecta": 1,
+        "respuestas": [
+          "Antártida",
+          "América",
+          "Oceanía"
+        ]
+      },
+      {
+        "id": "mantis",
+        "pregunta": "¿Cuántos grados puede girar la cabeza una mantis religiosa?",
+        "respuestaCorrecta": 1,
+        "respuestas": [
+          "120º",
+          "180º",
+          "200º"
+        ]
+      },
+      {
+        "id": "arana",
+        "pregunta": "¿Cuál de las siguientes arañas es la más venenosa?",
+        "respuestaCorrecta": 0,
+        "respuestas": [
+          "Araña bananera",
+          "Araña lobo",
+          "Araña saltarina"
         ]
       }
   ]

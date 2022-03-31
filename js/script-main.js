@@ -1,31 +1,31 @@
 /* ---------------------------------------------------------------------------- */
-
-
+//
+//
 /* ---------------------------------------------------------------------------- */
 
 //GLOBAL
 var video; // objeto de video
-var cueActual; // VTTCue actual
+var cueActual = null; // VTTCue actual
 var allCues; //Cues del video actual
 
 var recargando = false;
 
-//Control filtros
+//CONTROL FILTROS
 var seleccionAnimal = "todos";
 var seleccionAlimentacion = "todos";
 var seleccionMedio = "todos";
 var seleccionEsqueleto = "todos";
 var seleccionContinente = "todos";
 
-//Gestión funcionalidad filtros
+//GESTIÓN FUNCIONALIDAD FILTROS
 //var usadoFiltro = true;
-var hardPass = false;
-var seguirReproduccion = true;
-var filtroUsado = false; //indica si el cambio de cue se ha producido por los filtros
+var hardPass = false; // Control especial para el caso en el que la modificación del filtro no genera un evento exit
+var seguirReproduccion = true; // Evita que se pause la reproducción si se ha modificado el filtro
+var filtroUsado = false; // Indica si el cambio de cue se ha producido por los filtros
 // ya que en caso de ser así se debe ignorar el evento exit
 // del cue actual para que no se busque el cue siguiente
 
-//Gestión mapa
+//GESTIÓN DEL MAPA
 var map;
 var geoJson;
 var geoJson2;
@@ -34,6 +34,13 @@ var pinAnimal;
 //                      Africa                      Asia                        America                      Europa                      Oceania                       Antártida
 var centroContinentes = [["2.089165", "23.420877"], ["32.833621", "90.013133"], ["14.585737", "-85.387716"], ["56.625777", "29.137090"], ["-27.718539", "142.608864"], ["-75.775488", "38.663171"]];
 
+//GESTIÓN QUIZ
+var quizIniciado = false;
+var aciertos = 0;
+var errores = 0;
+var preguntaActual;
+var respuestaCorrectaActual;
+var preguntasContestadas = [];
 
 /* ---------------------------------------------------------------------------- */
 //FUNCIONES
@@ -150,12 +157,17 @@ function loadedMetadatos() {
     for (var i = 0; i < cues.length; i++) {
         cues[i].addEventListener('enter', event => {
             updateDatos(event.target);
+            //probablemente falle
+            if (quizIniciado) {
+                actualizaQuiz();
+            }
+
         });
         cues[i].addEventListener('exit', event => {
-            console.log("Selección animal: " + seleccionAnimal + " // Selección alimentacion: " + seleccionAlimentacion
+            /* console.log("Selección animal: " + seleccionAnimal + " // Selección alimentacion: " + seleccionAlimentacion
                 + " // Selección medio: " + seleccionMedio + " // Selección esqueleto: " + seleccionEsqueleto
                 + " // Selección continente: " + seleccionContinente + " // seguirreproducción: " + seguirReproduccion
-                + " // nuevocabmio: " + filtroUsado)
+                + " // nuevocabmio: " + filtroUsado) */
             //console.log("Nuevo cambio: " + filtroUsado)
 
             if (seleccionAnimal == "todos") {
@@ -181,6 +193,7 @@ function loadedMetadatos() {
                             video.currentTime = video.currentTime - 0.2; //para que al volver a reproducir se ejecute el exit de nuevo
                             video.pause();
                             clearFiltros();
+                            resetQuiz();
                         }
                     }
                 }
@@ -415,6 +428,7 @@ function crearDivisorFiltro() {
 
 //Funcion que actualiza los cues que se van a mostrar según los filtros activos
 function actualizaFiltros(filtro, seleccion) {
+    resetQuiz();
     //console.log("filtro: " + filtro + " selección: " + seleccion);
     var combinacionPosible = false;
     switch (filtro) {
@@ -612,8 +626,6 @@ function clearFiltros() {
     //Si se ha entrado en la función por la selección de un filtro no borra nada
     //en caso contrario significa que el usuario ha tocado la barra de reproducción
 
-    console.log("clear");
-
     $("#drop-animales").removeClass("filtroActivo");
     $("#drop-alimentacion").removeClass("filtroActivo");
     $("#drop-medio").removeClass("filtroActivo");
@@ -730,9 +742,9 @@ function cargarMapa(continent) {
         geoJson = L.geoJson(data, {
         }).addTo(map);
 
-        geoJson.eachLayer(function (layer) {
+        /* geoJson.eachLayer(function (layer) {
             layer.bindPopup(layer.feature.properties.name);
-        });
+        }); */
 
         map.setView({ lat: 47.040182144806664, lng: 9.667968750000002 }, 0);
 
@@ -818,9 +830,9 @@ function updateMapa(continent) {
             }).addTo(map);
         }
 
-        geoJson.eachLayer(function (layer) {
+        /* geoJson.eachLayer(function (layer) {
             layer.bindPopup(layer.feature.properties.name);
-        });
+        }); */
 
         //Se marca con un pin la longitud y latitud del ficher vtt
         var pinIcon = L.icon({
@@ -848,42 +860,133 @@ function updateMapa(continent) {
 
 // FUNCIONES QUIZ
 
+// Función que inicializa el quiz tras pulsar el botón inicio
 function inicioQuiz() {
-    console.log("quiz iniciado");
+    quizIniciado = true;
     $.getJSON("assets/quiz/preguntas.json", function (json) {
-        console.log(json);
-        console.log(json[0].pregunta);
-
         var quiz = document.getElementById("quiz");
         //Borrar botón inicio quiz
         var botonquiz = document.getElementById("inicioQuiz");
         botonquiz.remove();
 
         //Crear divs de preguntas y respuestas
-        quiz.classList.add("quizPreguntas");
-
         var perguntas = document.createElement("div");
         var respuestas = document.createElement("div");
 
         setAttributes(perguntas, { id: "preguntas", class: "elementoQuiz" });
         setAttributes(respuestas, { id: "respuestas", class: "elementoQuiz" });
 
-        for (var i = 0; i < 3; i++) {
+        /* for (var i = 0; i < 3; i++) {
             var nuevoBoton = document.createElement("div");
-            setAttributes(nuevoBoton, { id: "botonQuiz" + i, class: "botonQuiz disable-select" });
-
+            setAttributes(nuevoBoton, { id: "botonQuiz" + i, class: "botonQuiz disable-select", onclick: "evaluarRespuesta(\'" + i + "\');" });
             respuestas.appendChild(nuevoBoton);
-        }
+        } */
+
+        //Añadir score
+        var score = document.createElement("div");
+        setAttributes(score, { id: "score" });
 
         quiz.appendChild(perguntas);
         quiz.appendChild(respuestas);
+        quiz.appendChild(score);
 
-        $("#botonQuiz0").html(json[0].respuestas[0]);
-        $("#botonQuiz1").html(json[0].respuestas[1]);
-        $("#botonQuiz2").html(json[0].respuestas[2]);
+        actualizaQuiz();
 
-        $("#preguntas").html(json[0].pregunta);
     });
+}
+
+function actualizaQuiz() {
+    //console.log("acutaliza quiz")
+    $.getJSON("assets/quiz/preguntas.json", function (json) {
+
+        respuestaCorrectaActual = null;
+
+        var divRespuestas = document.getElementById("respuestas");
+        divRespuestas.innerHTML = "";
+
+        for (var i = 0; i < 3; i++) {
+            var nuevoBoton = document.createElement("div");
+            setAttributes(nuevoBoton, { id: "botonQuiz" + i, class: "botonQuiz disable-select", onclick: "evaluarRespuesta(\'" + i + "\');" });
+            divRespuestas.appendChild(nuevoBoton);
+        }
+
+        var pregunta;
+        var respuestas = [];
+
+        var hayPregunta = false;
+        var contestada = false;
+
+        if (cueActual != null) {
+            var info = JSON.parse(cueActual.text);
+            //Buscar pregunta relacionada con el animal actual
+            for (var i = 0; i < json.length; i++) {
+                if (json[i].id == info.nombreComun.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()) {
+                    preguntaActual = i;
+                    pregunta = json[i].pregunta;
+                    respuestas = json[i].respuestas;
+                    respuestaCorrectaActual = json[i].respuestaCorrecta;
+                    if (preguntasContestadas.includes(i)) {
+                        contestada = true;
+                    } else {
+                        hayPregunta = true;
+                    }
+                }
+            }
+        }
+
+        //Añadir texto de pregunta a los divs
+        $("#botonQuiz0").html(respuestas[0]);
+        $("#botonQuiz1").html(respuestas[1]);
+        $("#botonQuiz2").html(respuestas[2]);
+
+
+        if (hayPregunta) {
+            $("#preguntas").html(pregunta);
+        } else {
+            $("#preguntas").html("Vaya... Parece que no hay pregunta para este animal.");
+            divRespuestas.innerHTML = "";
+        }
+        if (contestada) {
+            $("#preguntas").html("Ya has contestado esta pregunta.");
+            divRespuestas.innerHTML = "";
+        }
+
+
+        $("#score").html("Aciertos: " + aciertos + "<br>Errores: " + errores + "");
+    });
+}
+
+//Función que evalua la respuesta dada por el usuario y actualiza el score
+function evaluarRespuesta(numRespuesta) {
+    preguntasContestadas.push(preguntaActual);
+    //Eliminar botones de respuesta y indicar resultado
+    if (numRespuesta == respuestaCorrectaActual) {
+        $("#respuestas").html("Respuesta correcta!");
+        aciertos += 1;
+    } else {
+        $("#respuestas").html("Respuesta incorrecta...");
+        errores += 1;
+    }
+
+    //Modificar score
+    $("#score").html("Aciertos: " + aciertos + "<br>Errores: " + errores + "");
+
+}
+
+//Función que resetea el quiz y vuelve a mostrar el botón de inicio
+function resetQuiz() {
+    preguntasContestadas = [];
+    respuestaCorrectaActual = null;
+    preguntaActual = null;
+    quizIniciado = false;
+    aciertos = 0;
+    errores = 0;
+    var quiz = document.getElementById("quiz").innerHTML = "";
+    var inicio = document.createElement("div");
+    setAttributes(inicio, { id: "inicioQuiz", class: "disable-select", onclick: "inicioQuiz()" });
+    document.getElementById("quiz").appendChild(inicio);
+    var quiz = document.getElementById("inicioQuiz");
+    quiz.innerHTML = "INICIO QUIZ";
 }
 
 /* ---------------------------------------------------------------------------- */
