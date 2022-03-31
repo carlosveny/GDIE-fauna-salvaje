@@ -53,14 +53,14 @@
 
 .elementoQuiz{
     width: 100%;
-    height: 100px;
+    height: 80px;
     margin: 5px;
     display: grid;
     justify-content: center;
     align-content: center;
     grid-auto-flow: column;
     color: black;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
 }
 
 .botonQuiz{
@@ -121,7 +121,6 @@
 #bottom-container{
     margin-top: 30px;
     min-height: 200px;
-    height: 250px;
 }
 
 #map{
@@ -132,7 +131,7 @@
     margin-right: 30px;
 	display: grid;
 	place-items: center;
-	min-height: 200px;
+	min-height: 150px;
 	border: 6px solid;
 	padding: 1rem;
     border-image: linear-gradient(45deg, green, greenyellow) 1;
@@ -166,7 +165,7 @@
 }
 
 #footer{
-    margin-top: 100px;
+    margin-top: 50px;
 }
 
 /* Web responsive*/
@@ -174,6 +173,9 @@
 
 }
 @media (max-width: 1200px) {
+    .elementoQuiz{
+        height: 70px;
+    }
     #bottom-container{
         max-width: 800px !important;
     }
@@ -206,9 +208,6 @@
     #info{
         width: 570px;
     }
-    #footer{
-        margin-top: 150px;
-    }
     .myAlert-top{
         left: 15%;
         width: 70%;
@@ -238,13 +237,13 @@
 
    /*  pendiente de cambio */
 .botonQuiz{
-    width: 100%;
-    height: 100px;
-    margin-top: 5px;
-    display: grid;
-	place-items: center;
-    color: black;
-    font-size: 1.4rem;
+    width: 125px;
+    height: 40px;
+    margin: 5px;
+}
+
+.elementoQuiz{
+    font-size: 1.2rem;
 }
 
 .myAlert-top{
@@ -253,11 +252,30 @@
 }
 }
 @media (max-width: 600px) {
-
+    .botonQuiz{
+        width: 100px;
+        height: 30px;
+        margin: 5px;
+    }
+    
+    .elementoQuiz{
+        height: 40px;
+        font-size: 1rem;
+    }
 }
 @media (max-width: 500px) {
     #info{
         min-width: 200px; 
+    }
+    .botonQuiz{
+        width: 70px;
+        height: 25px;
+        margin: 5px;
+    }
+    
+    .elementoQuiz{
+        font-size: 0.8rem;
+        height: 40px;
     }
     #gitFooter{
         font-size: 15px;

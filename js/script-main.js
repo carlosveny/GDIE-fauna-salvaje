@@ -121,7 +121,7 @@ function reloadVideo(path) {
 
     // Cargar subtítulos
     var track2 = document.createElement("track");
-    setAttributes(track2, { id: "track", kind: "subtitles", label: "Subtítulos" });
+    setAttributes(track2, { id: "track", kind: "subtitles", label: "Español", srclang: "es" });
     track2.setAttribute("src", pathSubtitulos1);
     track2.default = true;
     video.appendChild(track2);
@@ -149,12 +149,13 @@ function loadedMetadatos() {
             updateDatos(event.target);
         });
         cues[i].addEventListener('exit', event => {
-            seleccionAnimal = "todos";
-            updateTicks();
-            $("#drop-animales").removeClass("filtroActivo");
+            
             var activeCue = video.textTracks[0].activeCues[0];
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
             if (!nuevoCambio) {
+                seleccionAnimal = "todos";
+            updateTicks();
+            $("#drop-animales").removeClass("filtroActivo");
                 if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
                     var tiempo = siguienteCue(getNumCue(cueActual));
                     if (tiempo != null) {
@@ -578,6 +579,7 @@ function actualizaFiltros(filtro, seleccion) {
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
             reloadVideo(filtro);
+            //updateDatos();
     }
     updateTicks();
 }
