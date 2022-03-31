@@ -20,7 +20,7 @@ var seleccionContinente = "todos";
 //Gestión funcionalidad filtros
 //var usadoFiltro = true;
 var seguirReproduccion = true;
-var nuevoCambio = false; //indica si el cambio de cue se ha producido por los filtros
+var filtroUsado = false; //indica si el cambio de cue se ha producido por los filtros
                          // ya que en caso de ser así se debe ignorar el evento exit
                          // del cue actual para que no se busque el cue siguiente
 
@@ -149,14 +149,13 @@ function loadedMetadatos() {
     for (var i = 0; i < cues.length; i++) {
         cues[i].addEventListener('enter', event => {
             updateDatos(event.target);
-            nuevoCambio = false;
         });
         cues[i].addEventListener('exit', event => {
-            /* console.log("Selección animal: " + seleccionAnimal + " // Selección alimentacion: " + seleccionAlimentacion
+            console.log("Selección animal: " + seleccionAnimal + " // Selección alimentacion: " + seleccionAlimentacion
                 + " // Selección medio: " + seleccionMedio + " // Selección esqueleto: " + seleccionEsqueleto
                 + " // Selección continente: " + seleccionContinente + " // seguirreproducción: " + seguirReproduccion
-                + " // nuevocabmio: " + nuevoCambio) */
-            //console.log("Nuevo cambio: " + nuevoCambio)
+                + " // nuevocabmio: " + filtroUsado)
+            //console.log("Nuevo cambio: " + filtroUsado)
 
             if (seleccionAnimal == "todos"){
                 updateTicks();
@@ -166,7 +165,7 @@ function loadedMetadatos() {
 
             var activeCue = video.textTracks[0].activeCues[0];
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
-            if (!nuevoCambio) {                
+            if (!filtroUsado) {                
                 if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
                     var tiempo = siguienteCue(getNumCue(cueActual));
                     if (tiempo != null) {
@@ -178,6 +177,7 @@ function loadedMetadatos() {
                             //console.log("alerta")
                             var descr = "Se han visualizado todos los animales que cumplen estos filtros"
                             crearAviso("alert-success", "Completado:", descr, 4000);
+                            video.currentTime = video.currentTime - 1; //para que al volver a reproducir se ejecute el exit de nuevo
                             video.pause();
                             clearFiltros();
                         }
@@ -185,7 +185,7 @@ function loadedMetadatos() {
                     }
                 }
             }
-            nuevoCambio = false;
+            filtroUsado = false;
             seguirReproduccion = false;
 
             // Si justo empieza otra cue
@@ -429,7 +429,7 @@ function actualizaFiltros(filtro, seleccion) {
 
             if (seleccion == "todos") {
                 video.currentTime = 0;
-                nuevoCambio = true;
+                filtroUsado = true;
                 video.play();
                 $("#drop-animales").removeClass("filtroActivo");
                 break;
@@ -440,7 +440,7 @@ function actualizaFiltros(filtro, seleccion) {
                 info = info.nombreComun.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                 if (info == seleccion) {
                     video.currentTime = allCues[i].startTime;
-                    nuevoCambio = true;
+                    filtroUsado = true;
                     break;
                 }
             }
@@ -464,7 +464,7 @@ function actualizaFiltros(filtro, seleccion) {
                     combinacionPosible = true;
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
-                    nuevoCambio = true;
+                    filtroUsado = true;
                     break;
                 }
             }
@@ -491,7 +491,7 @@ function actualizaFiltros(filtro, seleccion) {
                     combinacionPosible = true;
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
-                    nuevoCambio = true;
+                    filtroUsado = true;
                     break;
                 }
             }
@@ -518,7 +518,7 @@ function actualizaFiltros(filtro, seleccion) {
                     combinacionPosible = true;
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
-                    nuevoCambio = true;
+                    filtroUsado = true;
                     break;
                 }
             }
@@ -545,7 +545,7 @@ function actualizaFiltros(filtro, seleccion) {
                     combinacionPosible = true;
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
-                    nuevoCambio = true;
+                    filtroUsado = true;
                     break;
                 }
             }
