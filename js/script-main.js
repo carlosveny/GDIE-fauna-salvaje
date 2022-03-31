@@ -20,7 +20,9 @@ var seleccionContinente = "todos";
 //Gestión funcionalidad filtros
 //var usadoFiltro = true;
 var seguirReproduccion = true;
-var nuevoCambio = false;
+var nuevoCambio = false; //indica si el cambio de cue se ha producido por los filtros
+                         // ya que en caso de ser así se debe ignorar el evento exit
+                         // del cue actual para que no se busque el cue siguiente
 
 //Gestión mapa
 var map;
@@ -147,15 +149,24 @@ function loadedMetadatos() {
     for (var i = 0; i < cues.length; i++) {
         cues[i].addEventListener('enter', event => {
             updateDatos(event.target);
+            nuevoCambio = false;
         });
         cues[i].addEventListener('exit', event => {
-            
+            /* console.log("Selección animal: " + seleccionAnimal + " // Selección alimentacion: " + seleccionAlimentacion
+                + " // Selección medio: " + seleccionMedio + " // Selección esqueleto: " + seleccionEsqueleto
+                + " // Selección continente: " + seleccionContinente + " // seguirreproducción: " + seguirReproduccion
+                + " // nuevocabmio: " + nuevoCambio) */
+            //console.log("Nuevo cambio: " + nuevoCambio)
+
+            if (seleccionAnimal == "todos"){
+                updateTicks();
+                $("#drop-animales").removeClass("filtroActivo");
+            }
+            seleccionAnimal = "todos";
+
             var activeCue = video.textTracks[0].activeCues[0];
             //si el cue inmediatamente siguiente al actual no cumple los filtros se salta al siguiente que sí los cumpla
-            if (!nuevoCambio) {
-                seleccionAnimal = "todos";
-            updateTicks();
-            $("#drop-animales").removeClass("filtroActivo");
+            if (!nuevoCambio) {                
                 if (!cumpleFiltros(getNumCue(cueActual) + 1)) {
                     var tiempo = siguienteCue(getNumCue(cueActual));
                     if (tiempo != null) {
@@ -450,14 +461,10 @@ function actualizaFiltros(filtro, seleccion) {
             seleccionAnimal = "todos";
             for (var i = 0; i < allCues.length; i++) {
                 if (cumpleFiltros(i)) {
-                    console.log(i);
-                    console.log(cumpleFiltros(i))
                     combinacionPosible = true;
                     seguirReproduccion = true;
-                    console.log(allCues[i])
                     video.currentTime = allCues[i].startTime;
                     nuevoCambio = true;
-                    console.log(allCues[i].startTime)
                     break;
                 }
             }
@@ -579,7 +586,7 @@ function actualizaFiltros(filtro, seleccion) {
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
             reloadVideo(filtro);
-            //updateDatos();
+        //updateDatos();
     }
     updateTicks();
 }
@@ -830,7 +837,7 @@ function inicioQuiz() {
     $.getJSON("assets/quiz/preguntas.json", function (json) {
         console.log(json);
         console.log(json[0].pregunta);
-        
+
         var quiz = document.getElementById("quiz");
         //Borrar botón inicio quiz
         var botonquiz = document.getElementById("inicioQuiz");
@@ -845,9 +852,9 @@ function inicioQuiz() {
         setAttributes(perguntas, { id: "preguntas", class: "elementoQuiz" });
         setAttributes(respuestas, { id: "respuestas", class: "elementoQuiz" });
 
-        for (var i = 0; i < 3; i++){
+        for (var i = 0; i < 3; i++) {
             var nuevoBoton = document.createElement("div");
-            setAttributes(nuevoBoton, {id: "botonQuiz"+i, class: "botonQuiz disable-select"});
+            setAttributes(nuevoBoton, { id: "botonQuiz" + i, class: "botonQuiz disable-select" });
 
             respuestas.appendChild(nuevoBoton);
         }

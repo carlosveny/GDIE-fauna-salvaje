@@ -114,7 +114,7 @@
 }
 
 #info{
-    margin-right: 5px;
+    margin-right: 20px;
     min-width: 350px; 
 }
 
@@ -172,7 +172,7 @@
 @media (max-width: 1500px) {
 
 }
-@media (max-width: 1200px) {
+@media (max-width: 1250px) {
     .elementoQuiz{
         height: 70px;
     }
