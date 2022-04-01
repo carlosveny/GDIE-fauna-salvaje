@@ -158,7 +158,6 @@ function loadedMetadatos() {
     for (var i = 0; i < cues.length; i++) {
         cues[i].addEventListener('enter', event => {
             updateDatos(event.target);
-            //probablemente falle
             if (quizIniciado) {
                 actualizaQuiz();
             }
@@ -705,9 +704,7 @@ function peticionObtenerVideos() {
 //Función que carga e inicializa el mapa con todos los continentes marcados y el mínimo de zoom
 function cargarMapa(continent) {
     var myGeoJSONPath = 'assets/leaflet/continents.json';
-
     $.getJSON(myGeoJSONPath, function (data) {
-
         map = L.map('map');
         map.createPane('labels');
 
@@ -784,7 +781,6 @@ function updateMapa(continent) {
     var myGeoJSONPath = 'assets/leaflet/continents.json';
 
     $.getJSON(myGeoJSONPath, function (data) {
-        //console.log(data["features"]);
         var newdata;
 
         //Se elimina el pin actual
@@ -811,7 +807,7 @@ function updateMapa(continent) {
         geoJson = L.geoJson(newdata, {
         }).addTo(map);
 
-        //En el caso que el contiente sea América hay que marcar tanto norteamerica y sudamerica
+        //En el caso que el contiente sea América hay que marcar norteamerica y sudamerica
         if (numContinent == 3) {
             casoAmerica = true;
             geoJson2 = L.geoJson(newdata2, {
@@ -822,7 +818,7 @@ function updateMapa(continent) {
             layer.bindPopup(layer.feature.properties.name);
         }); */
 
-        //Se marca con un pin la longitud y latitud del ficher vtt
+        //Se marca con un pin la latitud y longitud del fichero vtt
         var pinIcon = L.icon({
             iconUrl: 'assets/icons/pin.ico',
             iconSize: [40, 40], // size of the icon
@@ -952,7 +948,6 @@ function evaluarRespuesta(numRespuesta) {
         $("#respuestas").html("Respuesta incorrecta...");
         errores += 1;
     }
-
     //Modificar score
     $("#score").html("Aciertos: " + aciertos + "<br>Errores: " + errores + "");
 }
