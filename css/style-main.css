@@ -99,6 +99,11 @@
     max-width: 1425px;
 }
 
+#margenGrande{
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
 #filtros{
     height: 3rem;
 }
@@ -220,6 +225,10 @@
     }
     #videotest{
         width: 800px;
+    }
+    #margenGrande{
+        margin-right: 0px;
+        margin-left: 0px;
     }
     #panel-der{
         margin-top: 20px;

@@ -1,7 +1,7 @@
-/* ---------------------------------------------------------------------------- */
-//
-//
-/* ---------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------
+    Código JavaScript para gestionar todas las modificaciones y eventos
+    producidos en la página principal.
+------------------------------------------------------------------------------ */
 
 //GLOBAL
 var video; // objeto de video
@@ -57,11 +57,6 @@ function loaded() {
         toggleInvert: false
     });
     peticionObtenerVideos();
-
-    /* video.onseeked = function () {
-        clearFiltros();
-    }; */
-
     cargarMapa("todo");
 }
 
@@ -149,7 +144,6 @@ function reloadVideo(path) {
     if (recargando) {
         video.play();
     }
-
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -158,8 +152,6 @@ function reloadVideo(path) {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
-    //console.log("loaded metadatos")
-    //console.log(video.textTracks[0].cues);
     // Configurar los eventos de los metadatos
     var cues = video.textTracks[0].cues;
     allCues = cues;
@@ -170,15 +162,8 @@ function loadedMetadatos() {
             if (quizIniciado) {
                 actualizaQuiz();
             }
-
         });
         cues[i].addEventListener('exit', event => {
-            /* console.log("Selección animal: " + seleccionAnimal + " // Selección alimentacion: " + seleccionAlimentacion
-                + " // Selección medio: " + seleccionMedio + " // Selección esqueleto: " + seleccionEsqueleto
-                + " // Selección continente: " + seleccionContinente + " // seguirreproducción: " + seguirReproduccion
-                + " // nuevocabmio: " + filtroUsado) */
-            //console.log("Nuevo cambio: " + filtroUsado)
-
             if (seleccionAnimal == "todos") {
                 updateTicks();
                 $("#drop-animales").removeClass("filtroActivo");
@@ -196,7 +181,6 @@ function loadedMetadatos() {
                         if (seguirReproduccion) {
                             //console.log("seguir reproduccion");
                         } else {
-                            //console.log("alerta")
                             var descr = "Se han visualizado todos los animales que cumplen estos filtros"
                             crearAviso("alert-success", "Completado:", descr, 4000);
                             video.currentTime = video.currentTime - 0.2; //para que al volver a reproducir se ejecute el exit de nuevo
@@ -230,10 +214,6 @@ function updateDatos(cue) {
         return;
     }
     cueActual = cue;
-
-    //var textTracks = video.textTracks;
-    //var cues = textTracks[0].cues;
-    //console.log(JSON.parse(cues[0].text));
 
     var info = JSON.parse(cueActual.text);
     $("#nombreComun").text(info.nombreComun);
@@ -441,8 +421,6 @@ function actualizaFiltros(filtro, seleccion) {
     //console.log("filtro: " + filtro + " selección: " + seleccion);
     var combinacionPosible = false;
     switch (filtro) {
-        /* case "video":
-             break;*/
         case "animales":
             //Si se selecciona un animal concreto se eliminan todos los filtros
             seleccionAlimentacion = "todos";
@@ -490,12 +468,9 @@ function actualizaFiltros(filtro, seleccion) {
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
                     filtroUsado = true;
-                    //console.log(getNumCue(cueActual))
-                    //console.log(i)
                     if (getNumCue(cueActual) == i) {
                         hardPass = true;
                     }
-                    //console.log(hardPass)
                     break;
                 }
             }
@@ -625,7 +600,6 @@ function actualizaFiltros(filtro, seleccion) {
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
             reloadVideo(filtro);
-        //updateDatos();
     }
     updateTicks();
 }
@@ -648,7 +622,6 @@ function clearFiltros() {
     seleccionAnimal = "todos";
 
     updateTicks();
-
 }
 
 
@@ -866,7 +839,6 @@ function updateMapa(continent) {
         pinAnimal = L.marker([latitud, longitud], { icon: pinIcon }).addTo(map);
 
         //Se posiciona la vista en el centro del continente
-
         map.setView({ lat: latitudCentro, lng: longitudCentro }, 2);
     })
 }
@@ -906,7 +878,6 @@ function inicioQuiz() {
         quiz.appendChild(score);
 
         actualizaQuiz();
-
     });
 }
 
@@ -966,7 +937,6 @@ function actualizaQuiz() {
             divRespuestas.innerHTML = "";
         }
 
-
         $("#score").html("Aciertos: " + aciertos + "<br>Errores: " + errores + "");
     });
 }
@@ -985,7 +955,6 @@ function evaluarRespuesta(numRespuesta) {
 
     //Modificar score
     $("#score").html("Aciertos: " + aciertos + "<br>Errores: " + errores + "");
-
 }
 
 //Función que resetea el quiz y vuelve a mostrar el botón de inicio
@@ -1152,64 +1121,3 @@ function updateTicks() {
     setAttributes(tick, { id: identificadorTick, class: "tickFiltros", src: "assets/icons/check-mark.ico" });
     link.appendChild(tick);
 }
-
-//Función que carga un video en el player con sus correspondientes tracks
-/* function cargarVideo(path) {
-    // Si es un objeto se ha elegido un video existente
-    if ((typeof path) == "object") {
-        path = path.value;
-        console.log(path);
-    }
-
-    var pathMP4, pathWebm;
-    if (path.includes(".mp4")) {
-        pathMP4 = path;
-        pathWebm = path.replace("mp4", "webm");
-    }
-    else {
-        pathWebm = path;
-        pathMP4 = path.replace("webm", "mp4");
-    }
-
-    // Crear elemento "source" con MP4
-    var src = document.createElement("source");
-    setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
-    video.appendChild(src);
-
-    // Crear elemento "source" con webm
-    var src2 = document.createElement("source");
-    setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
-    video.appendChild(src2);
-
-    var pathMetadata;
-    var pathSubtitulos1;
-
-    // Cargar fichero de metadatos
-    if (path.includes(".mp4")) {
-        pathMetadata = path.replace(".mp4", "-metadata.vtt");
-        pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
-    }
-    else {
-        pathMetadata = path.replace(".webm", "-metadata.vtt");
-        pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
-    }
-
-    // Cargar fichero de metadatos
-    var track = document.createElement("track");
-    setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
-    var random = Math.random();
-    track.setAttribute("src", pathMetadata + "?" + random); //Añadido ? + random cortesía de carlos
-    track.default = true;
-    track.addEventListener("load", loadedMetadatos);
-    //Inicialización botones filtros al cargarse los cues
-    track.addEventListener("load", cargarFiltros);
-    video.appendChild(track);
-
-    // Cargar subtítulos
-    var track2 = document.createElement("track");
-    setAttributes(track2, { id: "track", kind: "subtitles", label: "Subtítulos" });
-    track2.setAttribute("src", pathSubtitulos1); 
-    track2.default = true;
-    video.appendChild(track2);
-
-} */
