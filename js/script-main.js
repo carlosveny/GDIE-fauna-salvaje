@@ -598,6 +598,7 @@ function actualizaFiltros(filtro, seleccion) {
             filtroUsado = false;
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
+            borrarMetadatos();
             reloadVideo(filtro);
     }
     updateTicks();
@@ -621,6 +622,27 @@ function clearFiltros() {
     seleccionAnimal = "todos";
 
     updateTicks();
+}
+
+//Función que borra todos los metadatos que aparecen en pantalla
+function borrarMetadatos() {
+    $("#nombreComun").text("");
+    $("#nombreCientifico").text("");
+    $("#descripcion").html("");
+
+    updateMapa("todos");
+
+    $("#alimentacion").text("");
+    $("#iconoAlimentacion").attr("src", "");
+    $("#lock-alimentacion").attr("src", "");
+
+    $("#medio").text("");
+    $("#iconoMedio").attr("src", "");
+    $("#lock-medio").attr("src", "");
+
+    $("#esqueleto").text("");
+    $("#iconoEsqueleto").attr("src", "");
+    $("#lock-esqueleto").attr("src", "");
 }
 
 
@@ -686,7 +708,7 @@ function peticionObtenerVideos() {
 
             // Por defecto carga el video "Wild Life"
             var idx_WildLife = 0;
-            for (var i=0; i<paths.length; i++) {
+            for (var i = 0; i < paths.length; i++) {
                 if (paths[i].includes("Wild Life.mp4")) {
                     idx_WildLife = i;
                 }
@@ -776,6 +798,8 @@ function updateMapa(continent) {
             break;
         default:
             var numContinent = 99;
+            latitudCentro = 47.040182144806664;
+            longitudCentro = 9.667968750000002;
     }
     //path de los datos de fronteras de los continentes
     var myGeoJSONPath = 'assets/leaflet/continents.json';
@@ -832,10 +856,15 @@ function updateMapa(continent) {
         //console.log(latitud);
         //console.log(longitud)
 
-        pinAnimal = L.marker([latitud, longitud], { icon: pinIcon }).addTo(map);
+        if (numContinent != 99) {
+            pinAnimal = L.marker([latitud, longitud], { icon: pinIcon }).addTo(map);
+            //Se posiciona la vista en el centro del continente
+            map.setView({ lat: latitudCentro, lng: longitudCentro }, 2);
+        } else {
+            map.setView({ lat: latitudCentro, lng: longitudCentro }, 0);
+        }
 
-        //Se posiciona la vista en el centro del continente
-        map.setView({ lat: latitudCentro, lng: longitudCentro }, 2);
+
     })
 }
 
