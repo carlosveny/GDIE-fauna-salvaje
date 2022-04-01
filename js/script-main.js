@@ -153,8 +153,11 @@ function reloadVideo(path) {
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
     // Configurar los eventos de los metadatos
+    console.log("loaded metadatos")
     var cues = video.textTracks[0].cues;
     allCues = cues;
+    cueActual = video.textTracks[0].cues[0];
+    updateDatos(cueActual);
     for (var i = 0; i < cues.length; i++) {
         cues[i].addEventListener('enter', event => {
             updateDatos(event.target);
@@ -601,6 +604,7 @@ function actualizaFiltros(filtro, seleccion) {
             borrarMetadatos();
             cueActual = null;
             reloadVideo(filtro);
+
     }
     updateTicks();
 }
@@ -851,13 +855,14 @@ function updateMapa(continent) {
             popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
 
-        var info = JSON.parse(cueActual.text);
-        var latitud = info.geoLat;
-        var longitud = info.geoLong;
-        //console.log(latitud);
-        //console.log(longitud)
+
 
         if (numContinent != 99) {
+            var info = JSON.parse(cueActual.text);
+            var latitud = info.geoLat;
+            var longitud = info.geoLong;
+            //console.log(latitud);
+            //console.log(longitud)
             pinAnimal = L.marker([latitud, longitud], { icon: pinIcon }).addTo(map);
             //Se posiciona la vista en el centro del continente
             map.setView({ lat: latitudCentro, lng: longitudCentro }, 2);
