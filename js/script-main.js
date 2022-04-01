@@ -1,7 +1,7 @@
-/* ---------------------------------------------------------------------------- */
-//
-//
-/* ---------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------
+    Código JavaScript para gestionar todas las modificaciones y eventos
+    producidos en la página principal.
+------------------------------------------------------------------------------ */
 
 //GLOBAL
 var video; // objeto de video
@@ -57,11 +57,6 @@ function loaded() {
         toggleInvert: false
     });
     peticionObtenerVideos();
-
-    /* video.onseeked = function () {
-        clearFiltros();
-    }; */
-
     cargarMapa("todo");
 }
 
@@ -148,7 +143,6 @@ function reloadVideo(path) {
     if (recargando) {
         video.play();
     }
-
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -157,8 +151,6 @@ function reloadVideo(path) {
 
 // Funcion que se ejecuta al cargarse los metadatos y configura los listeners
 function loadedMetadatos() {
-    //console.log("loaded metadatos")
-    //console.log(video.textTracks[0].cues);
     // Configurar los eventos de los metadatos
     var cues = video.textTracks[0].cues;
     allCues = cues;
@@ -169,15 +161,8 @@ function loadedMetadatos() {
             if (quizIniciado) {
                 actualizaQuiz();
             }
-
         });
         cues[i].addEventListener('exit', event => {
-            /* console.log("Selección animal: " + seleccionAnimal + " // Selección alimentacion: " + seleccionAlimentacion
-                + " // Selección medio: " + seleccionMedio + " // Selección esqueleto: " + seleccionEsqueleto
-                + " // Selección continente: " + seleccionContinente + " // seguirreproducción: " + seguirReproduccion
-                + " // nuevocabmio: " + filtroUsado) */
-            //console.log("Nuevo cambio: " + filtroUsado)
-
             if (seleccionAnimal == "todos") {
                 updateTicks();
                 $("#drop-animales").removeClass("filtroActivo");
@@ -195,7 +180,6 @@ function loadedMetadatos() {
                         if (seguirReproduccion) {
                             //console.log("seguir reproduccion");
                         } else {
-                            //console.log("alerta")
                             var descr = "Se han visualizado todos los animales que cumplen estos filtros"
                             crearAviso("alert-success", "Completado:", descr, 4000);
                             video.currentTime = video.currentTime - 0.2; //para que al volver a reproducir se ejecute el exit de nuevo
@@ -229,10 +213,6 @@ function updateDatos(cue) {
         return;
     }
     cueActual = cue;
-
-    //var textTracks = video.textTracks;
-    //var cues = textTracks[0].cues;
-    //console.log(JSON.parse(cues[0].text));
 
     var info = JSON.parse(cueActual.text);
     $("#nombreComun").text(info.nombreComun);
@@ -440,8 +420,6 @@ function actualizaFiltros(filtro, seleccion) {
     //console.log("filtro: " + filtro + " selección: " + seleccion);
     var combinacionPosible = false;
     switch (filtro) {
-        /* case "video":
-             break;*/
         case "animales":
             //Si se selecciona un animal concreto se eliminan todos los filtros
             seleccionAlimentacion = "todos";
@@ -489,12 +467,9 @@ function actualizaFiltros(filtro, seleccion) {
                     seguirReproduccion = true;
                     video.currentTime = allCues[i].startTime;
                     filtroUsado = true;
-                    //console.log(getNumCue(cueActual))
-                    //console.log(i)
                     if (getNumCue(cueActual) == i) {
                         hardPass = true;
                     }
-                    //console.log(hardPass)
                     break;
                 }
             }
@@ -624,7 +599,6 @@ function actualizaFiltros(filtro, seleccion) {
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
             reloadVideo(filtro);
-        //updateDatos();
     }
     updateTicks();
 }
@@ -647,7 +621,6 @@ function clearFiltros() {
     seleccionAnimal = "todos";
 
     updateTicks();
-
 }
 
 
@@ -865,7 +838,6 @@ function updateMapa(continent) {
         pinAnimal = L.marker([latitud, longitud], { icon: pinIcon }).addTo(map);
 
         //Se posiciona la vista en el centro del continente
-
         map.setView({ lat: latitudCentro, lng: longitudCentro }, 2);
     })
 }
@@ -905,7 +877,6 @@ function inicioQuiz() {
         quiz.appendChild(score);
 
         actualizaQuiz();
-
     });
 }
 
@@ -965,7 +936,6 @@ function actualizaQuiz() {
             divRespuestas.innerHTML = "";
         }
 
-
         $("#score").html("Aciertos: " + aciertos + "<br>Errores: " + errores + "");
     });
 }
@@ -984,7 +954,6 @@ function evaluarRespuesta(numRespuesta) {
 
     //Modificar score
     $("#score").html("Aciertos: " + aciertos + "<br>Errores: " + errores + "");
-
 }
 
 //Función que resetea el quiz y vuelve a mostrar el botón de inicio
