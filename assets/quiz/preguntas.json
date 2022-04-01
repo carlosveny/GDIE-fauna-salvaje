@@ -121,12 +121,12 @@
       },
       {
         "id": "arana",
-        "pregunta": "¿Cuál de las siguientes arañas es la más venenosa?",
+        "pregunta": "¿Qué araña es la más venenosa?",
         "respuestaCorrecta": 0,
         "respuestas": [
-          "Araña bananera",
-          "Araña lobo",
-          "Araña saltarina"
+          "Bananera",
+          "Lobo",
+          "Saltarina"
         ]
       }
   ]
