@@ -599,6 +599,7 @@ function actualizaFiltros(filtro, seleccion) {
             //en este caso "filtro" no contiene el tipo de filtro sino el path del video
             //para mantener mayúsculas y extensión del video
             borrarMetadatos();
+            cueActual = null;
             reloadVideo(filtro);
     }
     updateTicks();
