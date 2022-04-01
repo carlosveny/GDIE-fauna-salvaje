@@ -501,7 +501,7 @@ function actualizaFiltros(filtro, seleccion) {
             //Comprobar si la combinación de filtros es posible
             if (!combinacionPosible) {
                 seleccionAlimentacion = "todos";
-                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación"
+                var descr = "No hay ningún animal que cumpla los requisitos de filtrado. Prueba otra combinación."
                 crearAviso("alert-danger", "Error:", descr, 4000);
             }
             //Se actualiza el feedback de los filtros
@@ -718,7 +718,6 @@ function peticionObtenerVideos() {
                     idx_WildLife = i;
                 }
             }
-            console.log(paths[idx_WildLife]);
             reloadVideo(paths[idx_WildLife]);
             recargando = true;
         });
