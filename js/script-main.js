@@ -108,15 +108,18 @@ function reloadVideo(path) {
 
     var pathMetadata;
     var pathSubtitulos1;
+    var pathSubtitulos2;
 
     // Cargar fichero de metadatos
     if (path.includes(".mp4")) {
         pathMetadata = path.replace(".mp4", "-metadata.vtt");
         pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
+        pathSubtitulos2 = path.replace(".mp4", "-ingles.vtt");
     }
     else {
         pathMetadata = path.replace(".webm", "-metadata.vtt");
         pathSubtitulos1 = path.replace(".webm", "-castellano.vtt");
+        pathSubtitulos2 = path.replace(".webm", "-ingles.vtt");
     }
 
     // Cargar fichero de metadatos
@@ -129,12 +132,17 @@ function reloadVideo(path) {
     track.addEventListener("load", cargarFiltros);
     video.appendChild(track);
 
-    // Cargar subtítulos
+    // Cargar subtítulos (español e ingles)
     var track2 = document.createElement("track");
-    setAttributes(track2, { id: "track", kind: "subtitles", label: "Español", srclang: "es" });
+    setAttributes(track2, { id: "track2", kind: "subtitles", label: "Español", srclang: "es" });
     track2.setAttribute("src", pathSubtitulos1);
     track2.default = true;
     video.appendChild(track2);
+    var track3 = document.createElement("track");
+    setAttributes(track3, { id: "track3", kind: "subtitles", label: "Inglés", srclang: "en" });
+    track3.setAttribute("src", pathSubtitulos2);
+    track3.default = true;
+    video.appendChild(track3);
 
     //video.load();
     if (recargando) {
@@ -703,8 +711,15 @@ function peticionObtenerVideos() {
                 document.getElementById("filtroVideos").appendChild(filtro);
             }
 
-            //Por defecto carga el primer video
-            reloadVideo(paths[0]);
+            // Por defecto carga el video "Wild Life"
+            var idx_WildLife = 0;
+            for (var i=0; i<paths.length; i++) {
+                if (paths[i].includes("Wild Life.mp4")) {
+                    idx_WildLife = i;
+                }
+            }
+            console.log(paths[idx_WildLife]);
+            reloadVideo(paths[idx_WildLife]);
             recargando = true;
         });
 }
