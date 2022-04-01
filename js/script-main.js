@@ -110,7 +110,7 @@ function reloadVideo(path) {
     var pathSubtitulos1;
     var pathSubtitulos2;
 
-    // Cargar fichero de metadatos
+    // Actualizar variables metadatos/subtitulos
     if (path.includes(".mp4")) {
         pathMetadata = path.replace(".mp4", "-metadata.vtt");
         pathSubtitulos1 = path.replace(".mp4", "-castellano.vtt");
@@ -123,9 +123,10 @@ function reloadVideo(path) {
     }
 
     // Cargar fichero de metadatos
+    var random = Math.floor(Math.random() * 10000);
     var track = document.createElement("track");
     setAttributes(track, { id: "track", kind: "metadata", label: "Metadatos" });
-    track.setAttribute("src", pathMetadata);
+    track.setAttribute("src", pathMetadata + "?" + random);
     track.default = true;
     track.addEventListener("load", loadedMetadatos);
     //Inicialización botones filtros al cargarse los cues
@@ -135,12 +136,12 @@ function reloadVideo(path) {
     // Cargar subtítulos (español e ingles)
     var track2 = document.createElement("track");
     setAttributes(track2, { id: "track2", kind: "subtitles", label: "Español", srclang: "es" });
-    track2.setAttribute("src", pathSubtitulos1);
+    track2.setAttribute("src", pathSubtitulos1 + "?" + random);
     track2.default = true;
     video.appendChild(track2);
     var track3 = document.createElement("track");
     setAttributes(track3, { id: "track3", kind: "subtitles", label: "Inglés", srclang: "en" });
-    track3.setAttribute("src", pathSubtitulos2);
+    track3.setAttribute("src", pathSubtitulos2 + "?" + random);
     track3.default = true;
     video.appendChild(track3);
 
