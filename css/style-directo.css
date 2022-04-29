@@ -1,3 +1,10 @@
 .video {
-    height: 70vh;
+    width: 90%;
+    border: 1px solid black;
+}
+
+.comentarios {
+    width: 90%;
+    height: 600px;
+    border: 1px solid black;
 }
