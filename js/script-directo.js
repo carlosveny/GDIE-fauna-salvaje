@@ -4,7 +4,7 @@
 */
 
 // VARIABLES GLOBALES
-var ws = new WebSocket("ws://localhost:8895/ws"); //open a web socket from javascript
+var ws = new WebSocket("ws://https://alumnes-ltim.uib.es/gdie2208/:8895"); //open a web socket from javascript
 
 function loaded() {
     playVideoFromCamera();
