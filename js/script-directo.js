@@ -4,7 +4,7 @@
 */
 
 // VARIABLES GLOBALES
-var ws = new WebSocket("ws://localhost:8895"); //open a web socket from javascript
+var ws = new WebSocket("ws://130.206.30.11:8895"); //open a web socket from javascript
 
 function loaded() {
     playVideoFromCamera();
