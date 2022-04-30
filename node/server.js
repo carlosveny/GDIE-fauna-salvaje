@@ -1,8 +1,8 @@
 var WebSocketServer = require('ws').Server;
-var ws = new WebSocketServer({ port: 8095 });
+var ws = new WebSocketServer({ port: 8895 });
 
 ws.on('listening', function () {
-	console.log("Server started with port 8095");
+	console.log("Server started with port 8895");
 });
 
 ws.on('connection', function (connection) {
