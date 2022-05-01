@@ -1,4 +1,6 @@
 assets/animales.mp4
 assets/videos/
-node
+node/node_modules
+node/package.json
+node/package-lock.json
 **/.DS_Store
