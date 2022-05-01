@@ -1,10 +1,17 @@
-.video {
+.contenedor-video {
     width: 90%;
+    margin-right: auto;
+    margin-left: auto;
+}
+.contenedor-comments {
+    width: 90%;
+    height: 600px;
+    margin-right: auto;
+    margin-left: auto;
     border: 1px solid black;
 }
 
-.comentarios {
-    width: 90%;
-    height: 600px;
+.video {
+    width: 100%;
     border: 1px solid black;
 }

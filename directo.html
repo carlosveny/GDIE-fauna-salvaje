@@ -85,12 +85,29 @@
     </header>
     <!-- Fin Navbar -->
 
-    <div class="row mt-5">
-        <div class="col-md-8 text-center">
-            <video class="video" id="localVideo" autoplay></video>
-        </div>
-        <div class="col-md-4">
-            <div class="comentarios"></div>
+    <div class="container-fluid text-center mt-3">
+        <div class="row mt-5">
+            <div class="col-md-8 text-center">
+                <div class="contenedor-video">
+                    <video class="video" id="localVideo" autoplay></video>
+                </div>
+                
+            </div>
+            <div class="col-md-4">
+                <div class="contenedor-comments">
+                    <div class="row">
+                        <div class="col">
+                            Nombre:
+                        </div>
+                        <div class="col">
+                            <input id="username" class="">
+                        </div>
+                        <div class="col">
+                            <button onclick="setUsername()">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
