@@ -58,6 +58,7 @@
     border-radius: 4px;
     border: 1px solid #858585;
     width: 60px;
+    text-align: center;
 }
 .boton:hover:enabled {
     background-color: #c0d8ff;
@@ -67,6 +68,7 @@
     border-radius: 4px;
     border: 1px solid #858585;
     width: 65px;
+    text-align: center;
 }
 .boton-enviar:hover:enabled {
     background-color: #c0ffcc;
