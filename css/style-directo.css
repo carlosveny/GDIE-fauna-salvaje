@@ -19,4 +19,9 @@
     width: 100%;
     height: 90%;
     border: 1px solid gray;
+    overflow-y: auto;
+}
+
+.comentario:hover {
+    background-color: rgb(247, 247, 247);
 }

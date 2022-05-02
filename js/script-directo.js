@@ -28,6 +28,14 @@ function gestionarMensaje(mensaje) {
                 peticionUsuario();
             }
             break;
+        
+        case "mensaje":
+            var comment = document.createElement("div");
+            comment.setAttribute("class", "mt-1, comentario");
+            var tiempo = "[" + formatTime(mensaje["fecha"]) + "]";
+            var nombre = " <strong>" + mensaje["usuario"] + ": </strong>";
+            comment.innerHTML = tiempo + nombre + mensaje["mensaje"];
+            document.getElementById("comentarios").appendChild(comment);
     }
 }
 
@@ -102,4 +110,14 @@ function connect() {
     ws.onclose = function () {
         console.log("Conexión terminada");
     };
+}
+
+/* ---------------------------------------------------------------------------- */
+
+// FUNCIONES AUXILIARES
+
+// Funcion para formatear el tiempo en horas minutos y segundos
+function formatTime(ms) {
+    var d = new Date(ms);
+    return d.toLocaleTimeString();
 }
