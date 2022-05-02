@@ -1,3 +1,7 @@
+.bg {
+    background-color: rgb(255, 253, 250);
+}
+
 .contenedor-video {
     width: 90%;
     margin-right: auto;
@@ -11,17 +15,71 @@
 .contenedor-comments {
     width: 90%;
     height: calc(100vh - 180px);
+    min-height: 300px;
     margin-right: auto;
     margin-left: auto;
     border: 1px solid black;
+    padding: 9px;
+    padding-bottom: 12px;
 }
 .caja-comments {
     width: 100%;
-    height: 90%;
+    height: calc(100% - 70px);
     border: 1px solid gray;
+    background-color: rgb(251, 251, 251);
     overflow-y: auto;
 }
 
 .comentario:hover {
-    background-color: rgb(247, 247, 247);
+    background-color: rgb(244, 244, 244);
+}
+
+.input-size {
+    font-size: 0.9rem;
+}
+
+.max-input-mensaje {
+    min-width: calc(100% - 80px);
+}
+.max-input-enviar {
+    width: 60px;
+    padding-left: -20px;
+}
+.max-input-usuario {
+    min-width: calc(100% - 180px);
+}
+.max-w80 {
+    max-width: 80px;
+}
+
+/* Botones */
+.boton {
+    background-color: #d6e8ff;
+    border-radius: 4px;
+    border: 1px solid #858585;
+    width: 60px;
+}
+.boton:hover:enabled {
+    background-color: #c0d8ff;
+}
+.boton-enviar {
+    background-color: #d6ffdc;
+    border-radius: 4px;
+    border: 1px solid #858585;
+    width: 65px;
+}
+.boton-enviar:hover:enabled {
+    background-color: #c0ffcc;
+}
+
+/* Aviso flotante (https://codepen.io/Dinamo/pen/rNVOZmr) */
+.myAlert-top{
+    position: fixed;
+    top: 90px; 
+    left: 25%;
+    width: 50%;
+}
+
+/* Web Responsive */
+@media (max-width: 500px) {
 }

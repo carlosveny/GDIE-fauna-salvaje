@@ -86,42 +86,49 @@
     <!-- Fin Navbar -->
 
 
-    <div class="container-fluid text-center mt-3">
-        <div class="row mt-5">
-            <div class="col-md-8 text-center">
+    <div class="container-fluid text-center">
+        <div class="row mt-4">
+            <div class="col-lg-8 text-center">
+                <h3>Directo</h3>
                 <div class="contenedor-video">
                     <video class="video" id="localVideo" autoplay></video>
                 </div>
-                
+
             </div>
-            <div class="col-md-4">
+            <div class="col-lg-4">
+                <h3>Chat</h3>
                 <div class="contenedor-comments">
-                    <div class="row">
-                        <div class="col">
-                            Nombre:
+                    <div class="row mb-2">
+                        <div class="col max-w80">
+                            <strong>Usuario:</strong>
                         </div>
-                        <div class="col">
-                            <input id="username" class="">
+                        <div class="col max-input-usuario">
+                            <input id="username" class="w-100 input-size" maxlength="15" onkeydown="enterKey(event)"
+                                oninput="revisarCamposVacios('username')">
                         </div>
-                        <div class="col">
-                            <button onclick="setUsername()">OK</button>
+                        <div class="col text-end">
+                            <button id="bt-username" class="boton" onclick="setUsername()">Entrar</button>
                         </div>
                     </div>
-                    <div id="comentarios" class="caja-comments text-start"></div>
-                    <div class="row">
-                        <div class="col">Mensaje:</div>
-                        <div class="col">
-                            <input id="mensaje">
+                    <div id="comentarios" class="caja-comments text-start">
+                        <div class="mt-1 ms-1">Introduce un nombre de usuario para entrar al chat.</div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col max-input-mensaje">
+                            <input id="mensaje" class="w-100 input-size" placeholder="Envia un mensaje..."
+                                maxlength="200" onkeydown="enterKey(event)" oninput="revisarCamposVacios('mensaje')"
+                                disabled>
                         </div>
-                        <div class="col">
-                            <button onclick="enviarMensaje()">Enviar</button>
+                        <div class="col max-input-enviar ps-1">
+                            <button id="bt-mensaje" class="boton-enviar" onclick="peticionMensaje()"
+                                disabled>Enviar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
 
 
     <!-- Inicio Footer -->

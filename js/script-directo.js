@@ -8,35 +8,97 @@ var ws = null;
 var username = null;
 
 function loaded() {
-    playVideoFromCamera();
+    // Configuracion inicial
+    $("#username").val("");
+    $("#mensaje").val("");
+    $("#username").prop("disabled", false);
+    $("#bt-username").prop("disabled", true);
+    $("#mensaje").prop("disabled", true);
+    $("#bt-mensaje").prop("disabled", true);
+
+    //playVideoFromCamera();
 }
 
+// Funcion que guarda el nombre de usuario y establece la conexion
 function setUsername() {
     username = $("#username").val();
     connect();
 }
 
-function enviarMensaje() {
-    var mensaje = $("#mensaje").val();
-    peticionMensaje(mensaje);
+// Funcion que vuelve a la configuracion inicial y cierra la conexion
+function cerrarSesion() {
+    $("#username").val("");
+    $("#mensaje").val("");
+    $("#username").prop("disabled", false);
+    $("#bt-username").prop("disabled", true);
+    $("#mensaje").prop("disabled", true);
+    $("#bt-mensaje").prop("disabled", true);
+    $("#bt-username").html("Entrar");
+    $("#bt-username").attr("onclick", "setUsername()");
+    $('#bt-username').blur(); // Quitar focus para evitar fallos
+
+    $("#comentarios").empty(); // Eliminar los comentarios
+    var comment = document.createElement("div");
+    comment.setAttribute("class", "mt-1 ms-1");
+    comment.innerHTML = "Introduce un nombre de usuario para entrar al chat.";
+    document.getElementById("comentarios").appendChild(comment);
+
+    ws.close(); // Cerrar la conexion
+    crearAviso("alert-success", "Éxito", "Se ha cerrado la sesión correctamente.", 3000);
 }
 
+// Funcion que gestiona los mensajes que llegan del servidor
 function gestionarMensaje(mensaje) {
     switch(mensaje["tipo"]) {
+        // Acciones de control
         case "accion":
             if (mensaje["mensaje"] == "conexionEstablecida") {
                 peticionUsuario();
             }
+            else if (mensaje["mensaje"] == "usuarioAceptado") {
+                var descr = "Acabas de conectarte al chat. Ahora puedes escribir mensajes.";
+                crearAviso("alert-success", "Éxito", descr, 3000);
+                $("#bt-username").html("Salir");
+                $("#bt-username").attr("onclick", "cerrarSesion()");
+                $("#username").prop("disabled", true);
+                $("#mensaje").prop("disabled", false);
+                $("#bt-mensaje").prop("disabled", true);
+                $("#comentarios").empty();
+            }
+            else if (mensaje["mensaje"] == "usuarioExiste") {
+                $("#username").val("");
+                revisarCamposVacios("username");
+                var descr = "El nombre de usuario ya existe. Prueba con otro nombre.";
+                crearAviso("alert-danger", "Error", descr, 3000);
+            }
             break;
         
+        // Mensajes de usuarios (o propios)
         case "mensaje":
             var comment = document.createElement("div");
-            comment.setAttribute("class", "mt-1, comentario");
-            var tiempo = "[" + formatTime(mensaje["fecha"]) + "]";
+            comment.setAttribute("class", "mt-1 ms-1 comentario");
+            var tiempo = "[" + formatTime(mensaje["fecha"]) + "]&nbsp";
             var nombre = " <strong>" + mensaje["usuario"] + ": </strong>";
             comment.innerHTML = tiempo + nombre + mensaje["mensaje"];
-            document.getElementById("comentarios").appendChild(comment);
+            var caja = document.getElementById("comentarios");
+            caja.appendChild(comment);
+            caja.scrollTop = caja.scrollHeight;
     }
+}
+
+function enterKey(e) {
+    if (e.keyCode == 13) {
+        if (document.getElementById("mensaje").disabled && $("#username").val() != "") {
+            setUsername();
+        }
+        else if ($("#mensaje").val() != "") peticionMensaje();
+    }
+}
+
+function revisarCamposVacios(campo) {
+    console.log($("#" + campo).val() == "");
+    if ($("#" + campo).val() == "") $("#bt-" + campo).prop("disabled", true);
+    else $("#bt-" + campo).prop("disabled", false);
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -74,7 +136,10 @@ function peticionUsuario() {
     console.log("Mensaje enviado al servidor");
 }
 
-function peticionMensaje(mensaje) {
+function peticionMensaje() {
+    var mensaje = $("#mensaje").val();
+    $("#mensaje").val("");
+    revisarCamposVacios("mensaje");
     var datos = {
         "tipo": "mensaje",
         "usuario": username,
@@ -120,4 +185,35 @@ function connect() {
 function formatTime(ms) {
     var d = new Date(ms);
     return d.toLocaleTimeString();
+}
+
+// Funcion que crea un aviso de bootstrap dado el tipo, titulo y descripcion
+// tipo: alert-danger, alert-warning, alert-success. (Clases de Bootstrap)
+function crearAviso(tipo, titulo, descr, tiempo) {
+    // Crear aviso
+    var aviso = document.createElement("div");
+    aviso.classList.add("myAlert-top", "alert", "alert-dismissible", "fade", "show", tipo);
+    aviso.innerHTML = "<strong>" + titulo + ": </strong>" + descr;
+    var cerrar = document.createElement("button");
+    cerrar.setAttribute("type", "button");
+    cerrar.classList.add("btn-close");
+    cerrar.setAttribute("data-bs-dismiss", "alert");
+    cerrar.setAttribute("aria-label", "Close");
+
+    // Append
+    aviso.appendChild(cerrar);
+    document.getElementById("cuerpo").appendChild(aviso);
+
+    // Mostrar y ocultar tras X segundos
+    $(".myAlert-top").show();
+    if (tiempo > 0) {
+        setTimeout(function () {
+            // Quitar aviso
+            $(".myAlert-top").hide();
+            const boxes = document.querySelectorAll('.myAlert-top');
+            boxes.forEach(box => {
+                box.remove();
+            });
+        }, tiempo);
+    }
 }
