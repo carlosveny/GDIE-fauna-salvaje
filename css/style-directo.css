@@ -3,15 +3,20 @@
     margin-right: auto;
     margin-left: auto;
 }
+.video {
+    width: 100%;
+    border: 1px solid black;
+}
+
 .contenedor-comments {
     width: 90%;
-    height: 600px;
+    height: calc(100vh - 180px);
     margin-right: auto;
     margin-left: auto;
     border: 1px solid black;
 }
-
-.video {
+.caja-comments {
     width: 100%;
-    border: 1px solid black;
+    height: 90%;
+    border: 1px solid gray;
 }

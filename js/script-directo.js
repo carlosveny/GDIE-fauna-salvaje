@@ -4,7 +4,7 @@
 */
 
 // VARIABLES GLOBALES
-var ws = new WebSocket("wss://alumnes-ltim.uib.es/gdie2208b/"); //open a web socket from javascript
+var ws = null;
 var username = null;
 
 function loaded() {
@@ -13,8 +13,27 @@ function loaded() {
 
 function setUsername() {
     username = $("#username").val();
-    peticionUsuario(username);
+    connect();
 }
+
+function enviarMensaje() {
+    var mensaje = $("#mensaje").val();
+    peticionMensaje(mensaje);
+}
+
+function gestionarMensaje(mensaje) {
+    switch(mensaje["tipo"]) {
+        case "accion":
+            if (mensaje["mensaje"] == "conexionEstablecida") {
+                peticionUsuario();
+            }
+            break;
+    }
+}
+
+/* ---------------------------------------------------------------------------- */
+
+// FUNCIONES DE USERMEDIA
 
 async function playVideoFromCamera() {
     try {
@@ -37,11 +56,22 @@ async function playVideoFromCamera() {
 
 // FUNCIONES DE PETICIONES AL SIGNALING SERVER
 
-function peticionUsuario(user) {
+function peticionUsuario() {
     var datos = {
-        "nombre": user,
-        "fecha": Date.now(),
-        "tipo": "usuario"
+        "tipo": "usuario",
+        "usuario": username,
+        "fecha": Date.now()
+    };
+    ws.send(JSON.stringify(datos));
+    console.log("Mensaje enviado al servidor");
+}
+
+function peticionMensaje(mensaje) {
+    var datos = {
+        "tipo": "mensaje",
+        "usuario": username,
+        "mensaje": mensaje,
+        "fecha": Date.now()
     };
     ws.send(JSON.stringify(datos));
     console.log("Mensaje enviado al servidor");
@@ -52,22 +82,24 @@ function peticionUsuario(user) {
 
 // FUNCIONES QUE GESTIONAN LA CONEXION CON EL SIGNALING SERVER
 
-ws.onopen = function () {
+function connect() {
+    ws = new WebSocket("wss://alumnes-ltim.uib.es/gdie2208b/"); //open a web socket from javascript
 
-    // Web Socket is connected, send data to server
-    // ws.send("Message from user");
-    console.log("Conexión establecida");
-};
+    // Funcion que se ejecuta al abrirse la conexion
+    ws.onopen = function () {
+        console.log("Conexión establecida");
+    };
 
-ws.onmessage = function (evt) {
+    // Funcion que se ejecuta al recibir un mensaje del servidor
+    ws.onmessage = function (evt) {
+        var mensaje = evt.data;
+        console.log("SERVIDOR: " + mensaje);
+        mensaje = JSON.parse(mensaje);
+        gestionarMensaje(mensaje);
+    };
 
-    // handle messages from server
-    var received_msg = evt.data;
-    console.log("SERVIDOR: " + received_msg);
-};
-
-ws.onclose = function () {
-
-    // websocket is closed
-    console.log("Websocket Connection is closed...");
-};
+    // Funcion que se ejecuta al cerrarse la conexion
+    ws.onclose = function () {
+        console.log("Conexión terminada");
+    };
+}
