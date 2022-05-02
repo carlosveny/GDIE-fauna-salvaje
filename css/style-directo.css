@@ -82,4 +82,7 @@
 
 /* Web Responsive */
 @media (max-width: 500px) {
+    .contenedor-comments {
+        height: calc(100vh - 500px);
+    }
 }

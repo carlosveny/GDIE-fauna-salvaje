@@ -25,24 +25,8 @@ function setUsername() {
     connect();
 }
 
-// Funcion que vuelve a la configuracion inicial y cierra la conexion
+// Funcion que cierra la sesion
 function cerrarSesion() {
-    $("#username").val("");
-    $("#mensaje").val("");
-    $("#username").prop("disabled", false);
-    $("#bt-username").prop("disabled", true);
-    $("#mensaje").prop("disabled", true);
-    $("#bt-mensaje").prop("disabled", true);
-    $("#bt-username").html("Entrar");
-    $("#bt-username").attr("onclick", "setUsername()");
-    $('#bt-username').blur(); // Quitar focus para evitar fallos
-
-    $("#comentarios").empty(); // Eliminar los comentarios
-    var comment = document.createElement("div");
-    comment.setAttribute("class", "mt-1 ms-1");
-    comment.innerHTML = "Introduce un nombre de usuario para entrar al chat.";
-    document.getElementById("comentarios").appendChild(comment);
-
     ws.close(); // Cerrar la conexion
     crearAviso("alert-success", "Éxito", "Se ha cerrado la sesión correctamente.", 3000);
 }
@@ -173,6 +157,22 @@ function connect() {
 
     // Funcion que se ejecuta al cerrarse la conexion
     ws.onclose = function () {
+        $("#username").val("");
+        $("#mensaje").val("");
+        $("#username").prop("disabled", false);
+        $("#bt-username").prop("disabled", true);
+        $("#mensaje").prop("disabled", true);
+        $("#bt-mensaje").prop("disabled", true);
+        $("#bt-username").html("Entrar");
+        $("#bt-username").attr("onclick", "setUsername()");
+        $('#bt-username').blur(); // Quitar focus para evitar fallos
+    
+        $("#comentarios").empty(); // Eliminar los comentarios
+        var comment = document.createElement("div");
+        comment.setAttribute("class", "mt-1 ms-1");
+        comment.innerHTML = "Introduce un nombre de usuario para entrar al chat.";
+        document.getElementById("comentarios").appendChild(comment);
+        
         console.log("Conexión terminada");
     };
 }
