@@ -319,7 +319,7 @@ function sendIceCandidate(event) {
     }
 }
 
-async function createOffer(rtcPeerConnection, destinationUser) {
+async function createOffer(rtcPeerConnection) {
     let sessionDescription;
     try {
         sessionDescription = await rtcPeerConnection.createOffer();
