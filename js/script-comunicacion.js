@@ -6,6 +6,17 @@
 // VARIABLES GLOBALES
 var ws = null;
 var username = null;
+var targetUser;
+var localStream;
+var rtcPeerConnection; // Connection between the local device and the remote peer
+const iceServers = {
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' }
+    ]
+};
 
 function loaded() {
     // Configuracion inicial
@@ -19,7 +30,7 @@ function loaded() {
     $('#select-usuarios').val("default");
     $('#select-usuarios').prop("disabled", true);
 
-    //playVideoFromCamera();
+    playVideoFromCamera();
 }
 
 // Funcion que guarda el nombre de usuario y establece la conexion
@@ -35,7 +46,7 @@ function cerrarSesion() {
 }
 
 // Funcion que gestiona los mensajes que llegan del servidor
-function gestionarMensaje(mensaje) {
+async function gestionarMensaje(mensaje) {
     switch (mensaje["tipo"]) {
         // Acciones de control
         case "accion":
@@ -95,6 +106,43 @@ function gestionarMensaje(mensaje) {
             var caja = document.getElementById("comentarios");
             caja.appendChild(comment);
             caja.scrollTop = caja.scrollHeight;
+
+            break;
+
+        // Iniciar una llamada
+        case "start_call":
+            console.log("Recibida peticion de 'start_call'");
+            targetUser = mensaje["sender"];
+            rtcPeerConnection = new RTCPeerConnection(iceServers);
+            addLocalTracks(rtcPeerConnection);
+            rtcPeerConnection.ontrack = setRemoteStream;
+            rtcPeerConnection.onicecandidate = sendIceCandidate;
+            await createOffer(rtcPeerConnection);
+            break;
+
+        case "webrtc_ice_candidate":
+            console.log("Recibida peticion de 'webrtc_ice_candidate'");
+            var candidate = new RTCIceCandidate({
+                sdpMLineIndex: mensaje["label"],
+                candidate: mensaje["candidate"],
+            });
+            rtcPeerConnection.addIceCandidate(candidate)
+            break;
+
+        case "webrtc_offer":
+            console.log("Recibida peticion de 'webrtc_offer'");
+            rtcPeerConnection = new RTCPeerConnection(iceServers);
+            addLocalTracks(rtcPeerConnection);
+            rtcPeerConnection.ontrack = setRemoteStream;
+            rtcPeerConnection.onicecandidate = sendIceCandidate;
+            rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(mensaje["sdp"]));
+            await createAnswer(rtcPeerConnection);
+            break;
+
+        case "webrtc_answer":
+            console.log("Recibida peticion de 'webrtc_answer'");
+            rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(mensaje["sdp"]));
+            break;
     }
 }
 
@@ -110,15 +158,24 @@ function enterKey(e) {
 
 // Funcion que revisa si hay campos vacios en el usuario o en el mensaje
 function revisarCamposVacios(campo) {
-    console.log($("#" + campo).val() == "");
     if ($("#" + campo).val() == "") $("#bt-" + campo).prop("disabled", true);
     else $("#bt-" + campo).prop("disabled", false);
 }
 
 // Funcion que se ejecuta cuando se selecciona un usuario del dropdown
 function usuarioSeleccionado(user) {
+    // Desmarcar
     $('#select-usuarios').find('option:selected').removeAttr('selected');
     $('#select-usuarios').val("default");
+
+    // Realizar la peticion de hablar
+    console.log("Setting up connection to invite user: " + user);
+    targetUser = user;
+    var datos = {
+        "tipo": "start_call",
+        "destination": user
+    };
+    ws.send(JSON.stringify(datos));
 }
 
 function cargarUsuariosConectados(usuarios) {
@@ -132,7 +189,7 @@ function cargarUsuariosConectados(usuarios) {
     def.innerHTML = "Usuarios conectados";
     document.getElementById("select-usuarios").appendChild(def);
     // Añadir todos los usuarios
-    for (var i=0; i<usuarios.length; i++) {
+    for (var i = 0; i < usuarios.length; i++) {
         var opt = document.createElement("option");
         opt.setAttribute("value", usuarios[i]);
         opt.innerHTML = usuarios[i];
@@ -157,6 +214,7 @@ async function playVideoFromCamera() {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         const videoElement = document.querySelector('#localVideo');
         videoElement.srcObject = stream;
+        localStream = stream;
     } catch (error) {
         console.error('Error opening video camera.', error);
     }
@@ -233,6 +291,156 @@ function connect() {
         console.log("Conexión terminada");
     };
 }
+
+/* ---------------------------------------------------------------------------- */
+
+// FUNCIONES P2P
+
+function addLocalTracks(rtcPeerConnection) {
+    localStream.getTracks().forEach((track) => {
+        rtcPeerConnection.addTrack(track, localStream);
+    });
+}
+
+function setRemoteStream(event) {
+    document.getElementById("remoteVideo").srcObject = event.streams[0];
+    //remoteStream = event.stream
+}
+
+function sendIceCandidate(event) {
+    if (event.candidate) {
+        var datos = {
+            "tipo": "webrtc_ice_candidate",
+            "destination": targetUser,
+            "label": event.candidate.sdpMLineIndex,
+            "candidate": event.candidate.candidate
+        };
+        ws.send(JSON.stringify(datos));
+    }
+}
+
+async function createOffer(rtcPeerConnection, destinationUser) {
+    let sessionDescription;
+    try {
+        sessionDescription = await rtcPeerConnection.createOffer();
+        rtcPeerConnection.setLocalDescription(sessionDescription);
+    } catch (error) {
+        console.error(error);
+    }
+
+    var offer = {
+        "tipo": "webrtc_offer",
+        "sdp": sessionDescription,
+        "destination": targetUser
+    }
+    ws.send(JSON.stringify(offer));
+}
+
+async function createAnswer(rtcPeerConnection) {
+    let sessionDescription;
+    try {
+        sessionDescription = await rtcPeerConnection.createAnswer();
+        rtcPeerConnection.setLocalDescription(sessionDescription);
+    } catch (error) {
+        console.error(error);
+    }
+
+    var answer = {
+        "tipo": "webrtc_answer",
+        "sdp": sessionDescription,
+        "destination": targetUser
+    }
+    ws.send(JSON.stringify(answer));
+}
+
+// // Called by the WebRTC layer to let us know when it's time to
+// // begin, resume, or restart ICE negotiation.
+// async function handleNegotiationNeededEvent() {
+//     console.log("*** Negotiation needed");
+
+//     try {
+//         console.log("---> Creating offer");
+//         const offer = await myPeerConnection.createOffer();
+
+//         // If the connection hasn't yet achieved the "stable" state,
+//         // return to the caller. Another negotiationneeded event
+//         // will be fired when the state stabilizes.
+
+//         if (myPeerConnection.signalingState != "stable") {
+//             console.log("     -- The connection isn't stable yet; postponing...")
+//             return;
+//         }
+
+//         // Establish the offer as the local peer's current
+//         // description.
+
+//         console.log("---> Setting local description to the offer");
+//         await myPeerConnection.setLocalDescription(offer);
+
+//         // Send the offer to the remote peer.
+
+//         console.log("---> Sending the offer to the remote peer");
+//         // sendToServer({
+//         //     name: myUsername,
+//         //     target: targetUsername,
+//         //     type: "video-offer",
+//         //     sdp: myPeerConnection.localDescription
+//         // });
+//     } catch (err) {
+//         console.log("*** The following error occurred while handling the negotiationneeded event:");
+//         reportError(err);
+//     };
+// }
+
+// // Handles |icecandidate| events by forwarding the specified
+// // ICE candidate (created by our local ICE agent) to the other
+// // peer through the signaling server.
+// function handleICECandidateEvent(event) {
+//     if (event.candidate) {
+//         console.log("*** Outgoing ICE candidate: " + event.candidate.candidate);
+
+//         //   sendToServer({
+//         //     type: "new-ice-candidate",
+//         //     target: targetUsername,
+//         //     candidate: event.candidate
+//         //   });
+//     }
+// }
+
+// // Handle |iceconnectionstatechange| events. This will detect
+// // when the ICE connection is closed, failed, or disconnected.
+// //
+// // This is called when the state of the ICE agent changes.
+// function handleICEConnectionStateChangeEvent(event) {
+//     console.log("*** ICE connection state changed to " + myPeerConnection.iceConnectionState);
+
+//     switch (myPeerConnection.iceConnectionState) {
+//         case "closed":
+//         case "failed":
+//         case "disconnected":
+//             closeVideoCall();
+//             break;
+//     }
+// }
+
+// function handleTrackEvent(event) {
+//     console.log("*** Track event");
+//     document.getElementById("received_video").srcObject = event.streams[0];
+//     document.getElementById("hangup-button").disabled = false;
+// }
+
+// function handleSignalingStateChangeEvent(event) {
+//     console.log("*** WebRTC signaling state changed to: " + myPeerConnection.signalingState);
+//     switch (myPeerConnection.signalingState) {
+//         case "closed":
+//             closeVideoCall();
+//             break;
+//     }
+// }
+
+// function handleICEGatheringStateChangeEvent(event) {
+//     console.log("*** ICE gathering state changed to: " + myPeerConnection.iceGatheringState);
+// }
 
 /* ---------------------------------------------------------------------------- */
 
