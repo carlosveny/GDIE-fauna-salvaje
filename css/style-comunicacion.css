@@ -24,18 +24,34 @@
 }
 .caja-comments {
     width: 100%;
-    height: calc(100% - 70px);
+    height: calc(100% - 102px);
     border: 1px solid gray;
     background-color: rgb(251, 251, 251);
     overflow-y: auto;
 }
 
+.comentario {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
 .comentario:hover {
     background-color: rgb(244, 244, 244);
+}
+.cm-control {
+    color: rgb(0, 49, 146);
+}
+.cm-verde {
+    color: rgb(0, 146, 19);
+}
+.cm-rojo {
+    color: rgb(185, 5, 5);
 }
 
 .input-size {
     font-size: 0.9rem;
+}
+.input-size {
+    font-size: 0.95rem;
 }
 
 .max-input-mensaje {

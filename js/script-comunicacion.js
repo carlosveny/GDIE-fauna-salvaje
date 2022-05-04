@@ -1,6 +1,6 @@
 /*
-    Fichero que gestiona la parte del cliente de la retransmision
-    y el chat del directo.
+    Fichero que gestiona la parte del cliente del chat y las llamadas
+    P2P con usuarios.
 */
 
 // VARIABLES GLOBALES
@@ -15,6 +15,9 @@ function loaded() {
     $("#bt-username").prop("disabled", true);
     $("#mensaje").prop("disabled", true);
     $("#bt-mensaje").prop("disabled", true);
+    $('#select-usuarios').find('option:selected').removeAttr('selected');
+    $('#select-usuarios').val("default");
+    $('#select-usuarios').prop("disabled", true);
 
     //playVideoFromCamera();
 }
@@ -33,7 +36,7 @@ function cerrarSesion() {
 
 // Funcion que gestiona los mensajes que llegan del servidor
 function gestionarMensaje(mensaje) {
-    switch(mensaje["tipo"]) {
+    switch (mensaje["tipo"]) {
         // Acciones de control
         case "accion":
             if (mensaje["mensaje"] == "conexionEstablecida") {
@@ -47,16 +50,41 @@ function gestionarMensaje(mensaje) {
                 $("#username").prop("disabled", true);
                 $("#mensaje").prop("disabled", false);
                 $("#bt-mensaje").prop("disabled", true);
+                $('#select-usuarios').prop("disabled", false);
                 $("#comentarios").empty();
+                // Crear aviso bienvenida
+                var comment = document.createElement("div");
+                comment.setAttribute("class", "mt-1 ms-1 comentario cm-control");
+                comment.innerHTML = "<strong>Bienvenido a la sala de chat.</strong>";
+                document.getElementById("comentarios").appendChild(comment);
+
+                cargarUsuariosConectados(mensaje["usuarios"]);
             }
             else if (mensaje["mensaje"] == "usuarioExiste") {
                 $("#username").val("");
+                username = null;
                 revisarCamposVacios("username");
                 var descr = "El nombre de usuario ya existe. Prueba con otro nombre.";
                 crearAviso("alert-danger", "Error", descr, 3000);
             }
+            else if (mensaje["mensaje"] == "entraUsuario" || "saleUsuario") {
+                if (mensaje["usuario"] == username) break;
+                // Crear aviso de entrada/salida
+                var accion = "salido de";
+                if (mensaje["mensaje"] == "entraUsuario") accion = "entrado a";
+                var comment = document.createElement("div");
+                comment.setAttribute("class", "mt-1 ms-1 comentario");
+                if (mensaje["mensaje"] == "entraUsuario") comment.classList.add("cm-verde");
+                else comment.classList.add("cm-rojo");
+                var txt = "[" + formatTime(mensaje["fecha"]) + "]&nbsp";
+                txt += "<strong>" + mensaje["usuario"] + "</strong> ha " + accion + " la sala de chat.";
+                comment.innerHTML = txt;
+                document.getElementById("comentarios").appendChild(comment);
+
+                cargarUsuariosConectados(mensaje["usuarios"]);
+            }
             break;
-        
+
         // Mensajes de usuarios (o propios)
         case "mensaje":
             var comment = document.createElement("div");
@@ -70,6 +98,7 @@ function gestionarMensaje(mensaje) {
     }
 }
 
+// Funcion para habilitar la tecla intro para los inputs
 function enterKey(e) {
     if (e.keyCode == 13) {
         if (document.getElementById("mensaje").disabled && $("#username").val() != "") {
@@ -79,10 +108,37 @@ function enterKey(e) {
     }
 }
 
+// Funcion que revisa si hay campos vacios en el usuario o en el mensaje
 function revisarCamposVacios(campo) {
     console.log($("#" + campo).val() == "");
     if ($("#" + campo).val() == "") $("#bt-" + campo).prop("disabled", true);
     else $("#bt-" + campo).prop("disabled", false);
+}
+
+// Funcion que se ejecuta cuando se selecciona un usuario del dropdown
+function usuarioSeleccionado(user) {
+    $('#select-usuarios').find('option:selected').removeAttr('selected');
+    $('#select-usuarios').val("default");
+}
+
+function cargarUsuariosConectados(usuarios) {
+    $("#select-usuarios").empty(); // Eliminar todos los options de usuarios
+    // Crear default
+    var def = document.createElement("option");
+    def.setAttribute("value", "default");
+    def.setAttribute("selected", "");
+    def.setAttribute("disabled", "");
+    def.setAttribute("hidden", "");
+    def.innerHTML = "Usuarios conectados";
+    document.getElementById("select-usuarios").appendChild(def);
+    // Añadir todos los usuarios
+    for (var i=0; i<usuarios.length; i++) {
+        var opt = document.createElement("option");
+        opt.setAttribute("value", usuarios[i]);
+        opt.innerHTML = usuarios[i];
+        if (username == usuarios[i]) opt.innerHTML += " (yo)";
+        document.getElementById("select-usuarios").appendChild(opt);
+    }
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -157,6 +213,7 @@ function connect() {
 
     // Funcion que se ejecuta al cerrarse la conexion
     ws.onclose = function () {
+        $('#select-usuarios').prop("disabled", true);
         $("#username").val("");
         $("#mensaje").val("");
         $("#username").prop("disabled", false);
@@ -166,13 +223,13 @@ function connect() {
         $("#bt-username").html("Entrar");
         $("#bt-username").attr("onclick", "setUsername()");
         $('#bt-username').blur(); // Quitar focus para evitar fallos
-    
+
         $("#comentarios").empty(); // Eliminar los comentarios
         var comment = document.createElement("div");
         comment.setAttribute("class", "mt-1 ms-1");
         comment.innerHTML = "Introduce un nombre de usuario para entrar al chat.";
         document.getElementById("comentarios").appendChild(comment);
-        
+
         console.log("Conexión terminada");
     };
 }

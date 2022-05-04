@@ -36,8 +36,8 @@
     <!-- Local -->
     <link rel="stylesheet" href="css/style-player.css">
     <link rel="stylesheet" href="css/style-footer.css">
-    <link rel="stylesheet" href="css/style-directo.css">
-    <script src="js/script-directo.js"></script>
+    <link rel="stylesheet" href="css/style-comunicacion.css">
+    <script src="js/script-comunicacion.js"></script>
 </head>
 
 <body id="cuerpo" class="bg" onload="loaded()">
@@ -76,7 +76,7 @@
                         <ul class="site-menu main-menu js-clone-nav ml-auto d-none d-lg-block">
                             <li><a href="index.html" class="nav-link">Visor</a></li>
                             <li><a href="editor.html" class="nav-link">Editor</a></li>
-                            <li class="active"><a href="#" class="nav-link">Directo</a></li>
+                            <li class="active"><a href="#" class="nav-link">Comunicación</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -89,12 +89,12 @@
     <div class="container-fluid text-center">
         <div class="row mt-4">
             <div class="col-lg-8 text-center">
-                <h3>Directo</h3>
+                <h3>Llamada</h3>
                 <div class="contenedor-video">
                     <video class="video" id="localVideo" autoplay></video>
                 </div>
-
             </div>
+
             <div class="col-lg-4">
                 <h3>Chat</h3>
                 <div class="contenedor-comments">
@@ -110,8 +110,16 @@
                             <button id="bt-username" class="boton ps-1" onclick="setUsername()">Entrar</button>
                         </div>
                     </div>
+                    <select id="select-usuarios" class="input-size2 mb-2"
+                        onchange="usuarioSeleccionado(this.value)">
+                        <option value="default" selected disabled hidden>Usuarios conectados</option>
+                        <option value="lol">lol</option>
+                    </select>
+
                     <div id="comentarios" class="caja-comments text-start">
-                        <div class="mt-1 ms-1">Introduce un nombre de usuario para entrar al chat.</div>
+                        <div class="mt-1 ms-1 cm-control"><strong>Introduce un nombre de usuario para entrar al
+                                chat.</strong>
+                        </div>
                     </div>
                     <div class="row mt-2">
                         <div class="col max-input-mensaje">
