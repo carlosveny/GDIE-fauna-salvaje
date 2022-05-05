@@ -6,9 +6,10 @@
 // VARIABLES GLOBALES
 var ws = null;
 var username = null;
-var targetUser;
+var targetUser = null;
 var llamadaEstablecida = false;
 var localStream = null;
+var channel = null;
 var rtcPeerConnection; // Connection between the local device and the remote peer
 const iceServers = {
     iceServers: [
@@ -41,15 +42,15 @@ function loaded() {
         addLocalTracks(rtcPeerConnection);
         rtcPeerConnection.ontrack = setRemoteStream;
         rtcPeerConnection.onicecandidate = sendIceCandidate;
+        // Data channel
+        channel = rtcPeerConnection.createDataChannel("channel");
+        channel.onopen = channelAbierto;
+        channel.onclose = channelCerrado;
+        channel.onmessage = channelMensaje;
         await createOffer(rtcPeerConnection);
     };
     document.getElementById("bt-rechazar").onclick = () => {
-        var respuesta = {
-            "tipo": "rechazar",
-            "destination": targetUser
-        };
-        ws.send(JSON.stringify(respuesta));
-        $("#llamada-entrante").css("display", "none");
+        rechazarLlamada();
     };
 }
 
@@ -101,6 +102,10 @@ async function gestionarMensaje(mensaje) {
             }
             else if (mensaje["mensaje"] == "entraUsuario" || "saleUsuario") {
                 if (mensaje["usuario"] == username) break;
+                if (mensaje["usuario"] == undefined) break;
+                if (mensaje["usuario"] == targetUser) {
+                    colgar();
+                }
                 // Crear aviso de entrada/salida
                 var accion = "salido de";
                 if (mensaje["mensaje"] == "entraUsuario") accion = "entrado a";
@@ -167,6 +172,7 @@ async function gestionarMensaje(mensaje) {
         case "webrtc_offer":
             console.log("Recibida peticion de 'webrtc_offer'");
             rtcPeerConnection = new RTCPeerConnection(iceServers);
+            rtcPeerConnection.ondatachannel = receiveChannelCallback;
             addLocalTracks(rtcPeerConnection);
             rtcPeerConnection.ontrack = setRemoteStream;
             rtcPeerConnection.onicecandidate = sendIceCandidate;
@@ -183,16 +189,15 @@ async function gestionarMensaje(mensaje) {
             break;
 
         case "rechazar":
-            console.log("Llamada finalizada");
+            console.log("Llamada rechazada");
             // Actualizar pantalla
             $("#estado-llamada").empty();
             var estado = document.createElement("h5");
             estado.innerHTML = "Llamada finalizada";
             estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
             document.getElementById("estado-llamada").appendChild(estado);
-            setTimeout(function () {
-                $("#estado-llamada").empty();
-            }, 3000);
+            document.getElementById("localVideo").srcObject = null;
+            $("#bt-colgar").css("display", "none");
 
     }
 }
@@ -319,12 +324,6 @@ function peticionMensaje() {
 }
 
 function rechazarLlamada() {
-    var respuesta = {
-        "tipo": "rechazar",
-        "destination": targetUser
-    };
-    ws.send(JSON.stringify(respuesta));
-
     // Actualizar pantalla
     $("#llamada-entrante").css("display", "none");
     $("#estado-llamada").empty();
@@ -332,9 +331,16 @@ function rechazarLlamada() {
     estado.innerHTML = "Llamada finalizada";
     estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
     document.getElementById("estado-llamada").appendChild(estado);
-    setTimeout(function () {
-        $("#estado-llamada").empty();
-    }, 4000);
+    document.getElementById("localVideo").srcObject = null;
+    $("#bt-colgar").css("display", "none");
+
+    // Enviar al servidor el rechazo
+    llamadaEstablecida = true;
+    var respuesta = {
+        "tipo": "rechazar",
+        "destination": targetUser
+    };
+    ws.send(JSON.stringify(respuesta));
 }
 
 
@@ -399,6 +405,7 @@ function setRemoteStream(event) {
     estado.innerHTML = "Llamada P2P establecida con <strong>" + targetUser + "</strong>";
     estado.innerHTML += "<i class='fa-solid fa-phone text-success ms-2'></i>";
     document.getElementById("estado-llamada").appendChild(estado);
+    $("#bt-colgar").css("display", "");
 }
 
 function sendIceCandidate(event) {
@@ -445,6 +452,42 @@ async function createAnswer(rtcPeerConnection) {
         "destination": targetUser
     }
     ws.send(JSON.stringify(answer));
+}
+
+function receiveChannelCallback(event) {
+    channel = event.channel;
+    channel.onopen = channelAbierto;
+    channel.onclose = channelCerrado;
+    channel.onmessage = channelMensaje;
+}
+
+function channelAbierto(event) {
+    console.log("Canal abierto");
+}
+
+function channelCerrado(event) {
+    console.log("Canal cerrado");
+    targetUser = null;
+
+    // Actualizar pantalla
+    $("#estado-llamada").empty();
+    var estado = document.createElement("h5");
+    estado.innerHTML = "Llamada finalizada";
+    estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
+    document.getElementById("estado-llamada").appendChild(estado);
+    document.getElementById("localVideo").srcObject = null;
+    document.getElementById("remoteVideo").srcObject = null;
+    $("#bt-colgar").css("display", "none");
+}
+
+function channelMensaje(event) {
+    console.log("Canal mensaje");
+    console.log(event);
+}
+
+function colgar() {
+    console.log("Llamada finalizada");
+    rtcPeerConnection.close();
 }
 
 /* ---------------------------------------------------------------------------- */
