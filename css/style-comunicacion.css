@@ -3,13 +3,20 @@
 }
 
 .contenedor-video {
+    position: relative;
     width: 90%;
     margin-right: auto;
     margin-left: auto;
 }
 
-.video {
+.videoLocal {
+    position: absolute;
+    right:0px;
     width: 20%;
+    border: 1px solid black;
+}
+.videoRemoto {
+    width: 100%;
     border: 1px solid black;
 }
 

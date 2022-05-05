@@ -20,6 +20,7 @@ const iceServers = {
     ]
 };
 
+// Funcion que se ejecuta al cargarse la pagina
 function loaded() {
     // Configuracion inicial
     $("#username").val("");
@@ -85,6 +86,7 @@ async function gestionarMensaje(mensaje) {
                 $("#bt-mensaje").prop("disabled", true);
                 $('#select-usuarios').prop("disabled", false);
                 $("#comentarios").empty();
+                
                 // Crear aviso bienvenida
                 var comment = document.createElement("div");
                 comment.setAttribute("class", "mt-1 ms-1 comentario cm-control");
