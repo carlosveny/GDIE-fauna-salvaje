@@ -7,7 +7,8 @@
 var ws = null;
 var username = null;
 var targetUser;
-var localStream;
+var llamadaEstablecida = false;
+var localStream = null;
 var rtcPeerConnection; // Connection between the local device and the remote peer
 const iceServers = {
     iceServers: [
@@ -31,6 +32,25 @@ function loaded() {
     $('#select-usuarios').prop("disabled", true);
 
     playVideoFromCamera();
+
+    // Asignar listeners asincronos a botones "aceptar" y "rechazar"
+    document.getElementById("bt-aceptar").onclick = async () => {
+        document.getElementById("localVideo").srcObject = localStream;
+        llamadaEstablecida = true;
+        rtcPeerConnection = new RTCPeerConnection(iceServers);
+        addLocalTracks(rtcPeerConnection);
+        rtcPeerConnection.ontrack = setRemoteStream;
+        rtcPeerConnection.onicecandidate = sendIceCandidate;
+        await createOffer(rtcPeerConnection);
+    };
+    document.getElementById("bt-rechazar").onclick = () => {
+        var respuesta = {
+            "tipo": "rechazar",
+            "destination": targetUser
+        };
+        ws.send(JSON.stringify(respuesta));
+        $("#llamada-entrante").css("display", "none");
+    };
 }
 
 // Funcion que guarda el nombre de usuario y establece la conexion
@@ -54,7 +74,8 @@ async function gestionarMensaje(mensaje) {
                 peticionUsuario();
             }
             else if (mensaje["mensaje"] == "usuarioAceptado") {
-                var descr = "Acabas de conectarte al chat. Ahora puedes escribir mensajes.";
+                var descr = "Acabas de conectarte al chat. Ahora puedes escribir ";
+                descr += "mensajes y realizar llamadas.";
                 crearAviso("alert-success", "Éxito", descr, 3000);
                 $("#bt-username").html("Salir");
                 $("#bt-username").attr("onclick", "cerrarSesion()");
@@ -113,11 +134,25 @@ async function gestionarMensaje(mensaje) {
         case "start_call":
             console.log("Recibida peticion de 'start_call'");
             targetUser = mensaje["sender"];
-            rtcPeerConnection = new RTCPeerConnection(iceServers);
-            addLocalTracks(rtcPeerConnection);
-            rtcPeerConnection.ontrack = setRemoteStream;
-            rtcPeerConnection.onicecandidate = sendIceCandidate;
-            await createOffer(rtcPeerConnection);
+            // No permitir llamadas si no hay permiso de camara
+            if (localStream == null) {
+                var txt = "Tienes una llamada entrante pero no la puedes aceptar ";
+                txt += "porque no has aceptado los permisos de la cámara. Recarga ";
+                txt += "la página y acepta los permisos.";
+                crearAviso("alert-danger", "Error", txt, 4000);
+                rechazarLlamada();
+                return;
+            }
+
+            $("#usuario-entrante").html(targetUser);
+            $("#llamada-entrante").css("display", "");
+
+            // Establecer delay para rechazar la llamada (10 segundos)
+            setTimeout(() => {
+                if (!llamadaEstablecida) {
+                    rechazarLlamada();
+                }
+            }, 10000);
             break;
 
         case "webrtc_ice_candidate":
@@ -126,7 +161,7 @@ async function gestionarMensaje(mensaje) {
                 sdpMLineIndex: mensaje["label"],
                 candidate: mensaje["candidate"],
             });
-            rtcPeerConnection.addIceCandidate(candidate)
+            rtcPeerConnection.addIceCandidate(candidate);
             break;
 
         case "webrtc_offer":
@@ -142,7 +177,23 @@ async function gestionarMensaje(mensaje) {
         case "webrtc_answer":
             console.log("Recibida peticion de 'webrtc_answer'");
             rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(mensaje["sdp"]));
+
+            // Actualizar pantalla
+            $("#llamada-entrante").css("display", "none");
             break;
+
+        case "rechazar":
+            console.log("Llamada finalizada");
+            // Actualizar pantalla
+            $("#estado-llamada").empty();
+            var estado = document.createElement("h5");
+            estado.innerHTML = "Llamada finalizada";
+            estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
+            document.getElementById("estado-llamada").appendChild(estado);
+            setTimeout(function () {
+                $("#estado-llamada").empty();
+            }, 3000);
+
     }
 }
 
@@ -168,7 +219,27 @@ function usuarioSeleccionado(user) {
     $('#select-usuarios').find('option:selected').removeAttr('selected');
     $('#select-usuarios').val("default");
 
-    // Realizar la peticion de hablar
+    // No permitir llamadas a si mismo
+    if (username == user) {
+        var txt = "No puedes realizar una llamada contigo mismo.";
+        crearAviso("alert-danger", "Error", txt, 3000);
+        return;
+    }
+    // No permitir llamadas si no hay permiso de camara
+    if (localStream == null) {
+        var txt = "No se pueden iniciar llamadas porque no has permitido el acceso ";
+        txt += "a la cámara. Recarga la página y acepta los permisos.";
+        crearAviso("alert-danger", "Error", txt, 4000);
+        return;
+    }
+
+    // Realizar la peticion de llamada
+    $("#estado-llamada").empty();
+    var estado = document.createElement("h5");
+    estado.innerHTML = "Llamando a <strong>" + user + "</strong> ";
+    estado.innerHTML += "<img class='loading' src='assets/icons/bars.gif' />";
+    document.getElementById("estado-llamada").appendChild(estado);
+    document.getElementById("localVideo").srcObject = localStream;
     console.log("Setting up connection to invite user: " + user);
     targetUser = user;
     var datos = {
@@ -178,6 +249,7 @@ function usuarioSeleccionado(user) {
     ws.send(JSON.stringify(datos));
 }
 
+// Funcion que actualiza el dropdown de usuarios conectados
 function cargarUsuariosConectados(usuarios) {
     $("#select-usuarios").empty(); // Eliminar todos los options de usuarios
     // Crear default
@@ -212,8 +284,6 @@ async function playVideoFromCamera() {
             'audio': true
         };
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        const videoElement = document.querySelector('#localVideo');
-        videoElement.srcObject = stream;
         localStream = stream;
     } catch (error) {
         console.error('Error opening video camera.', error);
@@ -246,6 +316,25 @@ function peticionMensaje() {
     };
     ws.send(JSON.stringify(datos));
     console.log("Mensaje enviado al servidor");
+}
+
+function rechazarLlamada() {
+    var respuesta = {
+        "tipo": "rechazar",
+        "destination": targetUser
+    };
+    ws.send(JSON.stringify(respuesta));
+
+    // Actualizar pantalla
+    $("#llamada-entrante").css("display", "none");
+    $("#estado-llamada").empty();
+    var estado = document.createElement("h5");
+    estado.innerHTML = "Llamada finalizada";
+    estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
+    document.getElementById("estado-llamada").appendChild(estado);
+    setTimeout(function () {
+        $("#estado-llamada").empty();
+    }, 4000);
 }
 
 
@@ -304,7 +393,12 @@ function addLocalTracks(rtcPeerConnection) {
 
 function setRemoteStream(event) {
     document.getElementById("remoteVideo").srcObject = event.streams[0];
-    //remoteStream = event.stream
+    // Actualizar pantalla
+    $("#estado-llamada").empty();
+    var estado = document.createElement("h5");
+    estado.innerHTML = "Llamada P2P establecida con <strong>" + targetUser + "</strong>";
+    estado.innerHTML += "<i class='fa-solid fa-phone text-success ms-2'></i>";
+    document.getElementById("estado-llamada").appendChild(estado);
 }
 
 function sendIceCandidate(event) {
@@ -352,95 +446,6 @@ async function createAnswer(rtcPeerConnection) {
     }
     ws.send(JSON.stringify(answer));
 }
-
-// // Called by the WebRTC layer to let us know when it's time to
-// // begin, resume, or restart ICE negotiation.
-// async function handleNegotiationNeededEvent() {
-//     console.log("*** Negotiation needed");
-
-//     try {
-//         console.log("---> Creating offer");
-//         const offer = await myPeerConnection.createOffer();
-
-//         // If the connection hasn't yet achieved the "stable" state,
-//         // return to the caller. Another negotiationneeded event
-//         // will be fired when the state stabilizes.
-
-//         if (myPeerConnection.signalingState != "stable") {
-//             console.log("     -- The connection isn't stable yet; postponing...")
-//             return;
-//         }
-
-//         // Establish the offer as the local peer's current
-//         // description.
-
-//         console.log("---> Setting local description to the offer");
-//         await myPeerConnection.setLocalDescription(offer);
-
-//         // Send the offer to the remote peer.
-
-//         console.log("---> Sending the offer to the remote peer");
-//         // sendToServer({
-//         //     name: myUsername,
-//         //     target: targetUsername,
-//         //     type: "video-offer",
-//         //     sdp: myPeerConnection.localDescription
-//         // });
-//     } catch (err) {
-//         console.log("*** The following error occurred while handling the negotiationneeded event:");
-//         reportError(err);
-//     };
-// }
-
-// // Handles |icecandidate| events by forwarding the specified
-// // ICE candidate (created by our local ICE agent) to the other
-// // peer through the signaling server.
-// function handleICECandidateEvent(event) {
-//     if (event.candidate) {
-//         console.log("*** Outgoing ICE candidate: " + event.candidate.candidate);
-
-//         //   sendToServer({
-//         //     type: "new-ice-candidate",
-//         //     target: targetUsername,
-//         //     candidate: event.candidate
-//         //   });
-//     }
-// }
-
-// // Handle |iceconnectionstatechange| events. This will detect
-// // when the ICE connection is closed, failed, or disconnected.
-// //
-// // This is called when the state of the ICE agent changes.
-// function handleICEConnectionStateChangeEvent(event) {
-//     console.log("*** ICE connection state changed to " + myPeerConnection.iceConnectionState);
-
-//     switch (myPeerConnection.iceConnectionState) {
-//         case "closed":
-//         case "failed":
-//         case "disconnected":
-//             closeVideoCall();
-//             break;
-//     }
-// }
-
-// function handleTrackEvent(event) {
-//     console.log("*** Track event");
-//     document.getElementById("received_video").srcObject = event.streams[0];
-//     document.getElementById("hangup-button").disabled = false;
-// }
-
-// function handleSignalingStateChangeEvent(event) {
-//     console.log("*** WebRTC signaling state changed to: " + myPeerConnection.signalingState);
-//     switch (myPeerConnection.signalingState) {
-//         case "closed":
-//             closeVideoCall();
-//             break;
-//     }
-// }
-
-// function handleICEGatheringStateChangeEvent(event) {
-//     console.log("*** ICE gathering state changed to: " + myPeerConnection.iceGatheringState);
-// }
 
 /* ---------------------------------------------------------------------------- */
 

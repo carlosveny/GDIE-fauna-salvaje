@@ -7,6 +7,7 @@
     margin-right: auto;
     margin-left: auto;
 }
+
 .video {
     width: 20%;
     border: 1px solid black;
@@ -22,6 +23,7 @@
     padding: 9px;
     padding-bottom: 12px;
 }
+
 .caja-comments {
     width: 100%;
     height: calc(100% - 102px);
@@ -34,15 +36,19 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
 }
+
 .comentario:hover {
     background-color: rgb(244, 244, 244);
 }
+
 .cm-control {
     color: rgb(0, 49, 146);
 }
+
 .cm-verde {
     color: rgb(0, 146, 19);
 }
+
 .cm-rojo {
     color: rgb(185, 5, 5);
 }
@@ -50,6 +56,7 @@
 .input-size {
     font-size: 0.9rem;
 }
+
 .input-size {
     font-size: 0.95rem;
 }
@@ -57,13 +64,16 @@
 .max-input-mensaje {
     min-width: calc(100% - 80px);
 }
+
 .max-input-enviar {
     width: 60px;
     padding-left: -20px;
 }
+
 .max-input-usuario {
     min-width: calc(100% - 180px);
 }
+
 .max-w80 {
     max-width: 80px;
 }
@@ -79,6 +89,7 @@
 .boton:hover:enabled {
     background-color: #c0d8ff;
 }
+
 .boton-enviar {
     background-color: #d6ffdc;
     border-radius: 4px;
@@ -90,15 +101,81 @@
     background-color: #c0ffcc;
 }
 
+.boton-aceptar {
+    display: inline-block;
+    background-color: rgb(0, 169, 0);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    cursor: pointer;
+}
+.boton-aceptar:hover {
+    background-color: green;
+    color: black;
+}
+
+.boton-rechazar {
+    display: inline-block;
+    background-color: rgb(236, 0, 0);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    cursor: pointer;
+}
+.boton-rechazar:hover {
+    background-color: rgb(200, 0, 0);
+    color: black;
+}
+
+.icono-centrado {
+    margin-top: 12px;
+}
+
+.loading {
+    margin-left: 10px;
+    max-width: 50px;
+}
+
 /* Aviso flotante (https://codepen.io/Dinamo/pen/rNVOZmr) */
-.myAlert-top{
+.myAlert-top {
     position: fixed;
-    top: 90px; 
+    top: 90px;
     left: 25%;
     width: 50%;
 }
 
+/* Centered login (https://stackoverflow.com/questions/22658141/css-center-form-in-page-horizontally-and-vertically) */
+#llamada-entrante {
+    display: table;
+    width: 20%;
+}
+#form_login {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+.centered-dialog {
+    position: fixed;
+    top: 250px;
+    /* left: 40%; */
+    left: calc(50vw - 160px);
+    max-width: 320px;
+    min-width: 320px;
+    height: 160px;
+    background-color: white;
+    border-radius: 4px;
+    border: 2px solid #858585;
+}
+
 /* Web Responsive */
+@media (max-width: 1200px) {
+    .myAlert-top {
+        left: 15%;
+        width: 70%;
+    }
+}
 @media (max-width: 500px) {
     .contenedor-comments {
         height: calc(100vh - 500px);
