@@ -151,6 +151,7 @@ async function gestionarMensaje(mensaje) {
 
         // Iniciar una llamada
         case "start_call":
+            llamadaEstablecida = false;
             console.log("Recibida peticion de 'start_call'");
             targetUser = mensaje["sender"];
             // No permitir llamadas si no hay permiso de camara
@@ -167,8 +168,10 @@ async function gestionarMensaje(mensaje) {
             $("#llamada-entrante").css("display", "");
 
             // Establecer delay para rechazar la llamada (10 segundos)
+            llamadaAux = llamadaEstablecida;
             setTimeout(() => {
-                if (!llamadaEstablecida) {
+                console.log(llamadaAux);
+                if (!llamadaAux) {
                     rechazarLlamada();
                 }
             }, 10000);
@@ -210,7 +213,6 @@ async function gestionarMensaje(mensaje) {
             estado.innerHTML = "Llamada finalizada";
             estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
             document.getElementById("estado-llamada").appendChild(estado);
-            document.getElementById("localVideo").srcObject = null;
             $("#bt-colgar").css("display", "none");
 
     }
@@ -304,6 +306,7 @@ async function playVideoFromCamera() {
         };
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         localStream = stream;
+        document.getElementById("localVideo").srcObject = localStream;
     } catch (error) {
         console.error('Error opening video camera.', error);
     }
@@ -345,7 +348,6 @@ function rechazarLlamada() {
     estado.innerHTML = "Llamada finalizada";
     estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
     document.getElementById("estado-llamada").appendChild(estado);
-    document.getElementById("localVideo").srcObject = null;
     $("#bt-colgar").css("display", "none");
 
     // Enviar al servidor el rechazo
@@ -490,7 +492,6 @@ function channelCerrado(event) {
     estado.innerHTML = "Llamada finalizada";
     estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
     document.getElementById("estado-llamada").appendChild(estado);
-    document.getElementById("localVideo").srcObject = null;
     document.getElementById("remoteVideo").srcObject = null;
     $("#bt-colgar").css("display", "none");
 }
