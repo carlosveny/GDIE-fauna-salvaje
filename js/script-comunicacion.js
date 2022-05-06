@@ -168,10 +168,9 @@ async function gestionarMensaje(mensaje) {
             $("#llamada-entrante").css("display", "");
 
             // Establecer delay para rechazar la llamada (10 segundos)
-            llamadaAux = llamadaEstablecida;
             setTimeout(() => {
-                console.log(llamadaAux);
-                if (!llamadaAux) {
+                console.log(llamadaEstablecida);
+                if (!llamadaEstablecida) {
                     rechazarLlamada();
                 }
             }, 10000);
