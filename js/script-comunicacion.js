@@ -14,9 +14,13 @@ var rtcPeerConnection; // Connection between the local device and the remote pee
 const iceServers = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
         {
             urls: 'turn:openrelay.metered.ca:443',
+            credential: 'openrelayproject',
+            username: 'openrelayproject'
+        },
+        {
+            urls: 'turn:openrelay.metered.ca:80?transport=tcp',
             credential: 'openrelayproject',
             username: 'openrelayproject'
         },
