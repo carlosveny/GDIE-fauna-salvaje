@@ -16,14 +16,14 @@ const iceServers = {
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
         {
-            urls: 'turn:numb.viagenie.ca',
-            credential: 'carlosveny@yahoo.es',
-            username: 'miperritosalvaje69'
-        },
-        {
             urls: 'turn:openrelay.metered.ca:443',
             credential: 'openrelayproject',
             username: 'openrelayproject'
+        },
+        {
+            urls: 'turn:numb.viagenie.ca',
+            credential: 'carlosveny@yahoo.es',
+            username: 'miperritosalvaje69'
         }
     ]
 };
