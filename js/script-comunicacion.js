@@ -419,6 +419,7 @@ function setRemoteStream(event) {
 }
 
 function sendIceCandidate(event) {
+    console.log(event.candidate);
     if (event.candidate) {
         var datos = {
             "tipo": "webrtc_ice_candidate",
