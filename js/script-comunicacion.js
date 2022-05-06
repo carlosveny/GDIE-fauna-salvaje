@@ -15,8 +15,16 @@ const iceServers = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'stun:stun3.l.google.com:19302' }
+        {
+            urls: 'turn:numb.viagenie.ca',
+            credential: 'carlosveny@yahoo.es',
+            username: 'miperritosalvaje69'
+        },
+        {
+            urls: 'turn:openrelay.metered.ca:80',
+            credential: 'openrelayproject',
+            username: 'openrelayproject'
+        }
     ]
 };
 
@@ -86,7 +94,7 @@ async function gestionarMensaje(mensaje) {
                 $("#bt-mensaje").prop("disabled", true);
                 $('#select-usuarios').prop("disabled", false);
                 $("#comentarios").empty();
-                
+
                 // Crear aviso bienvenida
                 var comment = document.createElement("div");
                 comment.setAttribute("class", "mt-1 ms-1 comentario cm-control");
