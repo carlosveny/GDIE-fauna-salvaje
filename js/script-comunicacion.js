@@ -298,8 +298,8 @@ async function playVideoFromCamera() {
     try {
         const constraints = {
             video: {
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
+                width: { max: 1920 },
+                height: { max: 1080 }
             },
             'audio': true
         };
