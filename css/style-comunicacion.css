@@ -39,7 +39,7 @@
 
 .caja-comments {
     width: 100%;
-    height: calc(100% - 102px);
+    height: calc(100% - 110px);
     border: 1px solid gray;
     background-color: rgb(251, 251, 251);
     overflow-y: auto;
