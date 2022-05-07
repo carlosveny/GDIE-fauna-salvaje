@@ -166,6 +166,7 @@ async function gestionarMensaje(mensaje) {
 
             $("#usuario-entrante").html(targetUser);
             $("#llamada-entrante").css("display", "");
+            $('#select-usuarios').prop("disabled", true);
 
             // Establecer delay para rechazar la llamada (10 segundos)
             setTimeout(() => {
@@ -207,6 +208,7 @@ async function gestionarMensaje(mensaje) {
         case "rechazar":
             console.log("Llamada rechazada");
             // Actualizar pantalla
+            $('#select-usuarios').prop("disabled", false);
             $("#estado-llamada").empty();
             var estado = document.createElement("h5");
             estado.innerHTML = "Llamada finalizada";
@@ -254,6 +256,7 @@ function usuarioSeleccionado(user) {
     }
 
     // Realizar la peticion de llamada
+    $('#select-usuarios').prop("disabled", true);
     $("#estado-llamada").empty();
     var estado = document.createElement("h5");
     estado.innerHTML = "Llamando a <strong>" + user + "</strong> ";
@@ -288,6 +291,12 @@ function cargarUsuariosConectados(usuarios) {
         if (username == usuarios[i]) opt.innerHTML += " (yo)";
         document.getElementById("select-usuarios").appendChild(opt);
     }
+}
+
+// Funcion que invierte la camara (flip en el eje X)
+function flipScreen() {
+    let vLocal = document.getElementById("localVideo");
+    vLocal.classList.toggle("video-flip");
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -341,6 +350,7 @@ function peticionMensaje() {
 
 function rechazarLlamada() {
     // Actualizar pantalla
+    $('#select-usuarios').prop("disabled", false);
     $("#llamada-entrante").css("display", "none");
     $("#estado-llamada").empty();
     var estado = document.createElement("h5");
@@ -493,6 +503,7 @@ function channelCerrado(event) {
     document.getElementById("estado-llamada").appendChild(estado);
     document.getElementById("remoteVideo").srcObject = null;
     $("#bt-colgar").css("display", "none");
+    $('#select-usuarios').prop("disabled", false);
 }
 
 function channelMensaje(event) {

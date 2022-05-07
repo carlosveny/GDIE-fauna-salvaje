@@ -92,18 +92,20 @@
     <!-- Inicio Contenedor principal -->
     <div class="container-fluid text-center">
         <div class="row mt-4">
-            <div class="col-lg-8 text-center">
+            <div class="col-lg-8 text-center mb-5">
                 <h3>Llamada</h3>
                 <div id="estado-llamada">
                     <!-- <h5>Llamando a <strong>Carlos Veny</strong> <img class="loading" src="assets/icons/bars.gif" /> </h5> -->
                 </div>
 
                 <div class="contenedor-video">
-                    <video class="videoLocal" id="localVideo" autoplay muted playsinline></video>
+                    <video class="videoLocal video-flip" id="localVideo" autoplay muted playsinline></video>
                     <video class="videoRemoto" id="remoteVideo" autoplay playsinline></video>
                 </div>
                 <!-- <button id="bt-colgar" onclick="colgar()" style="display: none">Colgar</button> -->
-                <a id="bt-colgar" class="boton-rechazar text-center me-3" onclick="colgar()" style="display: none"><i
+                <a id="bt-flip" class="boton-flip text-center mx-3" onclick="flipScreen()"><i
+                        class="fa-solid fa-camera-rotate icono-centrado2"></i></a>
+                <a id="bt-colgar" class="boton-rechazar text-center mx-3" onclick="colgar()" style="display: none"><i
                         class="fa-solid fa-phone-slash icono-centrado"></i></a>
             </div>
 
