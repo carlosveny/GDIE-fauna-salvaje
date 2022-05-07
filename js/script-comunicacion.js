@@ -9,6 +9,10 @@ var username = null;
 var targetUser = null;
 var llamadaEstablecida = false;
 var localStream = null;
+var videoTrack = null;
+var screenTrack = null;
+var audioTrack = null;
+var sender = null;
 var channel = null;
 var rtcPeerConnection; // Connection between the local device and the remote peer
 const iceServers = {
@@ -312,13 +316,47 @@ async function playVideoFromCamera() {
             },
             'audio': true
         };
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        localStream = stream;
-        document.getElementById("localVideo").srcObject = localStream;
+        await navigator.mediaDevices.getUserMedia(constraints)
+            .then(stream => {
+                localStream = stream;
+                document.getElementById("localVideo").srcObject = localStream;
+                const tracks = stream.getTracks();
+                if (tracks[0].kind == "audio") {
+                    audioTrack = tracks[0];
+                    videoTrack = tracks[1];
+                }
+                else {
+                    audioTrack = tracks[1];
+                    videoTrack = tracks[0];
+                }
+            });
+
     } catch (error) {
         console.error('Error opening video camera.', error);
     }
 }
+
+async function startCapture(displayMediaOptions) {
+    try {
+        await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+        .then(captureStream => {
+            // document.getElementById("remoteVideo").srcObject = captureStream;
+            let tracks = captureStream.getTracks();
+            for (let i=0; i<tracks.length; i++) {
+                if (tracks[i].kind == "video") {
+                    screenTrack = tracks[i];
+                    //rtcPeerConnection.removeTrack(sender);
+                    rtcPeerConnection.addTrack(screenTrack);
+                    break;
+                }
+            }
+        });
+
+    } catch (err) {
+        console.error("Error: " + err);
+    }
+}
+
 
 /* ---------------------------------------------------------------------------- */
 
@@ -417,9 +455,8 @@ function connect() {
 // FUNCIONES P2P
 
 function addLocalTracks(rtcPeerConnection) {
-    localStream.getTracks().forEach((track) => {
-        rtcPeerConnection.addTrack(track, localStream);
-    });
+    rtcPeerConnection.addTrack(audioTrack, localStream);
+    sender = rtcPeerConnection.addTrack(videoTrack, localStream);
 }
 
 function setRemoteStream(event) {
