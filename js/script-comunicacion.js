@@ -551,6 +551,15 @@ function channelMensaje(event) {
 function colgar() {
     console.log("Llamada finalizada");
     rtcPeerConnection.close();
+    // Actualizar pantalla
+    $("#estado-llamada").empty();
+    var estado = document.createElement("h5");
+    estado.innerHTML = "Llamada finalizada";
+    estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
+    document.getElementById("estado-llamada").appendChild(estado);
+    document.getElementById("remoteVideo").srcObject = null;
+    $("#bt-colgar").css("display", "none");
+    $('#select-usuarios').prop("disabled", false);
 }
 
 /* ---------------------------------------------------------------------------- */
