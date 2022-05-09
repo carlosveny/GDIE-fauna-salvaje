@@ -74,6 +74,12 @@ function loaded() {
 // Funcion que guarda el nombre de usuario y establece la conexion
 function setUsername() {
     username = $("#username").val();
+    if (username == "default") {
+        var descr = "Este nombre de usuario no está permitido. Prueba con otro nombre.";
+        crearAviso("alert-danger", "Error", descr, 3000);
+        $("#username").val("");
+        return;
+    }
     connect();
 }
 
@@ -241,6 +247,7 @@ function revisarCamposVacios(campo) {
 
 // Funcion que se ejecuta cuando se selecciona un usuario del dropdown
 function usuarioSeleccionado(user) {
+    if (user == "default") return;
     // Desmarcar
     $('#select-usuarios').find('option:selected').removeAttr('selected');
     $('#select-usuarios').val("default");
