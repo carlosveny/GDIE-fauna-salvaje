@@ -343,26 +343,26 @@ async function playVideoFromCamera() {
     }
 }
 
-async function startCapture(displayMediaOptions) {
-    try {
-        await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
-        .then(captureStream => {
-            // document.getElementById("remoteVideo").srcObject = captureStream;
-            let tracks = captureStream.getTracks();
-            for (let i=0; i<tracks.length; i++) {
-                if (tracks[i].kind == "video") {
-                    screenTrack = tracks[i];
-                    //rtcPeerConnection.removeTrack(sender);
-                    rtcPeerConnection.addTrack(screenTrack);
-                    break;
-                }
-            }
-        });
+// async function startCapture(displayMediaOptions) {
+//     try {
+//         await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+//         .then(captureStream => {
+//             // document.getElementById("remoteVideo").srcObject = captureStream;
+//             let tracks = captureStream.getTracks();
+//             for (let i=0; i<tracks.length; i++) {
+//                 if (tracks[i].kind == "video") {
+//                     screenTrack = tracks[i];
+//                     //rtcPeerConnection.removeTrack(sender);
+//                     rtcPeerConnection.addTrack(screenTrack);
+//                     break;
+//                 }
+//             }
+//         });
 
-    } catch (err) {
-        console.error("Error: " + err);
-    }
-}
+//     } catch (err) {
+//         console.error("Error: " + err);
+//     }
+// }
 
 
 /* ---------------------------------------------------------------------------- */

@@ -1,5 +1,6 @@
 assets/animales.mp4
 assets/videos/
+assets/cmaf/
 node/node_modules
 node/package.json
 node/package-lock.json
