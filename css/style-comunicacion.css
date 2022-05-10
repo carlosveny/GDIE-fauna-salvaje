@@ -37,8 +37,8 @@
     padding-bottom: 12px;
 }
 .contenedor-comments2 {
-    width: 420px;
-    height: 400px;
+    width: 380px;
+    height: 360px;
     border: 1px solid black;
     margin-right: auto;
     margin-left: auto;
@@ -245,5 +245,9 @@
 @media (max-width: 500px) {
     .contenedor-comments {
         height: calc(100vh - 500px);
+    }
+    .contenedor-comments2 {
+        width: 320px;
+        height: 340px;
     }
 }
