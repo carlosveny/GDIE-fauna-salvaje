@@ -9,6 +9,7 @@ var cueActual = null; // VTTCue actual
 var allCues; //Cues del video actual
 
 var recargando = false;
+var adaptativos;
 
 //CONTROL FILTROS
 var seleccionAnimal = "todos";
@@ -46,6 +47,8 @@ var preguntasContestadas = [];
 //FUNCIONES
 /* ---------------------------------------------------------------------------- */
 
+consultarAdaptativos();
+
 //Función inicial tras cargar la página
 function loaded() {
     // Inicializacion variable global
@@ -56,6 +59,7 @@ function loaded() {
         invertTime: false,
         toggleInvert: false
     });
+    
     peticionObtenerVideos();
     cargarMapa("todo");
 }
@@ -106,22 +110,33 @@ function reloadVideo(path) {
         path = path.value;
         console.log(path);
     }
-
-    /* var pathMP4, pathWebm, pathMPD;
+    console.log(path);
+    var pathMP4, pathWebm, pathMPD, pathHLS;
+    var adaptatiu;
     if (path.includes(".mp4")) {
         pathMP4 = path;
         pathWebm = path.replace("mp4", "webm");
-        //pathMPD = path.replace("mp4", "mpd");
     }
     else {
         pathWebm = path;
         pathMP4 = path.replace("webm", "mp4");
-    } */
+    }
 
-    // De momento únicamente se selecciona el wild life
-    pathMPD = "assets/cmaf/wild/playlist.mpd"
+    var name = path.substring(14);
+        myArray = name.split(".");
+        myArray = myArray[0].split(" ");
+        name = myArray[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-    pathHLS = "assets/cmaf/wild/playlist.m3u8"
+        pathMPD = "assets/cmaf/" + name + "/playlist.mpd"
+        console.log(pathMPD);
+        pathHLS = "assets/cmaf/" + name + "/playlist.m3u8"
+        console.log(pathHLS);
+
+        adaptatiu = adaptativos.includes(name);
+        console.log(adaptatiu);
+
+    /* pathMPD = "assets/cmaf/wild/playlist.mpd"
+    pathHLS = "assets/cmaf/wild/playlist.m3u8" */
 
     const urlParams = new URLSearchParams(window.location.search);
     const tipo = urlParams.get('tipo');
@@ -129,82 +144,83 @@ function reloadVideo(path) {
 
     //---------------------------------------------------------
 
-    const defaultOptions = {};
+    if (adaptatiu) {
+        const defaultOptions = {};
+        if (!Hls.isSupported() || tipo == "DASH") {
+            // DASH
+            console.log("DASH");
+            const dash = dashjs.MediaPlayer().create();
+            dash.initialize(video, pathMPD, true);
+            dash.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function (event, data) {
+                // Transform available levels into an array of integers (height values).
+                const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
+                console.log(availableQualities);
 
-    if (!Hls.isSupported() || tipo == "DASH") {
-        // DASH
-        console.log("DASH");
-        const dash = dashjs.MediaPlayer().create();
-        dash.initialize(video, pathMPD, true);
-        dash.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function (event, data) {
-            // Transform available levels into an array of integers (height values).
-            const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
-            console.log(availableQualities);
+                // Add new qualities to option
+                defaultOptions.quality = {
+                    default: availableQualities[0],
+                    options: availableQualities,
+                    // this ensures Plyr to use Hls to update quality level
+                    forced: true,
+                    onChange: (e) => updateQualityDash(e),
+                }
+                console.log(defaultOptions)
+                const player = new Plyr(video, defaultOptions);
+            });
 
-            // Add new qualities to option
-            defaultOptions.quality = {
-                default: availableQualities[0],
-                options: availableQualities,
-                // this ensures Plyr to use Hls to update quality level
-                forced: true,
-                onChange: (e) => updateQualityDash(e),
-            }
-            console.log(defaultOptions)
-            const player = new Plyr(video, defaultOptions);
-        });
+            // Expose player and dash so they can be used from the console
+            window.player = player;
+            window.dash = dash;
 
-        console.log("done")
+            // Esto es para que no se ponga la mejor calidad posible (para poder usar las opciones)
+            const cfg = { streaming: { abr: { autoSwitchBitrate: { video: false } } } }
+            window.dash.updateSettings(cfg);
+        } else {
+            //HLS
+            console.log("HLS");
+            const hls = new Hls();
+            hls.loadSource(pathHLS);
+            hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                console.log("parsed");
 
-        // Expose player and dash so they can be used from the console
-        window.player = player;
-        window.dash = dash;
+                // Transform available levels into an array of integers (height values).
+                const availableQualities = hls.levels.map((l) => l.height);
+                console.log(availableQualities);
 
-        // Esto es para que no se ponga la mejor calidad posible (para poder usar las opciones)
-        const cfg = { streaming: { abr: { autoSwitchBitrate: { video: false } } } }
-        window.dash.updateSettings(cfg);
+                // Add new qualities to option
+                defaultOptions.quality = {
+                    default: availableQualities[0],
+                    options: availableQualities,
+                    // this ensures Plyr to use Hls to update quality level
+                    forced: true,
+                    onChange: (e) => updateQuality(e),
+                }
+                console.log(defaultOptions)
+
+                // Initialize here
+                const player = new Plyr(video, defaultOptions);
+                //const player = new Plyr(video, { captions: { active: false, update: true }, quality: { default: 720, options: [4320, 2880, 2160, 1440, 1080, 720, 480, 360, 240] } });
+            });
+            hls.attachMedia(video);
+            window.hls = hls;
+        }
     } else {
-        //HLS
-        console.log("HLS");
-        const hls = new Hls();
-        hls.loadSource(pathHLS);
-        hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-            console.log("parsed");
-
-            // Transform available levels into an array of integers (height values).
-            const availableQualities = hls.levels.map((l) => l.height);
-            console.log(availableQualities);
-
-            // Add new qualities to option
-            defaultOptions.quality = {
-                default: availableQualities[0],
-                options: availableQualities,
-                // this ensures Plyr to use Hls to update quality level
-                forced: true,
-                onChange: (e) => updateQuality(e),
-            }
-            console.log(defaultOptions)
-
-            // Initialize here
-            const player = new Plyr(video, defaultOptions);
-            //const player = new Plyr(video, { captions: { active: false, update: true }, quality: { default: 720, options: [4320, 2880, 2160, 1440, 1080, 720, 480, 360, 240] } });
+        const player = new Plyr('#player', {
+            invertTime: false,
+            toggleInvert: false
         });
-        hls.attachMedia(video);
-        window.hls = hls;
+        // Crear elemento "source" con MP4
+        var src = document.createElement("source");
+        setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
+        video.appendChild(src);
 
-        console.log("quality")
+        // Crear elemento "source" con webm
+        var src2 = document.createElement("source");
+        setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
+        video.appendChild(src2);
     }
 
     //---------------------------------------------------------
-
-    /*  // Crear elemento "source" con MP4
-     var src = document.createElement("source");
-     setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
-     video.appendChild(src);
- 
-     // Crear elemento "source" con webm
-     var src2 = document.createElement("source");
-     setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
-     video.appendChild(src2); */
 
     var pathMetadata;
     var pathSubtitulos1;
@@ -826,6 +842,15 @@ function peticionObtenerVideos() {
             reloadVideo(paths[idx_WildLife]);
             recargando = true;
         });
+}
+
+
+function consultarAdaptativos() {
+    $.get("php/consultAdaptative.php", {})
+        .done(function (data) {
+            adaptativos = data;
+        });
+    console.log("sale")
 }
 
 
