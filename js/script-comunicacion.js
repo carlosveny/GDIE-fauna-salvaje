@@ -49,7 +49,7 @@ function loaded() {
     $('#select-usuarios').find('option:selected').removeAttr('selected');
     $('#select-usuarios').val("default");
     $('#select-usuarios').prop("disabled", true);
-    // $("#chat-p2p").css("display", "none");
+    $("#chat-p2p").css("display", "none");
 
     playVideoFromCamera();
 
