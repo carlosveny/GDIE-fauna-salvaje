@@ -36,6 +36,13 @@
     padding: 9px;
     padding-bottom: 12px;
 }
+.contenedor-comments2 {
+    width: 380px;
+    height: 360px;
+    border: 1px solid black;
+    margin-right: auto;
+    margin-left: auto;
+}
 
 .caja-comments {
     width: 100%;
@@ -44,8 +51,32 @@
     background-color: rgb(251, 251, 251);
     overflow-y: auto;
 }
+.caja-comments2 {
+    width: 100%;
+    height: calc(100% - 95px);
+    background-color: rgb(251, 251, 251);
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    overflow-y: auto;
+}
+
+.banner-chat {
+    height: 50px;
+    background-color: rgb(182, 225, 255);
+}
+.banner-user {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.banner-status {
+    font-size: 0.85rem;
+}
 
 .comentario {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+.comentario2 {
     overflow-wrap: break-word;
     word-wrap: break-word;
 }
@@ -89,6 +120,9 @@
 
 .max-w80 {
     max-width: 80px;
+}
+.max-w60 {
+    max-width: 60px;
 }
 
 /* Botones */
@@ -211,5 +245,9 @@
 @media (max-width: 500px) {
     .contenedor-comments {
         height: calc(100vh - 500px);
+    }
+    .contenedor-comments2 {
+        width: 320px;
+        height: 340px;
     }
 }
