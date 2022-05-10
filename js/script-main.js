@@ -60,6 +60,32 @@ function loaded() {
     cargarMapa("todo");
 }
 
+function updateQuality(newQuality) {
+    window.hls.levels.forEach((level, levelIndex) => {
+        if (level.height === newQuality) {
+            console.log("Found quality match with " + newQuality);
+            window.hls.currentLevel = levelIndex;
+            console.log(levelIndex)
+        }
+    });
+}
+
+// Probablemente falle, usar window.player y window.dash
+function updateQualityDash(newQuality) {
+    const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
+    console.log(availableQualities);
+
+
+    for (i = 0; i < availableQualities.length; i++) {
+        console.log(newQuality);
+        console.log(availableQualities[i]);
+        if (availableQualities[i] == newQuality) {
+            window.dash.setQualityFor("video", i);
+            break;
+        }
+    }
+}
+
 /* ---------------------------------------------------------------------------- */
 
 //FUNCIONES INICIALIZACIÓN Y CONTROL PLAYER
@@ -71,35 +97,114 @@ function reloadVideo(path) {
     video = document.getElementById('player');
 
     // Inicializacion del media player "plyr"
-    const player = new Plyr('#player', {
+    /* const player = new Plyr('#player', {
         invertTime: false,
         toggleInvert: false
-    });
+    }); */
     // Si es un objeto se ha elegido un video existente
     if ((typeof path) == "object") {
         path = path.value;
         console.log(path);
     }
 
-    var pathMP4, pathWebm;
+    /* var pathMP4, pathWebm, pathMPD;
     if (path.includes(".mp4")) {
         pathMP4 = path;
         pathWebm = path.replace("mp4", "webm");
+        //pathMPD = path.replace("mp4", "mpd");
     }
     else {
         pathWebm = path;
         pathMP4 = path.replace("webm", "mp4");
+    } */
+
+    // De momento únicamente se selecciona el wild life
+    pathMPD = "assets/cmaf/wild/playlist.mpd"
+
+    pathHLS = "assets/cmaf/wild/playlist.m3u8"
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const tipo = urlParams.get('tipo');
+    console.log(tipo);
+
+    //---------------------------------------------------------
+
+    const defaultOptions = {};
+
+    if (!Hls.isSupported() || tipo == "DASH") {
+        // DASH
+        console.log("DASH");
+        const dash = dashjs.MediaPlayer().create();
+        dash.initialize(video, pathMPD, true);
+        dash.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function (event, data) {
+            // Transform available levels into an array of integers (height values).
+            const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
+            console.log(availableQualities);
+
+            // Add new qualities to option
+            defaultOptions.quality = {
+                default: availableQualities[0],
+                options: availableQualities,
+                // this ensures Plyr to use Hls to update quality level
+                forced: true,
+                onChange: (e) => updateQualityDash(e),
+            }
+            console.log(defaultOptions)
+            const player = new Plyr(video, defaultOptions);
+        });
+
+        console.log("done")
+
+        // Expose player and dash so they can be used from the console
+        window.player = player;
+        window.dash = dash;
+
+        // Esto es para que no se ponga la mejor calidad posible (para poder usar las opciones)
+        const cfg = { streaming: { abr: { autoSwitchBitrate: { video: false } } } }
+        window.dash.updateSettings(cfg);
+    } else {
+        //HLS
+        console.log("HLS");
+        const hls = new Hls();
+        hls.loadSource(pathHLS);
+        hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+            console.log("parsed");
+
+            // Transform available levels into an array of integers (height values).
+            const availableQualities = hls.levels.map((l) => l.height);
+            console.log(availableQualities);
+
+            // Add new qualities to option
+            defaultOptions.quality = {
+                default: availableQualities[0],
+                options: availableQualities,
+                // this ensures Plyr to use Hls to update quality level
+                forced: true,
+                onChange: (e) => updateQuality(e),
+            }
+            console.log(defaultOptions)
+
+            // Initialize here
+            const player = new Plyr(video, defaultOptions);
+            //const player = new Plyr(video, { captions: { active: false, update: true }, quality: { default: 720, options: [4320, 2880, 2160, 1440, 1080, 720, 480, 360, 240] } });
+        });
+        hls.attachMedia(video);
+        window.hls = hls;
+
+        console.log("quality")
     }
 
-    // Crear elemento "source" con MP4
-    var src = document.createElement("source");
-    setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
-    video.appendChild(src);
+    //---------------------------------------------------------
 
-    // Crear elemento "source" con webm
-    var src2 = document.createElement("source");
-    setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
-    video.appendChild(src2);
+    /*  // Crear elemento "source" con MP4
+     var src = document.createElement("source");
+     setAttributes(src, { id: "video-src", src: pathMP4, type: "video/mp4" });
+     video.appendChild(src);
+ 
+     // Crear elemento "source" con webm
+     var src2 = document.createElement("source");
+     setAttributes(src2, { id: "video-src2", src: pathWebm, type: "video/webm" });
+     video.appendChild(src2); */
 
     var pathMetadata;
     var pathSubtitulos1;
