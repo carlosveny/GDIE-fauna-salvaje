@@ -93,24 +93,53 @@
     <div class="container-fluid text-center">
         <div class="row mt-4">
             <div class="col-lg-8 text-center mb-5">
+                <!-- Inicio Llamada -->
                 <h3>Llamada</h3>
-                <div id="estado-llamada">
-                    <!-- <h5>Llamando a <strong>Carlos Veny</strong> <img class="loading" src="assets/icons/bars.gif" /> </h5> -->
-                </div>
+                <div id="estado-llamada"></div>
 
                 <div class="contenedor-video">
                     <video class="videoLocal video-flip" id="localVideo" autoplay muted playsinline></video>
                     <video class="videoRemoto" id="remoteVideo" autoplay playsinline></video>
                 </div>
-                <!-- <button id="bt-colgar" onclick="colgar()" style="display: none">Colgar</button> -->
                 <a id="bt-flip" class="boton-flip text-center mx-3" onclick="flipScreen()"><i
                         class="fa-solid fa-camera-rotate icono-centrado2"></i></a>
                 <a id="bt-colgar" class="boton-rechazar text-center mx-3" onclick="colgar()" style="display: none"><i
                         class="fa-solid fa-phone-slash icono-centrado"></i></a>
+                <!-- Fin Llamada -->
+
+                <!-- Inicio Chat P2P -->
+                <div id="chat-p2p" style="display: none">
+                    <h3 class="mt-4">Chat P2P</h3>
+                    <div class="contenedor-comments2 text-start">
+                        <div class="banner-chat row mx-0">
+                            <div class="col max-w60">
+                                <img class="mt-1" src="assets/icons/p2p.png" width="40px">
+                            </div>
+                            <div class="col">
+                                <div id="banner-usuario" class="banner-user">carlosveny</div>
+                                <div id="banner-estado" class="banner-status">en línea</div>
+                            </div>
+                        </div>
+                        <div id="comentarios2" class="caja-comments2"></div>
+                        <div class="row mx-auto mt-2">
+                            <div class="col max-input-mensaje">
+                                <input id="mensaje2" class="w-100 input-size" placeholder="Envia un mensaje..."
+                                    maxlength="100" onkeydown="enterKey(event)"
+                                    oninput="revisarCamposVacios('mensaje2'); peticionStatus()">
+                            </div>
+                            <div class="col max-input-enviar ps-1">
+                                <button id="bt-mensaje2" class="boton-enviar ps-1" onclick="peticionMensajeChannel()"
+                                    disabled>Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fin Chat P2P -->
             </div>
 
             <div class="col-lg-4">
-                <h3>Chat</h3>
+                <!-- Inicio Chat Global -->
+                <h3>Chat Global</h3>
                 <div class="contenedor-comments">
                     <div class="row mb-2">
                         <div class="col max-w80">
@@ -137,7 +166,7 @@
                     <div class="row mt-2 mb-0">
                         <div class="col max-input-mensaje">
                             <input id="mensaje" class="w-100 input-size" placeholder="Envia un mensaje..."
-                                maxlength="200" onkeydown="enterKey(event)" oninput="revisarCamposVacios('mensaje')"
+                                maxlength="100" onkeydown="enterKey(event)" oninput="revisarCamposVacios('mensaje')"
                                 disabled>
                         </div>
                         <div class="col max-input-enviar ps-1">
@@ -146,6 +175,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Fin Chat Global -->
             </div>
         </div>
     </div>

@@ -14,6 +14,7 @@ var screenTrack = null;
 var audioTrack = null;
 var sender = null;
 var channel = null;
+var timeoutEscribiendo = null;
 var rtcPeerConnection; // Connection between the local device and the remote peer
 const iceServers = {
     iceServers: [
@@ -48,6 +49,7 @@ function loaded() {
     $('#select-usuarios').find('option:selected').removeAttr('selected');
     $('#select-usuarios').val("default");
     $('#select-usuarios').prop("disabled", true);
+    // $("#chat-p2p").css("display", "none");
 
     playVideoFromCamera();
 
@@ -225,6 +227,8 @@ async function gestionarMensaje(mensaje) {
             estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
             document.getElementById("estado-llamada").appendChild(estado);
             $("#bt-colgar").css("display", "none");
+            $("#chat-p2p").css("display", "none");
+            break;
 
     }
 }
@@ -236,6 +240,9 @@ function enterKey(e) {
             setUsername();
         }
         else if ($("#mensaje").val() != "") peticionMensaje();
+        else if (document.activeElement == document.getElementById("mensaje2")) {
+            if ($("#mensaje2").val() != "") peticionMensajeChannel();
+        }
     }
 }
 
@@ -343,27 +350,6 @@ async function playVideoFromCamera() {
     }
 }
 
-// async function startCapture(displayMediaOptions) {
-//     try {
-//         await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
-//         .then(captureStream => {
-//             // document.getElementById("remoteVideo").srcObject = captureStream;
-//             let tracks = captureStream.getTracks();
-//             for (let i=0; i<tracks.length; i++) {
-//                 if (tracks[i].kind == "video") {
-//                     screenTrack = tracks[i];
-//                     //rtcPeerConnection.removeTrack(sender);
-//                     rtcPeerConnection.addTrack(screenTrack);
-//                     break;
-//                 }
-//             }
-//         });
-
-//     } catch (err) {
-//         console.error("Error: " + err);
-//     }
-// }
-
 
 /* ---------------------------------------------------------------------------- */
 
@@ -403,6 +389,7 @@ function rechazarLlamada() {
     estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
     document.getElementById("estado-llamada").appendChild(estado);
     $("#bt-colgar").css("display", "none");
+    $("#chat-p2p").css("display", "none");
 
     // Enviar al servidor el rechazo
     llamadaEstablecida = true;
@@ -475,6 +462,14 @@ function setRemoteStream(event) {
     estado.innerHTML += "<i class='fa-solid fa-phone text-success ms-2'></i>";
     document.getElementById("estado-llamada").appendChild(estado);
     $("#bt-colgar").css("display", "");
+
+    // Mostrar chat P2P
+    $("#chat-p2p").css("display", "");
+    $("#banner-usuario").html(targetUser);
+    $("#banner-estado").html("en línea");
+    $("#comentarios2").empty();
+    $("#mensaje2").val("");
+    $("#bt-mensaje2").prop("disabled", true);
 }
 
 function sendIceCandidate(event) {
@@ -548,13 +543,35 @@ function channelCerrado(event) {
     document.getElementById("remoteVideo").srcObject = null;
     $("#bt-colgar").css("display", "none");
     $('#select-usuarios').prop("disabled", false);
+    $("#chat-p2p").css("display", "none");
 }
 
 function channelMensaje(event) {
-    console.log("Canal mensaje");
-    console.log(event);
+    var datos = JSON.parse(event.data);
+    if (datos["tipo"] == "mensaje") {
+        // Mostrar comentario en el chat
+        var comment = document.createElement("div");
+        comment.setAttribute("class", "mt-1 ms-1 comentario");
+        var tiempo = "[" + formatTime(datos["fecha"]) + "]&nbsp";
+        var nombre = " <strong>" + targetUser + ": </strong>";
+        comment.innerHTML = tiempo + nombre + datos["mensaje"];
+        var caja = document.getElementById("comentarios2");
+        caja.appendChild(comment);
+        caja.scrollTop = caja.scrollHeight;
+    }
+    else {
+        // Cambiar estado escribiendo
+        if (timeoutEscribiendo != null) {
+            window.clearTimeout(timeoutEscribiendo);
+        }
+        $("#banner-estado").html("escribiendo...");
+        timeoutEscribiendo = window.setTimeout(function () {
+            $("#banner-estado").html("en línea");
+        }, 500);
+    }
 }
 
+// Funcion que cuelga la llamada y cierra la conexion
 function colgar() {
     console.log("Llamada finalizada");
     rtcPeerConnection.close();
@@ -567,6 +584,38 @@ function colgar() {
     document.getElementById("remoteVideo").srcObject = null;
     $("#bt-colgar").css("display", "none");
     $('#select-usuarios').prop("disabled", false);
+    $("#chat-p2p").css("display", "none");
+}
+
+// Funcion que envia un mensaje por el data channel
+function peticionMensajeChannel() {
+    var mensaje = $("#mensaje2").val();
+    $("#mensaje2").val("");
+    revisarCamposVacios("mensaje2");
+    var datos = {
+        "tipo": "mensaje",
+        "mensaje": mensaje,
+        "fecha": Date.now()
+    };
+    channel.send(JSON.stringify(datos));
+
+    // Mostrar comentario en el chat
+    var comment = document.createElement("div");
+    comment.setAttribute("class", "mt-1 ms-1 comentario");
+    var tiempo = "[" + formatTime(datos["fecha"]) + "]&nbsp";
+    var nombre = " <strong>" + username + ": </strong>";
+    comment.innerHTML = tiempo + nombre + mensaje;
+    var caja = document.getElementById("comentarios2");
+    caja.appendChild(comment);
+    caja.scrollTop = caja.scrollHeight;
+}
+
+// Funcion que envia el estado "escribiendo" al otro usuario
+function peticionStatus() {
+    var datos = {
+        "tipo": "estado"
+    };
+    channel.send(JSON.stringify(datos));
 }
 
 /* ---------------------------------------------------------------------------- */
