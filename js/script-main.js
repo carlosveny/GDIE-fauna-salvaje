@@ -67,22 +67,21 @@ function loaded() {
 function updateQuality(newQuality) {
     if (newQuality === 0) {
         window.hls.currentLevel = -1; //Enable AUTO quality if option.value = 0
-      } else {
+    } else {
         window.hls.levels.forEach((level, levelIndex) => {
-          if (level.height === newQuality) {
-            console.log("Found quality match with " + newQuality);
-            window.hls.currentLevel = levelIndex;
-            console.log(levelIndex);
-          }
+            if (level.height === newQuality) {
+                console.log("Found quality match with " + newQuality);
+                window.hls.currentLevel = levelIndex;
+                console.log(levelIndex);
+            }
         });
-      }
+    }
 }
 
 // Probablemente falle, usar window.player y window.dash
-function updateQualityDash(newQuality) {
+/* function updateQualityDash(newQuality) {
     const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
     console.log(availableQualities);
-
 
     for (i = 0; i < availableQualities.length; i++) {
         console.log(newQuality);
@@ -92,7 +91,7 @@ function updateQualityDash(newQuality) {
             break;
         }
     }
-}
+} */
 
 /* ---------------------------------------------------------------------------- */
 
@@ -155,21 +154,68 @@ function reloadVideo(path) {
             console.log("DASH");
             const dash = dashjs.MediaPlayer().create();
             dash.initialize(video, pathMPD, true);
+            dash.updateSettings({
+                streaming: {
+                    abr: {
+                        autoSwitchBitrate: { audio: true, video: true },
+                        useDefaultABRRules: true,
+                        ABRStrategy: "abrDynamic",
+                        additionalAbrRules: {
+                            insufficientBufferRule: true,
+                            switchHistoryRule: true,
+                            droppedFramesRule: true,
+                            abandonRequestsRule: true
+                        }
+                    },
+                    buffer: {
+                        fastSwitchEnabled: true,
+                    }
+                }
+            });
             dash.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function (event, data) {
                 // Transform available levels into an array of integers (height values).
                 const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
+                availableQualities.unshift(0) //prepend 0 to quality array
                 console.log(availableQualities);
-
                 // Add new qualities to option
                 defaultOptions.quality = {
-                    default: availableQualities[0],
+                    default: 0,
                     options: availableQualities,
-                    // this ensures Plyr to use Hls to update quality level
                     forced: true,
-                    onChange: (e) => updateQualityDash(e),
+                    onChange: function (newQuality) {
+                        dash.getBitrateInfoListFor("video").forEach((level, levelIndex) => {
+                            if (level.height === newQuality) {
+                                console.log("newQual: " + newQuality)
+                                dash.setQualityFor("video", level.qualityIndex);
+                            }
+                            if (newQuality === 0) {
+                                // Pone la calidad en automático
+                                const cfg = { streaming: { abr: { autoSwitchBitrate: { video: true } } } }
+                                dash.updateSettings(cfg);
+                            } else {
+                                // Quita la calidad automática
+                                const cfg = { streaming: { abr: { autoSwitchBitrate: { video: false } } } }
+                                dash.updateSettings(cfg);
+                            }
+                        });
+                    },
                 }
                 console.log(defaultOptions)
                 const player = new Plyr(video, defaultOptions);
+            });
+
+            //QUALITY_CHANGE_REQUESTED
+            dash.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, function (event, data) {
+                var span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span")
+
+                var qual = dash.getQualityFor("video")
+                const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
+                actualQual = availableQualities[qual];
+
+                if (span != null) {
+                    span.innerHTML = `AUTO (${actualQual}p)`
+                }
+
             });
 
             // Expose player and dash so they can be used from the console
@@ -177,11 +223,8 @@ function reloadVideo(path) {
             window.dash = dash;
 
             //dash.setAutoQualityFor("video", true);
-
-            // Esto es para que no se ponga la mejor calidad posible (para poder usar las opciones)
-            const cfg = { streaming: { abr: { autoSwitchBitrate: { video: true } } } }
-            dash.updateSettings(cfg);
-            console.log("actual")
+            /* const cfg = { streaming: { abr: { autoSwitchBitrate: { video: false } } } }
+            dash.updateSettings(cfg); */
         } else {
             //HLS
             console.log("HLS");
@@ -209,11 +252,11 @@ function reloadVideo(path) {
                     var span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span")
                     console.log(hls.autoLevelEnabled);
                     if (hls.autoLevelEnabled) {
-                      span.innerHTML = `AUTO (${hls.levels[data.level].height}p)`
+                        span.innerHTML = `AUTO (${hls.levels[data.level].height}p)`
                     } else {
-                      span.innerHTML = `AUTO`
+                        span.innerHTML = `AUTO`
                     }
-                  })
+                })
 
                 // Initialize here
                 const player = new Plyr(video, defaultOptions);
