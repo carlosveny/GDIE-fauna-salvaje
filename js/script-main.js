@@ -59,19 +59,23 @@ function loaded() {
         invertTime: false,
         toggleInvert: false
     });
-    
+
     peticionObtenerVideos();
     cargarMapa("todo");
 }
 
 function updateQuality(newQuality) {
-    window.hls.levels.forEach((level, levelIndex) => {
-        if (level.height === newQuality) {
+    if (newQuality === 0) {
+        window.hls.currentLevel = -1; //Enable AUTO quality if option.value = 0
+      } else {
+        window.hls.levels.forEach((level, levelIndex) => {
+          if (level.height === newQuality) {
             console.log("Found quality match with " + newQuality);
             window.hls.currentLevel = levelIndex;
-            console.log(levelIndex)
-        }
-    });
+            console.log(levelIndex);
+          }
+        });
+      }
 }
 
 // Probablemente falle, usar window.player y window.dash
@@ -123,17 +127,17 @@ function reloadVideo(path) {
     }
 
     var name = path.substring(14);
-        myArray = name.split(".");
-        myArray = myArray[0].split(" ");
-        name = myArray[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    myArray = name.split(".");
+    myArray = myArray[0].split(" ");
+    name = myArray[0].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-        pathMPD = "assets/cmaf/" + name + "/playlist.mpd"
-        console.log(pathMPD);
-        pathHLS = "assets/cmaf/" + name + "/playlist.m3u8"
-        console.log(pathHLS);
+    pathMPD = "assets/cmaf/" + name + "/playlist.mpd"
+    console.log(pathMPD);
+    pathHLS = "assets/cmaf/" + name + "/playlist.m3u8"
+    console.log(pathHLS);
 
-        adaptatiu = adaptativos.includes(name);
-        console.log(adaptatiu);
+    adaptatiu = adaptativos.includes(name);
+    console.log(adaptatiu);
 
     /* pathMPD = "assets/cmaf/wild/playlist.mpd"
     pathHLS = "assets/cmaf/wild/playlist.m3u8" */
@@ -172,9 +176,12 @@ function reloadVideo(path) {
             window.player = player;
             window.dash = dash;
 
+            //dash.setAutoQualityFor("video", true);
+
             // Esto es para que no se ponga la mejor calidad posible (para poder usar las opciones)
-            const cfg = { streaming: { abr: { autoSwitchBitrate: { video: false } } } }
-            window.dash.updateSettings(cfg);
+            const cfg = { streaming: { abr: { autoSwitchBitrate: { video: true } } } }
+            dash.updateSettings(cfg);
+            console.log("actual")
         } else {
             //HLS
             console.log("HLS");
@@ -185,11 +192,12 @@ function reloadVideo(path) {
 
                 // Transform available levels into an array of integers (height values).
                 const availableQualities = hls.levels.map((l) => l.height);
+                availableQualities.unshift(0) //prepend 0 to quality array
                 console.log(availableQualities);
 
                 // Add new qualities to option
                 defaultOptions.quality = {
-                    default: availableQualities[0],
+                    default: 0,
                     options: availableQualities,
                     // this ensures Plyr to use Hls to update quality level
                     forced: true,
@@ -197,11 +205,22 @@ function reloadVideo(path) {
                 }
                 console.log(defaultOptions)
 
+                hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+                    var span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span")
+                    console.log(hls.autoLevelEnabled);
+                    if (hls.autoLevelEnabled) {
+                      span.innerHTML = `AUTO (${hls.levels[data.level].height}p)`
+                    } else {
+                      span.innerHTML = `AUTO`
+                    }
+                  })
+
                 // Initialize here
                 const player = new Plyr(video, defaultOptions);
                 //const player = new Plyr(video, { captions: { active: false, update: true }, quality: { default: 720, options: [4320, 2880, 2160, 1440, 1080, 720, 480, 360, 240] } });
             });
             hls.attachMedia(video);
+
             window.hls = hls;
         }
     } else {
