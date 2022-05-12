@@ -10,6 +10,7 @@ var allCues; //Cues del video actual
 
 var recargando = false;
 var adaptativos;
+var auto = true;
 
 //CONTROL FILTROS
 var seleccionAnimal = "todos";
@@ -183,21 +184,33 @@ function reloadVideo(path) {
                     options: availableQualities,
                     forced: true,
                     onChange: function (newQuality) {
-                        dash.getBitrateInfoListFor("video").forEach((level, levelIndex) => {
-                            if (level.height === newQuality) {
-                                console.log("newQual: " + newQuality)
-                                dash.setQualityFor("video", level.qualityIndex);
+                        if (newQuality === 0) {
+                            // Pone la calidad en automático
+                            const cfg = { streaming: { abr: { autoSwitchBitrate: { video: true } } } }
+                            dash.updateSettings(cfg);
+                            auto = true;
+                            var qual = dash.getQualityFor("video")
+                            actualQual = availableQualities[qual];
+                            var spans = document.querySelectorAll(".plyr__menu__container [data-plyr='settings'] span")
+                            var span2 = spans[2];
+                            if (span2 != null) {
+                                span2.innerHTML = `Quality<span class="plyr__menu__value">AUTO (${actualQual}p)</span>`
                             }
-                            if (newQuality === 0) {
-                                // Pone la calidad en automático
-                                const cfg = { streaming: { abr: { autoSwitchBitrate: { video: true } } } }
-                                dash.updateSettings(cfg);
-                            } else {
-                                // Quita la calidad automática
-                                const cfg = { streaming: { abr: { autoSwitchBitrate: { video: false } } } }
-                                dash.updateSettings(cfg);
-                            }
-                        });
+                        } else {
+                            // Quita la calidad automática
+                            const cfg = { streaming: { abr: { autoSwitchBitrate: { video: false } } } }
+                            dash.updateSettings(cfg);
+                            auto = false;
+                            dash.getBitrateInfoListFor("video").forEach((level, levelIndex) => {
+                                if (level.height === newQuality) {
+                                    console.log("newQual: " + newQuality)
+                                    dash.setQualityFor("video", level.qualityIndex);
+                                }
+                                
+                            });
+                        }
+
+                        
                     },
                 }
                 console.log(defaultOptions)
@@ -212,8 +225,13 @@ function reloadVideo(path) {
                 const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
                 actualQual = availableQualities[qual];
 
+                var spans = document.querySelectorAll(".plyr__menu__container [data-plyr='settings'] span")
+                var span2 = spans[2];
                 if (span != null) {
                     span.innerHTML = `AUTO (${actualQual}p)`
+                }
+                if (span2 != null && auto == true) {
+                    span2.innerHTML = `Quality<span class="plyr__menu__value">AUTO (${actualQual}p)</span>`
                 }
 
             });
@@ -250,9 +268,12 @@ function reloadVideo(path) {
 
                 hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
                     var span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span")
-                    console.log(hls.autoLevelEnabled);
+                    var spans = document.querySelectorAll(".plyr__menu__container [data-plyr='settings'] span")
+                    var span2 = spans[2];
+                    //var span2 = Array.from(document.querySelectorAll(".plyr__menu__container [data-plyr='settings'] span")).find(el => el.textContent === 'Quality');
                     if (hls.autoLevelEnabled) {
                         span.innerHTML = `AUTO (${hls.levels[data.level].height}p)`
+                        span2.innerHTML = `Quality<span class="plyr__menu__value">AUTO (${hls.levels[data.level].height}p)</span>`
                     } else {
                         span.innerHTML = `AUTO`
                     }
