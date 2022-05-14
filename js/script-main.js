@@ -71,28 +71,11 @@ function updateQuality(newQuality) {
     } else {
         window.hls.levels.forEach((level, levelIndex) => {
             if (level.height === newQuality) {
-                console.log("Found quality match with " + newQuality);
                 window.hls.currentLevel = levelIndex;
-                console.log(levelIndex);
             }
         });
     }
 }
-
-// Probablemente falle, usar window.player y window.dash
-/* function updateQualityDash(newQuality) {
-    const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
-    console.log(availableQualities);
-
-    for (i = 0; i < availableQualities.length; i++) {
-        console.log(newQuality);
-        console.log(availableQualities[i]);
-        if (availableQualities[i] == newQuality) {
-            window.dash.setQualityFor("video", i);
-            break;
-        }
-    }
-} */
 
 /* ---------------------------------------------------------------------------- */
 
@@ -174,8 +157,7 @@ function reloadVideo(path) {
             dash.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function (event, data) {
                 const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
                 availableQualities.unshift(0);
-                console.log(availableQualities);
-                // Añadir nuevas calidades a las opciones
+                // Añadir calidades a las opciones
                 defaultOptions.quality = {
                     default: 0,
                     options: availableQualities,
@@ -241,7 +223,7 @@ function reloadVideo(path) {
                 const availableQualities = hls.levels.map((l) => l.height);
                 availableQualities.unshift(0);
 
-                // Añadir las nuevas calidades a las opciones
+                // Añadir calidades a las opciones
                 defaultOptions.quality = {
                     default: 0,
                     options: availableQualities,
