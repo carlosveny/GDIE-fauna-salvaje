@@ -146,8 +146,6 @@ function reloadVideo(path) {
     const tipo = urlParams.get('tipo');
     console.log(tipo);
 
-    //---------------------------------------------------------
-
     if (adaptatiu) {
         const defaultOptions = {};
         if (!Hls.isSupported() || tipo == "DASH") {
@@ -174,11 +172,10 @@ function reloadVideo(path) {
                 }
             });
             dash.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function (event, data) {
-                // Transform available levels into an array of integers (height values).
                 const availableQualities = dash.getBitrateInfoListFor("video").map((l) => l.height);
-                availableQualities.unshift(0) //prepend 0 to quality array
+                availableQualities.unshift(0);
                 console.log(availableQualities);
-                // Add new qualities to option
+                // Añadir nuevas calidades a las opciones
                 defaultOptions.quality = {
                     default: 0,
                     options: availableQualities,
@@ -189,9 +186,9 @@ function reloadVideo(path) {
                             const cfg = { streaming: { abr: { autoSwitchBitrate: { video: true } } } }
                             dash.updateSettings(cfg);
                             auto = true;
-                            var qual = dash.getQualityFor("video")
+                            var qual = dash.getQualityFor("video");
                             actualQual = availableQualities[qual];
-                            var spans = document.querySelectorAll(".plyr__menu__container [data-plyr='settings'] span")
+                            var spans = document.querySelectorAll(".plyr__menu__container [data-plyr='settings'] span");
                             var span2 = spans[2];
                             if (span2 != null) {
                                 span2.innerHTML = `Quality<span class="plyr__menu__value">AUTO (${actualQual}p)</span>`
@@ -206,18 +203,13 @@ function reloadVideo(path) {
                                     console.log("newQual: " + newQuality)
                                     dash.setQualityFor("video", level.qualityIndex);
                                 }
-                                
                             });
                         }
-
-                        
                     },
-                }
-                console.log(defaultOptions)
+                };
                 const player = new Plyr(video, defaultOptions);
             });
 
-            //QUALITY_CHANGE_REQUESTED
             dash.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, function (event, data) {
                 var span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span")
 
@@ -233,10 +225,7 @@ function reloadVideo(path) {
                 if (span2 != null && auto == true) {
                     span2.innerHTML = `Quality<span class="plyr__menu__value">AUTO (${actualQual}p)</span>`
                 }
-
             });
-
-            // Expose player and dash so they can be used from the console
             window.player = player;
             window.dash = dash;
 
@@ -249,22 +238,16 @@ function reloadVideo(path) {
             const hls = new Hls();
             hls.loadSource(pathHLS);
             hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-                console.log("parsed");
-
-                // Transform available levels into an array of integers (height values).
                 const availableQualities = hls.levels.map((l) => l.height);
-                availableQualities.unshift(0) //prepend 0 to quality array
-                console.log(availableQualities);
+                availableQualities.unshift(0);
 
-                // Add new qualities to option
+                // Añadir las nuevas calidades a las opciones
                 defaultOptions.quality = {
                     default: 0,
                     options: availableQualities,
-                    // this ensures Plyr to use Hls to update quality level
                     forced: true,
                     onChange: (e) => updateQuality(e),
-                }
-                console.log(defaultOptions)
+                };
 
                 hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
                     var span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span")
@@ -277,16 +260,16 @@ function reloadVideo(path) {
                     } else {
                         span.innerHTML = `AUTO`
                     }
-                })
+                });
 
-                // Initialize here
+                // Inicializar el player
                 const player = new Plyr(video, defaultOptions);
                 //const player = new Plyr(video, { captions: { active: false, update: true }, quality: { default: 720, options: [4320, 2880, 2160, 1440, 1080, 720, 480, 360, 240] } });
             });
             hls.attachMedia(video);
-
             window.hls = hls;
         }
+        // Si no existen los ficheros CMAF se carga el video MP4 y WEBM
     } else {
         const player = new Plyr('#player', {
             invertTime: false,
