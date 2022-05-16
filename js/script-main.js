@@ -120,10 +120,15 @@ function reloadVideo(path) {
     console.log(pathHLS);
 
     adaptatiu = adaptativos.includes(name);
-    console.log(adaptatiu);
 
-    /* pathMPD = "assets/cmaf/wild/playlist.mpd"
-    pathHLS = "assets/cmaf/wild/playlist.m3u8" */
+    console.log("Agent:")
+    console.log(navigator.userAgent.toLocaleLowerCase().includes("iphone"))
+
+    // Si es iphone no se carga el adaptativo ya que los iphone no tienen MediaSourceExtension y no funcionan con hls.js
+    // Más info: https://github.com/video-dev/hls.js/issues/4354
+    if (navigator.userAgent.toLocaleLowerCase().includes("iphone")){
+        adaptatiu = false;
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     const tipo = urlParams.get('tipo');
