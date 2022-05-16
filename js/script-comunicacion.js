@@ -15,6 +15,7 @@ var audioTrack = null;
 var sender = null;
 var channel = null;
 var timeoutEscribiendo = null;
+var timeoutRechazar = null;
 var rtcPeerConnection; // Connection between the local device and the remote peer
 const iceServers = {
     iceServers: [
@@ -69,7 +70,7 @@ function loaded() {
         await createOffer(rtcPeerConnection);
     };
     document.getElementById("bt-rechazar").onclick = () => {
-        rechazarLlamada();
+        rechazarLlamada(true);
     };
 }
 
@@ -168,11 +169,20 @@ async function gestionarMensaje(mensaje) {
             targetUser = mensaje["sender"];
             // No permitir llamadas si no hay permiso de camara
             if (localStream == null) {
-                var txt = "Tienes una llamada entrante pero no la puedes aceptar ";
+                var txt = "Tienes una llamada entrante pero no la puedes contestar ";
                 txt += "porque no has aceptado los permisos de la cámara. Recarga ";
                 txt += "la página y acepta los permisos.";
                 crearAviso("alert-danger", "Error", txt, 4000);
-                rechazarLlamada();
+                rechazarLlamada(true);
+                return;
+            }
+            // No permitir llamadas si ya hay una en curso
+            if (document.getElementById("remoteVideo").srcObject != null) {
+                var txt = "Tienes una llamada entrante de " + targetUser + " pero";
+                txt += " no la puedes contestar porque ya tienes una llamada en ";
+                txt += " curso. Cuelga esta llamada para poder aceptar llamadas entrantes.";
+                crearAviso("alert-warning", "Error", txt, 4000);
+                rechazarLlamada(false);
                 return;
             }
 
@@ -181,10 +191,12 @@ async function gestionarMensaje(mensaje) {
             $('#select-usuarios').prop("disabled", true);
 
             // Establecer delay para rechazar la llamada (10 segundos)
-            setTimeout(() => {
-                console.log(llamadaEstablecida);
+            if (timeoutRechazar != null) {
+                window.clearTimeout(timeoutRechazar);
+            }
+            timeoutRechazar = window.setTimeout(function () {
                 if (!llamadaEstablecida) {
-                    rechazarLlamada();
+                    rechazarLlamada(true);
                 }
             }, 10000);
             break;
@@ -379,17 +391,19 @@ function peticionMensaje() {
     console.log("Mensaje enviado al servidor");
 }
 
-function rechazarLlamada() {
+function rechazarLlamada(actualizarPantalla) {
     // Actualizar pantalla
-    $('#select-usuarios').prop("disabled", false);
-    $("#llamada-entrante").css("display", "none");
-    $("#estado-llamada").empty();
-    var estado = document.createElement("h5");
-    estado.innerHTML = "Llamada finalizada";
-    estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
-    document.getElementById("estado-llamada").appendChild(estado);
-    $("#bt-colgar").css("display", "none");
-    $("#chat-p2p").css("display", "none");
+    if (actualizarPantalla) {
+        $('#select-usuarios').prop("disabled", false);
+        $("#llamada-entrante").css("display", "none");
+        $("#estado-llamada").empty();
+        var estado = document.createElement("h5");
+        estado.innerHTML = "Llamada finalizada";
+        estado.innerHTML += "<i class='fa-solid fa-phone-slash text-danger ms-2'></i>";
+        document.getElementById("estado-llamada").appendChild(estado);
+        $("#bt-colgar").css("display", "none");
+        $("#chat-p2p").css("display", "none");
+    }
 
     // Enviar al servidor el rechazo
     llamadaEstablecida = true;
