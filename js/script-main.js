@@ -71,8 +71,8 @@ function updateQuality(newQuality) {
     var span2 = spans[2];
     if (newQuality === 0) {
         window.hls.currentLevel = -1; //Enable AUTO quality if option.value = 0
-        span.innerHTML = `AUTO (${hls.levels[data.level].height}p)`
-        span2.innerHTML = `Quality<span class="plyr__menu__value">AUTO (${hls.levels[data.level].height}p)</span>`
+        span.innerHTML = `AUTO (${window.hls.levels[data.level].height}p)`
+        span2.innerHTML = `Quality<span class="plyr__menu__value">AUTO (${window.hls.levels[data.level].height}p)</span>`
     } else {
         window.hls.levels.forEach((level, levelIndex) => {
             if (level.height === newQuality) {
