@@ -66,20 +66,14 @@ function loaded() {
 }
 
 function updateQuality(newQuality) {
-    var span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='0'] span")
-    var spans = document.querySelectorAll(".plyr__menu__container [data-plyr='settings'] span")
-    var span2 = spans[2];
     if (newQuality === 0) {
         window.hls.currentLevel = -1; //Enable AUTO quality if option.value = 0
-        span.innerHTML = `AUTO (${window.hls.currentLevel}p)`
-        span2.innerHTML = `Quality<span class="plyr__menu__value">AUTO (${window.hls.currentLevel}p)</span>`
     } else {
         window.hls.levels.forEach((level, levelIndex) => {
             if (level.height === newQuality) {
                 window.hls.currentLevel = levelIndex;
             }
         });
-        span.innerHTML = `AUTO`
     }
 }
 
@@ -132,7 +126,7 @@ function reloadVideo(path) {
 
     // Si es iphone no se carga el adaptativo ya que los iphone no tienen MediaSourceExtension y no funcionan con hls.js
     // Más info: https://github.com/video-dev/hls.js/issues/4354
-    if (navigator.userAgent.toLocaleLowerCase().includes("iphone")) {
+    if (navigator.userAgent.toLocaleLowerCase().includes("iphone")){
         adaptatiu = false;
     }
 
