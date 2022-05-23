@@ -24,19 +24,19 @@ const iceServers = {
             urls: 'turn:numb.viagenie.ca',
             credential: 'carlosveny@yahoo.es',
             username: 'miperritosalvaje69'
-        },
-        {
-            urls: 'turn:openrelay.metered.ca:443',
-            credential: 'openrelayproject',
-            username: 'openrelayproject'
-        },
-        {
-            urls: 'turn:openrelay.metered.ca:80?transport=tcp',
-            credential: 'openrelayproject',
-            username: 'openrelayproject'
         }
     ]
 };
+// {
+//     urls: 'turn:openrelay.metered.ca:443',
+//     credential: 'openrelayproject',
+//     username: 'openrelayproject'
+// },
+// {
+//     urls: 'turn:openrelay.metered.ca:80?transport=tcp',
+//     credential: 'openrelayproject',
+//     username: 'openrelayproject'
+// }
 
 // Funcion que se ejecuta al cargarse la pagina
 function loaded() {
